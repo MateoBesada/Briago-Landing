@@ -31,8 +31,8 @@ app.post('/create_preference', async (req, res) => {
     const preference = {
       items: items.map(item => ({
         title: String(item.title || 'Producto'),
-        unit_price: Number(item.unit_price) || 0,
-        quantity: Number(item.quantity) || 1,
+        unit_price: Number(item.unit_price),
+        quantity: Number(item.quantity),
         currency_id: 'ARS',
       })),
       payer: {

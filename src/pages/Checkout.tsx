@@ -18,19 +18,13 @@ const formatearPrecio = (precio: number) =>
     maximumFractionDigits: 0,
   }).format(precio);
 
-// --- Componente reutilizable para los inputs del formulario ---
 const FloatingLabelInput = ({ id, name, type, value, onChange, placeholder, required = true }: any) => (
   <div className="relative">
-    <input
-      type={type} id={id} name={name} value={value} onChange={onChange}
-      required={required} placeholder=" "
+    <input type={type} id={id} name={name} value={value} onChange={onChange} required={required} placeholder=" "
       className="block px-3 pb-2 pt-5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500 peer"
     />
-    <label
-      htmlFor={id}
-      className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-3 
-                 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 
-                 peer-focus:scale-75 peer-focus:-translate-y-4"
+    <label htmlFor={id}
+      className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-3 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
     >
       {placeholder}
     </label>
@@ -71,17 +65,42 @@ const CheckoutPage = () => {
     const initBrick = async () => {
       setIsPreferenceLoading(true);
       try {
+        if (!window.MercadoPago) {
+          throw new Error("MercadoPago SDK no está disponible.");
+        }
+
         const mp = new window.MercadoPago("APP_USR-9aa2c361-7d29-4154-885f-09dfc9c58c0e", { locale: "es-AR" });
-        
+
+        // --- CORRECCIÓN CLAVE AQUÍ: ENVIAR DATOS COMPLETOS AL BACKEND ---
+        const mpItems = cart.map(item => ({
+          title: item.nombre,
+          unit_price: item.precio,
+          quantity: item.cantidad,
+        }));
+
+        const [firstName, ...lastNameParts] = formData.fullname.trim().split(' ');
+        const mpPayer = {
+          name: firstName || '',
+          surname: lastNameParts.join(' ') || '',
+          email: formData.email,
+          phone: { number: formData.phone },
+          address: { zip_code: formData.postalcode, street_name: formData.address }
+        };
+
         const res = await fetch("https://checkout-server-gehy.onrender.com/create_preference", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            amount: total,
-            description: `Compra en Briago Pinturas`,
-            payer: { email: formData.email }
+            items: mpItems,
+            payer: mpPayer,
+            external_reference: `BRIAGO-${Date.now()}`
           }),
         });
+        
+        if (!res.ok) { // Si la respuesta del servidor no es 2xx
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Error del servidor al crear la preferencia.');
+        }
 
         const { preferenceId } = await res.json();
         if (!preferenceId) throw new Error("No se pudo crear la preferencia de pago.");
@@ -93,22 +112,21 @@ const CheckoutPage = () => {
           customization: { paymentMethods: { creditCard: "all", debitCard: "all", mercadoPago: "all", ticket: "all" } },
           callbacks: {
             onSubmit: async () => {
-              // Lógica de post-pago
               toast.success('¡Pago procesado con éxito!');
               vaciarCarrito();
               navigate('/compra-exitosa');
             },
             onReady: () => setIsPreferenceLoading(false),
             onError: (err: any) => {
-              toast.error("Error al inicializar el pago.");
+              toast.error("Hubo un error al procesar el pago.");
               console.error("Error en Brick:", err);
               setIsBrickVisible(false);
               setIsPreferenceLoading(false);
             },
           },
         });
-      } catch (error) {
-        toast.error("No se pudo conectar con el servicio de pago.");
+      } catch (error: any) {
+        toast.error(error.message || "No se pudo conectar con el servicio de pago.");
         console.error("Error al renderizar Brick:", error);
         setIsBrickVisible(false);
         setIsPreferenceLoading(false);
@@ -125,7 +143,7 @@ const CheckoutPage = () => {
     } else {
       initBrick();
     }
-  }, [isBrickVisible, total, formData.email, navigate, vaciarCarrito]);
+  }, [isBrickVisible, total, formData, cart, navigate, vaciarCarrito]);
 
   const handleProceedToPayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
