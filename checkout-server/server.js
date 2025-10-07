@@ -3,7 +3,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import mercadopago from 'mercadopago';
 import dotenv from 'dotenv';
-import { Resend } from 'resend'; // 1. Se importa Resend
+import { Resend } from 'resend';
 
 dotenv.config();
 
@@ -11,10 +11,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// 2. Se inicializa Resend con la API Key de tu archivo .env
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Configura Mercado Pago con tu Access Token de .env
 mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN,
 });
@@ -27,14 +25,14 @@ app.post('/create_preference', async (req, res) => {
       return res.status(400).json({ error: 'La lista de productos (items) es inválida.' });
     }
     if (!payer || typeof payer.email !== 'string') {
-        return res.status(400).json({ error: 'La información del comprador (payer) es inválida.' });
+      return res.status(400).json({ error: 'La información del comprador (payer) es inválida.' });
     }
 
     const preference = {
       items: items.map(item => ({
-        title: String(item.title),
-        unit_price: Number(item.unit_price),
-        quantity: Number(item.quantity),
+        title: String(item.title || 'Producto'),
+        unit_price: Number(item.unit_price) || 0,
+        quantity: Number(item.quantity) || 1,
         currency_id: 'ARS',
       })),
       payer: {
@@ -64,22 +62,19 @@ app.post('/create_preference', async (req, res) => {
     res.json({ preferenceId: result.body.id });
 
   } catch (error) {
-    console.error('Error al crear preferencia:', error.cause || error.message);
+    console.error('Error al crear preferencia:', error.cause ? error.cause : error);
     res.status(500).json({ error: 'Error interno al procesar la solicitud de pago.' });
   }
 });
 
-// --- RUTA DEL WEBHOOK CON LÓGICA PARA ENVIAR EMAIL ---
 app.post('/webhook-mercadopago', async (req, res) => {
   console.log('Webhook de Mercado Pago recibido');
   const paymentId = req.body.data?.id;
 
   if (req.body.type === 'payment' && paymentId) {
     try {
-      // 3. Obtenemos los detalles completos del pago desde Mercado Pago
       const payment = await mercadopago.payment.get(paymentId);
       
-      // 4. Verificamos que el pago esté aprobado
       if (payment.body.status === 'approved') {
         console.log('Pago aprobado. Enviando email de notificación...');
         
@@ -91,10 +86,9 @@ app.post('/webhook-mercadopago', async (req, res) => {
           </tr>
         `).join('');
 
-        // 5. Enviamos el email usando Resend
         await resend.emails.send({
-          from: 'Tienda Briago <Administracion@briagopinturas.com>', // <-- Cambiá a tu dominio verificado
-          to: 'besadamateo@gmail.com', // <-- TU EMAIL para recibir el aviso
+          from: 'Tienda Briago <Administracion@briagopinturas.com>',
+          to: 'besadamateo@gmail.com',
           subject: `¡Nueva Venta! - Orden #${payment.body.external_reference}`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
@@ -127,7 +121,6 @@ app.post('/webhook-mercadopago', async (req, res) => {
     }
   }
 
-  // Siempre respondemos 200 OK a Mercado Pago
   res.status(200).send('OK');
 });
 
