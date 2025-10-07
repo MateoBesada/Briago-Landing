@@ -7,6 +7,7 @@ export interface Producto {
   descripcion?: string;
   producto?: string;
   imgOpcionales?: string[];
+  seccion?: string; // Sección del producto (ej: "Abrasivos", "Accesorios")
 
   // Galería de imágenes
   imagenHover?: string;
@@ -16,24 +17,29 @@ export interface Producto {
   variantes?: Producto[];
 
   // Atributos de variantes
-  capacidad?: string;       // Ej: "1", "4", "20" (litros)
-  abrasivo?: string;        // Ej: "Grano 120", "Grano 1500"
+  capacidad?: string;      // Ej: "1", "4", "20" (litros)
+  abrasivo?: string;       // Ej: "Grano 120", "Grano 1500"
   acabado?: string;      // Ej: "Brillante", "Satinado", "Mate"
-  color?: string;           // Ej: "Rojo", "Negro", etc.
-  grano?: string;           // Ej: "2000", "3000" (para abrasivos)  
-  kilos?: string;           // Ej: "1kg", "5kg" (para productos en peso)
+  color?: string;          // Ej: "Rojo Fuego" (Para Látex y otros)
+  
+  // --- CAMBIO AQUÍ ---
+  ColorAerosol?: string; // Ej: "Rojo Fuego" (Específico para Aerosoles)
+  
+  colorHex?: string;       // Ej: "#c50000" (para mostrar el círculo de color)
+  grano?: string;          // Ej: "2000", "3000" (para abrasivos)  
+  kilos?: string;          // Ej: "1kg", "5kg" (para productos en peso)
 
   tipoVenta?: {
-  unidad?: {
-    precio: number;
-    stock?: number;
+    unidad?: {
+      precio: number;
+      stock?: number;
+    };
+    caja?: {
+      precio: number;
+      unidadesPorCaja: number;
+      stock?: number;
+    };
   };
-  caja?: {
-    precio: number;
-    unidadesPorCaja: number;
-    stock?: number;
-  };
-};
 
   // Precios
   precioOriginal?: number;

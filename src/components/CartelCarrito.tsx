@@ -13,6 +13,7 @@ const CartelCarrito = ({ visible, onClose, mensaje }: CartelCarritoProps) => {
       const timer = setTimeout(onClose, 3000); // se oculta luego de 3 segundos
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [visible, onClose]);
 
   if (!visible) return null;

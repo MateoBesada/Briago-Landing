@@ -1,157 +1,213 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, FC } from 'react';
 import { Link } from 'react-router-dom';
-import type { Producto } from '@/types/Producto';
+import Fuse from 'fuse.js';
+import type { FuseResult, FuseResultMatch, IFuseOptions } from 'fuse.js';
+import { Search, Paintbrush, Tags, Building2 } from 'lucide-react';
+
+export interface Producto {
+  id: number | string;
+  nombre: string;
+  marca: string;
+  categoria: string;
+  descripcion?: string;
+  slug?: string;
+}
+
+interface SimpleSearchItem {
+  nombre: string;
+}
 
 interface GlobalSearchProps {
   productos: Producto[];
   query: string;
-  setQuery: (value: string) => void;
-  agregarAlCarrito: (producto: Producto) => void;
+  setQuery: (query: string) => void;
+  onResultClick?: () => void; // Prop opcional para notificar un clic
 }
 
-const normalizar = (texto: string) =>
-  texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+interface HighlightProps {
+  text: string;
+  matches: readonly FuseResultMatch[] | undefined;
+  keyName: string;
+}
 
-export default function GlobalSearch({
-  productos,
-  query,
-  setQuery,
-  agregarAlCarrito,
-}: GlobalSearchProps) {
-  const [resultados, setResultados] = useState<Producto[]>([]);
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+interface SearchResults {
+  productos: FuseResult<Producto>[];
+  categorias: FuseResult<SimpleSearchItem>[];
+  marcas: FuseResult<SimpleSearchItem>[];
+}
 
-  const flattenProductos = (lista: Producto[]) =>
-    lista.flatMap((p) => [p, ...(p.variantes ?? [])]);
-
-  useEffect(() => {
-    if (query.trim().length === 0) {
-      setResultados([]);
-      setOpen(false);
-      return;
+const Highlight: FC<HighlightProps> = ({ text, matches, keyName }) => {
+  if (!matches) return <span>{text}</span>;
+  const highlightMatch = matches.find(m => m.key === keyName);
+  if (!highlightMatch || !highlightMatch.indices) {
+    return <span>{text}</span>;
+  }
+  const result: React.ReactNode[] = [];
+  let lastIndex = 0;
+  highlightMatch.indices.forEach(([start, end]: readonly [number, number], i: number) => {
+    if (start > lastIndex) {
+      result.push(<span key={`unmatched-${i}-pre`}>{text.substring(lastIndex, start)}</span>);
     }
+    result.push(
+      <strong key={`matched-${i}`} className="text-black font-bold">
+        {text.substring(start, end + 1)}
+      </strong>
+    );
+    lastIndex = end + 1;
+  });
+  if (lastIndex < text.length) {
+    result.push(<span key="unmatched-post">{text.substring(lastIndex)}</span>);
+  }
+  return <>{result}</>;
+};
 
-    const palabras = normalizar(query.toLowerCase()).split(/\s+/).filter(Boolean);
-    const productosPlanos = flattenProductos(productos);
+const GlobalSearch: FC<GlobalSearchProps> = ({ productos, query, setQuery, onResultClick }) => {
+  const [results, setResults] = useState<SearchResults>({ productos: [], categorias: [], marcas: [] });
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
 
-    const filtrados = productosPlanos
-      .filter((p) => {
-        const texto = normalizar(`${p.nombre} ${p.descripcion ?? ''}`.toLowerCase());
-        return palabras.every((palabra) => texto.includes(palabra));
-      })
-      .filter(
-        (producto, index, self) =>
-          index === self.findIndex((p) => p.id === producto.id)
-      );
-
-    setResultados(filtrados);
-    setOpen(filtrados.length > 0);
-  }, [query, productos]);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const renderResultados = () => {
-    if (resultados.length === 0) {
-      return (
-        <div className="text-center py-4 text-gray-500">
-          No se encontraron productos
-        </div>
-      );
+  const handleResultClick = () => {
+    setIsFocused(false);
+    setQuery('');
+    if (onResultClick) {
+      onResultClick();
     }
-
-    return resultados.map((p) => (
-      <Link
-        to={`/producto/${p.id}`}
-        key={p.id}
-        className="flex items-center gap-4 bg-white rounded-lg shadow hover:bg-gray-100 transition p-3 mb-3"
-        onClick={() => setOpen(false)}
-      >
-        <div className="relative min-w-[60px] max-w-[60px]">
-          {p.off && p.off > 0 && (
-            <div className="absolute -top-3 -left-2 bg-green-600 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-              {p.off}% OFF
-            </div>
-          )}
-          <img
-            src={p.imagen}
-            alt={p.nombre}
-            className="w-14 h-14 object-contain"
-          />
-        </div>
-
-        <div className="flex flex-col flex-1">
-          <span className="text-black font-semibold text-sm leading-tight">
-            {p.nombre}
-          </span>
-          <span className="text-black font-bold text-sm mt-1">
-            $
-            {(p.precio ??
-              (p.precioOriginal && p.off != null
-                ? Math.round(p.precioOriginal * (1 - p.off / 100))
-                : p.precioOriginal)
-            )?.toLocaleString('es-AR', { minimumFractionDigits: 2 }) ?? 'Consultar'}
-          </span>
-        </div>
-
-        <button
-          onClick={(e) => {
-            e.preventDefault(); // evita redirección inmediata
-            agregarAlCarrito(p);
-          }}
-          className="bg-black text-yellow-400 hover:text-black text-sm font-semibold rounded-full px-4 py-1 transition hover:bg-yellow-300 hover:border hover:border-black"
-        >
-          Agregar
-        </button>
-      </Link>
-    ));
   };
 
-  return (
-    <>
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
-          }}
-        />
-      )}
+  const { categoriasUnicas, marcasUnicas } = useMemo(() => {
+    const categorias = [...new Set(productos.map(p => p.categoria).filter(Boolean))];
+    const marcas = [...new Set(productos.map(p => p.marca).filter(Boolean))];
+    return { 
+      categoriasUnicas: categorias.map((c): SimpleSearchItem => ({ nombre: c })),
+      marcasUnicas: marcas.map((m): SimpleSearchItem => ({ nombre: m }))
+    };
+  }, [productos]);
 
-      <div
-        ref={ref}
-        className="relative z-50 w-full max-w-[480px] md:w-[480px] mx-auto"
-      >
+  const fuseOptions: IFuseOptions<any> = {
+    includeScore: true,
+    includeMatches: true,
+    minMatchCharLength: 2,
+    threshold: 0.3,
+  };
+
+  const fuseProductos = useMemo(() => new Fuse<Producto>(productos, {
+    ...fuseOptions,
+    keys: ['nombre', 'marca', 'categoria', 'descripcion'],
+    ignoreLocation: true,
+  }), [productos]);
+
+  const fuseCategorias = useMemo(() => new Fuse<SimpleSearchItem>(categoriasUnicas, {
+    ...fuseOptions,
+    keys: ['nombre'],
+  }), [categoriasUnicas]);
+
+  const fuseMarcas = useMemo(() => new Fuse<SimpleSearchItem>(marcasUnicas, {
+    ...fuseOptions,
+    keys: ['nombre'],
+  }), [marcasUnicas]);
+
+  useEffect(() => {
+    if (query.trim().length > 1) {
+      const productResults = fuseProductos.search(query).slice(0, 5);
+      const categoryResults = fuseCategorias.search(query).slice(0, 3);
+      const brandResults = fuseMarcas.search(query).slice(0, 3);
+      setResults({ productos: productResults, categorias: categoryResults, marcas: brandResults });
+    } else {
+      setResults({ productos: [], categorias: [], marcas: [] });
+    }
+  }, [query, fuseProductos, fuseCategorias, fuseMarcas]);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setIsFocused(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const hasResults = results.productos.length > 0 || results.categorias.length > 0 || results.marcas.length > 0;
+
+  return (
+    <div className="relative w-full max-w-lg" ref={searchContainerRef}>
+      <div className="relative">
         <input
-          type="search"
-          placeholder="Buscar..."
+          type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => query.length > 0 && setOpen(true)}
-          className="w-full px-5 py-1.5 text-base rounded-full border border-black text-black placeholder-gray-600 bg-white focus:outline-none shadow-md"
+          onFocus={() => setIsFocused(true)}
+          placeholder="Buscar por producto, marca, o categoría..."
+          className="w-full pl-10 pr-4 py-2.5 text-sm bg-white border border-gray-300 rounded-full focus:ring-2 focus:ring-black focus:border-black transition-all"
         />
-
-        <div
-          className={`hidden md:block absolute top-full mt-6 bg-white border border-black shadow-xl max-h-[70vh] overflow-y-auto transition-all duration-300 ease-in-out px-2 w-[480px] left-1/2 -translate-x-1/2 z-50
-            ${open ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
-        >
-          {renderResultados()}
-        </div>
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
       </div>
 
-      {open && (
-        <div className="block md:hidden fixed top-20 left-0 right-0 z-50 px-2">
-          <div className="bg-white border border-black rounded-lg shadow-xl max-h-[70vh] overflow-y-auto px-2 py-4 w-full">
-            {renderResultados()}
-          </div>
+      {isFocused && query.length > 1 && (
+        <div className="absolute top-full mt-2 w-full bg-white rounded-lg shadow-2xl overflow-hidden z-10 border">
+          {hasResults ? (
+            <div className="max-h-[60vh] overflow-y-auto">
+              {results.productos.length > 0 && (
+                <div className="p-2">
+                  <h3 className="px-3 py-1 text-xs font-bold text-gray-500 uppercase">Productos</h3>
+                  <ul>
+                    {results.productos.map(({ item, matches }) => (
+                      <li key={item.id}>
+                        <Link to={`/producto/${item.id}`} onClick={handleResultClick} className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-100 rounded-md transition-colors">
+                          <Paintbrush className="w-5 h-5 text-gray-400 shrink-0" />
+                          <span className="text-sm text-gray-800">
+                            <Highlight text={item.nombre} matches={matches} keyName="nombre" />
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {results.categorias.length > 0 && (
+                <div className="p-2 border-t">
+                  <h3 className="px-3 py-1 text-xs font-bold text-gray-500 uppercase">Categorías</h3>
+                   <ul>
+                    {results.categorias.map(({ item, matches }) => (
+                      <li key={item.nombre}>
+                        <Link to={`/productos?categoria=${item.nombre}`} onClick={handleResultClick} className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-100 rounded-md transition-colors">
+                          <Tags className="w-5 h-5 text-gray-400 shrink-0" />
+                           <span className="text-sm text-gray-800">
+                            <Highlight text={item.nombre} matches={matches} keyName="nombre" />
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {results.marcas.length > 0 && (
+                <div className="p-2 border-t">
+                  <h3 className="px-3 py-1 text-xs font-bold text-gray-500 uppercase">Marcas</h3>
+                   <ul>
+                    {results.marcas.map(({ item, matches }) => (
+                      <li key={item.nombre}>
+                        <Link to={`/productos?marca=${item.nombre}`} onClick={handleResultClick} className="flex items-center gap-3 px-3 py-2.5 hover:bg-gray-100 rounded-md transition-colors">
+                          <Building2 className="w-5 h-5 text-gray-400 shrink-0" />
+                           <span className="text-sm text-gray-800">
+                            <Highlight text={item.nombre} matches={matches} keyName="nombre" />
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="p-4 text-center text-sm text-gray-600">
+              <p>No se encontraron resultados para "{query}"</p>
+            </div>
+          )}
         </div>
       )}
-    </>
+    </div>
   );
-}
+};
+
+export default GlobalSearch;

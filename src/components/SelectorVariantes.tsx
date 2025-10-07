@@ -50,6 +50,8 @@ useEffect(() => {
 useEffect(() => {
   if (!colorSeleccionado && !acabadoSeleccionado && !capacidadSeleccionada && !granoSeleccionado && !kilosSeleccionado) return;
 
+  
+  
   const nuevaVariante = variantes.find((v) =>
     (!colorSeleccionado || v.color?.toLowerCase() === colorSeleccionado) &&
     (!acabadoSeleccionado || v.acabado?.toLowerCase() === acabadoSeleccionado) &&

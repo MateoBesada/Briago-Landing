@@ -5,7 +5,7 @@ const SECCIONES = [
   { label: "HOGAR Y OBRA", to: "/productos-pinturas" },
   { label: "AUTOMOTOR", to: "/productos-automotor" },
   { label: "INDUSTRIA", to: "#productos-industria" },
-  { label: "PULIDOS", to: "/productos-automotor?tipo=Pulidos" },
+  { label: "PULIDOS", to: "/productos-pulidos" },
   { label: "ABRASIVOS", to: "/productos-abrasivos" },
   { label: "ACCESORIOS", to: "/productos-accesorios" },
 ];
@@ -24,8 +24,8 @@ export default function SeccionesTabs() {
               to={to}
               className={clsx(
                 "w-full text-center rounded-xl py-4 font-extrabold uppercase tracking-wide transition shadow-sm",
-                "bg-[#fff03b] text-black hover:shadow-md",
-                active && "ring-2 ring-black"
+                "bg-[#fff03b] text-black hover:shadow-md hover:ring-2 hover:ring-[#fff03b]",
+                active && "ring-3 ring-[#fce11b] ring-offset-3 bg-[#fce11b] ",
               )}
             >
               {label}

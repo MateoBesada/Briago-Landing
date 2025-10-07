@@ -7,9 +7,10 @@ export const productosAccesorios: Producto[] = [
     descripcion: '',
     precio: 13306,
     imagen: '/img/Accesorios/Rodillo22cmElGalgo.png',
-    imagenHover: '/img/Accesorios/Rodillo22cmElGalgoHover.png',
+    imgOpcionales: ['/img/Accesorios/Rodillo22cmElGalgoHover.png'],
     categoria: 'Rodillos',
-    marca:'El Galgo'
+    marca:'El Galgo',
+    seccion: "Accesorios",
   },
   {
     id: '54',
@@ -18,39 +19,40 @@ export const productosAccesorios: Producto[] = [
     off: 11,
     precioOriginal: 9191,
     imagen: '/img/Accesorios/RodilloAntigotaElGalgo.png',
-    imagenHover: '/img/Accesorios/RodilloAntigotaElGalgoHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloAntigotaElGalgoHover.png'],
     categoria: 'Rodillos',
-    marca:'El Galgo'
+    marca:'El Galgo',
+    seccion: "Accesorios",
   },
   {
     id: '24',
     nombre: 'Rodillo Premium Lana Natural Hilada Rosarpin 18cm',
     descripcion: '',
-
     imagen: '/img/Accesorios/RodilloPremiumLanaNaturalHiladaRosarpin18cm.png',
-    imagenHover: '/img/Accesorios/RodilloPremiumLanaNaturalHiladaRosarpin18cmHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloPremiumLanaNaturalHiladaRosarpin18cmHover.png'],
     categoria: 'Rodillos',
-    marca:'Rosarpin'
+    marca:'Rosarpin',
+    seccion: "Accesorios",
   },
   {
     id: '34',
     nombre: 'Rodillo Lana Natural Hilada Pelo Corto Rosarpin 18cm',
     descripcion: '',
-
     imagen: '/img/Accesorios/RodilloLanaNaturalHiladaPeloCortoRosarpin18cm.png',
-    imagenHover: '/img/Accesorios/RodilloLanaNaturalHiladaPeloCortoRosarpin18cmHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloLanaNaturalHiladaPeloCortoRosarpin18cmHover.png'],
     categoria: 'Rodillos',
-    marca:'Rosarpin'
+    marca:'Rosarpin',
+    seccion: "Accesorios",
   },
   {
     id: '44',
     nombre: 'Rodillo Lana Natural Rosarpin Super 22 Cm',
     descripcion: '',
-    
     imagen: '/img/Accesorios/RodilloLanaNaturalRosarpinSuper22Cm.png',
-    imagenHover: '/img/Accesorios/RodilloLanaNaturalRosarpinSuper22CmHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloLanaNaturalRosarpinSuper22CmHover.png'],
     categoria: 'Rodillos',
-    marca:'Rosarpin'
+    marca:'Rosarpin',
+    seccion: "Accesorios",
   },
   {
     id: '64',
@@ -58,38 +60,41 @@ export const productosAccesorios: Producto[] = [
     descripcion: '',
     precio: 7593,
     imagen: '/img/Accesorios/RodilloCubremasElGalgo.png',
-    imagenHover: '/img/Accesorios/RodilloCubremasElGalgoHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloCubremasElGalgoHover.png'],
     categoria: 'Rodillos',
-    marca:'El Galgo'
+    marca:'El Galgo',
+    seccion: "Accesorios",
   },
   {
     id: '74',
     nombre: 'Rodillo para Epoxi, Poliuretanos y Esmaltes Sinteticos Rosarpin',
     descripcion: '',
-    
+    off:5,
+    precioOriginal:7500,
     imagen: '/img/Accesorios/RodilloRosarpinAzul.png',
-    imagenHover: '/img/Accesorios/RodilloRosarpinAzulHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloRosarpinAzulHover.png'],
     categoria: 'Rodillos',
-    marca:'Rosarpin'
+    marca:'Rosarpin',
+    seccion: "Accesorios",
   },
   {
     id: '84',
     nombre: 'Rodillo Antigota Rosarpin',
     descripcion: '',
-    
     imagen: '/img/Accesorios/RodilloAntigotaRosarpin.png',
-    imagenHover: '/img/Accesorios/RodilloAntigotaRosarpinHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloAntigotaRosarpinHover.png'],
     categoria: 'Rodillos',
-    marca:'Rosarpin'
+    marca:'Rosarpin',
+    seccion: "Accesorios",
   },
   {
     id: '94',
     nombre: 'Rodillo Premium Lana Natural Gaudi',
     descripcion: '',
-    
     imagen: '/img/Accesorios/RodilloPremiumLanaNaturalGaudi.png',
-    imagenHover: '/img/Accesorios/RodilloPremiumLanaNaturalGaudiHover.png',
+    imgOpcionales: ['/img/Accesorios/RodilloPremiumLanaNaturalGaudiHover.png'],
     categoria: 'Rodillos',
-    marca:'Gaudi'
+    marca:'Gaudi',
+    seccion: "Accesorios",
   },
 ];

@@ -132,9 +132,14 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className="mt-12 text-center text-gray-400 text-xs px-4">
+      <div className="mt-10 text-center text-gray-400 text-xs px-4">
         <p>
           Los precios y promociones publicados en este sitio web son válidos únicamente para compras online.
+        </p>
+      </div>
+      <div className="mt-5 text-center text-gray-400 text-xs px-4">
+        <p>
+          Todos los precios del sitio web son a peso argentino (ARS)
         </p>
       </div>
     </footer>

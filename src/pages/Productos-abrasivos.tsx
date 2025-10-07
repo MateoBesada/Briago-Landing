@@ -5,6 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useFiltrosProductos } from '@/hooks/useFiltrosProductos';
 import Filtros from '@/components/Filtros';
 import ProductoCard from '@/components/ProductoCard';
+import SeccionesTabs from "@/components/SeccionesTabs";
 
 
 const aplicarDescuento = (p: Producto): Producto =>
@@ -46,11 +47,12 @@ export default function AbrasivosPage() {
 
   return (
   <div className="bg-gray-100 min-h-screen px-2 py-8">
+    <SeccionesTabs />
     <div className="max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row gap-6">
         {/* Filtros + Botones */}
         <div className="w-full md:w-80">
-          <div className="md:sticky md:top-28 flex flex-col gap-6">
+          <div className="md:fixed md:top-28">
             <Filtros
               filtros={filtrosDisponibles}
               filtroActivo={filtroActivo}
@@ -59,8 +61,9 @@ export default function AbrasivosPage() {
               titulo="ABRASIVOS"
             />
 
-            {/* Botones de Disco y Tela debajo de filtros */}
-            <div className="w-full grid grid-cols-2 gap-4">
+
+            <div className="w-full md:w-80 grid grid-cols-2 gap-4 mt-6">
+
               <button
                 onClick={() =>
                   setFiltroAbrasivo(filtroAbrasivo === 'Disco' ? null : 'Disco')

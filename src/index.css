@@ -3,23 +3,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html {
+/* ===== CONFIGURACIÓN BASE ===== */
+body, html {
+  overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
-body, html {
-  overflow-x: hidden;
-}
-
-.scrollbar-hide {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
-
-
+/* --- VARIABLES DE TEMA (SIN CAMBIOS) --- */
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -78,58 +68,21 @@ body, html {
   --border: oklch(0.928 0.006 264.531);
   --input: oklch(0.928 0.006 264.531);
   --ring: oklch(0.707 0.022 261.325);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.002 247.839);
-  --sidebar-foreground: oklch(0.13 0.028 261.692);
-  --sidebar-primary: oklch(0.21 0.034 264.665);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-accent: oklch(0.967 0.003 264.542);
-  --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
-  --sidebar-border: oklch(0.928 0.006 264.531);
-  --sidebar-ring: oklch(0.707 0.022 261.325);
+  /* ... (el resto de tus variables root) ... */
 }
 
 .dark {
   --background: oklch(0.13 0.028 261.692);
   --foreground: oklch(0.985 0.002 247.839);
-  --card: oklch(0.21 0.034 264.665);
-  --card-foreground: oklch(0.985 0.002 247.839);
-  --popover: oklch(0.21 0.034 264.665);
-  --popover-foreground: oklch(0.985 0.002 247.839);
-  --primary: oklch(0.928 0.006 264.531);
-  --primary-foreground: oklch(0.21 0.034 264.665);
-  --secondary: oklch(0.278 0.033 256.848);
-  --secondary-foreground: oklch(0.985 0.002 247.839);
-  --muted: oklch(0.278 0.033 256.848);
-  --muted-foreground: oklch(0.707 0.022 261.325);
-  --accent: oklch(0.278 0.033 256.848);
-  --accent-foreground: oklch(0.985 0.002 247.839);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.034 264.665);
-  --sidebar-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-accent: oklch(0.278 0.033 256.848);
-  --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* ... (el resto de tus variables dark) ... */
 }
 
+/* --- ESTILOS BASE DE TAILWIND --- */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    /* --- CORRECCIÓN AQUÍ --- */
+    border-color: theme('colors.border'); /* Se aplica el color del tema directamente */
+    outline-color: theme('colors.ring / 50%'); /* Se aplica el color del tema con opacidad */
   }
   body {
     @apply bg-background text-foreground;
@@ -137,90 +90,74 @@ body, html {
   }
 }
 
-@layer utilities {
-  .font-gotham-book {
-    font-family: 'gotham', sans-serif;
-    font-weight: 400;
-    font-style: normal;
+/* ===== COMPONENTES Y UTILIDADES PERSONALIZADAS ===== */
+@layer components {
+  /* --- Estilos para el Carrusel 3D de SATA --- */
+  .sata-carousel-item .slick-slide {
+    transform: scale(0.75);
+    opacity: 0.5;
+    transition: all 0.4s ease-in-out;
   }
-
-  .font-gotham-book-italic {
-    font-family: 'gotham', sans-serif;
-    font-weight: 400;
-    font-style: italic;
-  }
-
-  .font-gotham-bold {
-    font-family: 'gotham', sans-serif;
-    font-weight: 700;
-    font-style: normal;
-  }
-
-  .font-gotham-bold-italic {
-    font-family: 'gotham', sans-serif;
-    font-weight: 700;
-    font-style: italic;
-  }
-}
-
-@keyframes scrollMarquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.marquee-track {
-  animation: scrollMarquee 10s linear infinite;
-}
-
-@keyframes cartelIn {
-  0% {
-    opacity: 0;
-    transform: translateY(30px) scale(0.95);
-  }
-  100% {
+  .sata-carousel-item .slick-center {
+    transform: scale(1);
     opacity: 1;
-    transform: translateY(0) scale(1);
+  }
+  .sata-carousel-item .slick-list {
+    padding: 20px 0 !important;
+  }
+  .sata-carousel-item .slick-track {
+    display: flex !important;
+    align-items: center;
+  }
+  
+  /* --- Scrollbar Personalizado --- */
+  .custom-scrollbar::-webkit-scrollbar { width: 8px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #d1d5db; /* gris-300 */
+    border-radius: 20px;
+    border: 2px solid #f9fafb; /* bg-slate-50 */
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #facc15; /* yellow-400 */
+  }
+  .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #d1d5db #f9fafb; }
+  
+  /* --- Fade para el carrusel de marcas --- */
+  [data-fade="true"]::before,
+  [data-fade="true"]::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10rem;
+    z-index: 10;
+    pointer-events: none;
+  }
+  [data-fade="true"]::before { left: 0; background: linear-gradient(to right, white, transparent); }
+  [data-fade="true"]::after { right: 0; background: linear-gradient(to left, white, transparent); }
+}
+
+@layer utilities {
+  /* --- Utilidades de Fuente --- */
+  .font-gotham-book { font-family: 'gotham', sans-serif; font-weight: 400; font-style: normal; }
+  .font-gotham-book-italic { font-family: 'gotham', sans-serif; font-weight: 400; font-style: italic; }
+  .font-gotham-bold { font-family: 'gotham', sans-serif; font-weight: 700; font-style: normal; }
+  .font-gotham-bold-italic { font-family: 'gotham', sans-serif; font-weight: 700; font-style: italic; }
+
+  /* --- Ocultar Scrollbar --- */
+  .scrollbar-hide { scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+  /* --- Otras Utilidades --- */
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    display: none;
+  }
+  .search-dimmed #root > :not(header) {
+    filter: brightness(0.4);
+    transition: filter 0.3s ease;
+    pointer-events: none;
   }
 }
-
-.animate-cartel-in {
-  animation: cartelIn 0.6s ease-out forwards;
-}
-
-@keyframes bounceSlow {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-.animate-bounce-slow {
-  animation: bounceSlow 1.5s infinite;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.animate-fadeIn {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-input[type="search"]::-webkit-search-cancel-button {
-  -webkit-appearance: none;
-  appearance: none;
-  display: none;
-}
-
-.search-dimmed #root > :not(header) {
-  filter: brightness(0.4);
-  transition: filter 0.3s ease;
-  pointer-events: none;
-}
-

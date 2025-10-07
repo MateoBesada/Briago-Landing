@@ -1,4 +1,4 @@
-import type { Producto} from "@/types/Producto";
+import type { Producto } from "@/types/Producto";
 
 export const productosAutomotor: Producto[] = [
   {
@@ -10,6 +10,8 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/primerPPGBocaUnidos.webp',
     categoria: 'Primers',
     marca:'PPG',
+    capacidad: '3,5',
+    seccion: "Automotor"
   },
   {
     id: '401',
@@ -20,6 +22,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Captura de pantalla 2025-06-13 173458_optimized_.webp',
     categoria: 'Primers',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '421',
@@ -30,6 +33,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Captura de pantalla 2025-06-13 173515_optimized_.webp',
     categoria: 'Primers',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '411',
@@ -40,6 +44,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Captura de pantalla 2025-06-13 173505_optimized_.webp',
     categoria: 'Primers',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '431',
@@ -50,6 +55,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Captura de pantalla 2025-06-13 173555_optimized_.webp',
     categoria: 'Primers',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '371',
@@ -57,9 +63,10 @@ export const productosAutomotor: Producto[] = [
     descripcion:'',
     off: 8,
     precioOriginal: 56800,
-    imagen: '/img/Automotor/iviplastPPG.webp',
+    imagen: '/img/Automotor/Captura de pantalla 2025-08-05 132444.png',
     categoria: 'Masillas',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '441',
@@ -67,9 +74,10 @@ export const productosAutomotor: Producto[] = [
     descripcion:'',
     off: 8,
     precioOriginal: 34826,
-    imagen: '/img/Automotor/Captura de pantalla 2025-06-18 144243_optimized_.webp',
+    imagen: '/img/Automotor/Captura de pantalla 2025-08-05 132421.png',
     categoria: 'Masillas',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '361',
@@ -79,6 +87,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/DiluyentePPGblanco.webp',
     categoria: 'Diluyentes',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '381',
@@ -88,6 +97,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/clear-catalizador_optimized_1.webp',
     categoria: 'Barnices',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '391',
@@ -97,7 +107,9 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Captura de pantalla 2025-06-23 182329.png',
     categoria: 'Barnices',
     marca:'PPG',
+    seccion: "Automotor"
   },
+
   {
     id: '341',
     nombre: 'Kit Barniz Transparente DC4000 Con DCH3070  PPG Deltron',
@@ -106,6 +118,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/DeltronPPG4000.webp',
     categoria: 'Barnices',
     marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '351',
@@ -115,74 +128,899 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/DeltronPPG3000.webp',
     categoria: 'Barnices',
     marca:'PPG',
-  },
-  {
-    id: '451',
-    nombre: 'Combo #1',
-    descripcion:'',
-    
-    imagen: '/img/Automotor/Captura de pantalla 2025-06-18 144514_optimized_.webp',
-    categoria: 'Combos',
-    marca:'PPG',
-  },
-  {
-    id: '461',
-    nombre: 'Combo  #2',
-    descripcion:'',
-    
-    imagen: '/img/Automotor/Captura de pantalla 2025-06-18 144634_optimized_.webp',
-    categoria: 'Combos',
-    marca:'PPG',
+    seccion: "Automotor"
   },
   {
     id: '331',
     nombre: 'R1 Primer P11 3.6lts Roberlo',
     descripcion:'',
-    precio: 53895,
-    imagen: '/img/Automotor/PrimerRoberloR1.webp',
+    off:8,
+    precioOriginal: 86890,
+    imagen: '/img/Automotor/D_NQ_NP_2X_857445-MLA86130673175_062025-F.webp',
     categoria: 'Primers',
     marca:'Roberlo',
+    seccion: "Automotor"
+  },
+  {
+    id: '641',
+    nombre: 'Sata Jet X 5500 RP',
+    descripcion:'',
+    
+    imagen: '/img/Automotor/SATAjet X 5500 (Tarjeta).png',
+    imgOpcionales: ['/img/Automotor/Satajet X 5500-2-Photoroom.png','/img/Automotor/Satajet X 5500-3-Photoroom.png'],
+    categoria: 'Herramientas',
+    marca:'SATA',
+    seccion: "Automotor"
+  },
+  {
+    id: '651',
+    nombre: 'Sata Jet X',
+    descripcion:'',
+    
+    imagen: '/img/Automotor/_SATAjet X (Tarjeta).png',
+    imgOpcionales: ['/img/Automotor/jet-x-(4).jpg','/img/Automotor/sata-jet-x-caja.jpg'],
+    categoria: 'Herramientas',
+    marca:'SATA',
+    seccion: "Automotor"
+  },
+  {
+    id: '661',
+    nombre: 'Sata Jet 100B',
+    descripcion:'',
+    imagen: '/img/Automotor/SATA Jet 100 B (Tarjeta)1.png',
+    
+    imgOpcionales: ['/img/Automotor/SATAjet 100B-2-Photoroom.png', '/img/Automotor/SATAvaso100b-Photoroom.png'],
+    categoria: 'Herramientas',
+    marca:'SATA',
+    seccion: "Automotor"
+  },
+  {
+    id: '701',
+    nombre: 'Sata Jet 100',
+    descripcion:'',
+    
+    imagen: '/img/Automotor/SATA Jet 100 B (Tarjeta)1.png',
+    imgOpcionales: ['/img/Automotor/SATAjet 100B-2-Photoroom.png', '/img/Automotor/SATAvaso100b-Photoroom.png'],
+    categoria: 'Herramientas',
+    marca:'SATA',
+    seccion: "Automotor"
+  },
+  {
+    id: '671',
+    nombre: 'Sata Dry Jet 2',
+    descripcion:'',
+    
+    imagen: '/img/Automotor/SataDryJet2-Photoroom.png',
+    imgOpcionales: ['/img/Automotor/SataDryJet2-2-Photoroom.png'],
+    categoria: 'Herramientas',
+    marca:'SATA',
+    seccion: "Automotor"
+  },
+  {
+    id: '691',
+    nombre: 'SATA RPS 0,6L',
+    descripcion:'',
+    
+    imagen: '/img/Automotor/vasoSATA1.png',
+    imgOpcionales: ['/img/Automotor/vasoSATA2-Photoroom.png'],
+    categoria: 'Herramientas',
+    marca:'SATA',
+    seccion: "Automotor"
+  },
+  {
+    id: '681',
+    nombre: 'Manómetro Sata',
+    descripcion:'',
+    
+    imagen: '/img/Automotor/manometro3.jpg',
+    imgOpcionales: ['/img/Automotor/manometro2.jpg', '/img/Automotor/manometro4.jpg'],
+    categoria: 'Herramientas',
+    marca:'SATA',
+    seccion: "Automotor"
+  },
+  {
+    id: '531',
+    nombre: 'Roberlo R1 Cera Power Wax 300gr',
+    descripcion:'',
+    off: 8,
+    precioOriginal: 63200,
+    imagen: '/img/Automotor/PowerWax.png',
+    categoria: 'Cera Automotor',
+    marca:'Roberlo',
+    seccion: "Automotor"
   },
   {
     id: '501',
     nombre: 'Pistola Antigravilla RB1 Roberlo',
     descripcion:'',
-    precio: 159020,
+    off:5,
+    precioOriginal: 149999,
     imagen: '/img/Automotor/02-roberlo-pistola-antigravilla_optimized_.webp',
     imagenHover:'/img/Automotor/Captura de pantalla 2025-06-23 113633.png',
-    categoria: 'Otros',
+    categoria: 'Herramientas',
     marca:'Roberlo',
+    seccion: "Automotor"
+  },
+  {
+    id: '521',
+    nombre: 'Lijadora Neumatica Kovax Rotorbital Ko-202 117x70mm',
+    descripcion:'',
+    off: 5,
+    precioOriginal: 719051,
+    imagen: '/img/Automotor/LijadoraKovax1.png',
+    imgOpcionales: ['/img/Automotor/LijadoraKovax3.png', '/img/Automotor/LijadoraKovax2.png'],
+    categoria: 'Herramientas',
+    marca:'Kovax',
+    seccion: "Automotor"
   },
   {
     id: '221',
     nombre: 'Masilla Metalica Sn 96 Roberlo',
     descripcion:'',
-    precioOriginal: 99768,
+    precioOriginal: 95850,
     off: 10,
     imagen: '/img/Automotor/01-roberlo-metallic-polyester.png',
     categoria: 'Masillas',
     marca:'Roberlo',
+    seccion: "Automotor"
+  },
+  {
+    id: '591',
+    nombre: 'Roberlo Masilla Resin Glass 1.5kg C/cata',
+    descripcion:'',
+    precioOriginal: 49990,
+    off: 8,
+    imagen: '/img/Automotor/D_NQ_NP_2X_934665-MLA86786746625_062025-F.webp',
+    categoria: '',
+    marca:'Roberlo',
+    seccion: "Automotor"
   },
   {
     id: '251',
     nombre: 'Masilla Aluminio Roberlo',
     descripcion:'',
-    precioOriginal: 63101,
+    precioOriginal: 61800,
     off: 10,
     imagen: '/img/Automotor/Aluminio-Roberlo.png',
     categoria: 'Masillas',
     marca:'Roberlo',
+    seccion: "Automotor"
   },
   {
     id: '231',
-    nombre: 'Masilla Multiextender 3Kg Roberlo',
+    nombre: 'Masilla Multiextender 2,5lts Roberlo',
     descripcion:'',
-    precioOriginal: 84638,
+    precioOriginal: 80250,
     off: 10,
     imagen: '/img/Automotor/03-roberlo-multiextender.png',
     categoria: 'Masillas',
     marca:'Roberlo',
+    seccion: "Automotor"
   },
+  {
+  id: '901',
+  nombre: 'Montana MTN 94 Aerosol 400ml',
+  descripcion: 'Pintura en aerosol de baja presión y acabado mate. La válvula permite un control total sobre el trazo. Ideal para trabajos de precisión, bellas artes y graffiti.',
+  
+  imagen: '/img/Automotor/MTN94Tarjeta.png', // Imagen principal o de la primera variante
+  categoria: 'Aerosoles',
+  marca: 'Montana',
+  seccion: "Automotor",
+  variantes: [
+    {
+      id: '911',
+      nombre: 'MTN 94 RV-5013 Azul Marino 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Azul Marino',
+      colorHex: '#010e30',
+    },
+    {
+      id: '921',
+      nombre: 'MTN 94 RV-7016 Gris Antracita 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Gris Antracita',
+      colorHex: '#363538',
+    },
+    {
+      id: '931',
+      nombre: 'MTN 94 RV-172 Violeta Destino 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Violeta Destino',
+      colorHex: '#8270a3',
+    },
+    {
+      id: '941',
+      nombre: 'MTN 94 RV-5005 Azul Oscuro 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Azul Oscuro',
+      colorHex: '#003875',
+    },
+    {
+      id: '951',
+      nombre: 'MTN 94 RV-28 Violeta Cosmos 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Violeta Cosmos',
+      colorHex: '#241c46',
+    },
+    {
+      id: '961',
+      nombre: 'MTN 94 RV-156 Azul Barceloneta 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Azul Barceloneta',
+      colorHex: '#cae4f0',
+    },
+    {
+      id: '971',
+      nombre: 'MTN 94 RV-126 Verde Toscana 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Verde Toscana',
+      colorHex: '#2b491e',
+    },
+    {
+      id: '981',
+      nombre: 'MTN 94 RV-34 Verde Guacamole 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Verde Guacamole',
+      colorHex: '#81a512',
+    },
+    {
+      id: '991',
+      nombre: 'MTN 94 Fluorescente Verde 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Fluorescente Verde',
+      colorHex: '#39ff14',
+    },
+    {
+      id: '1001',
+      nombre: 'MTN 94 RV-5018 Turquesa 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Turquesa',
+      colorHex: '#008691',
+    },
+    {
+      id: '1011',
+      nombre: 'MTN 94 RV-183 Verde Berilo 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Verde Berilo',
+      colorHex: '#117774',
+    },
+    {
+      id: '1021',
+      nombre: 'MTN 94 RV-144 Verde Bali 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Verde Bali',
+      colorHex: '#7bc6c0',
+    },
+    {
+      id: '1031',
+      nombre: 'MTN 94 RV-6009 Verde Amazonas 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Verde Amazonas',
+      colorHex: '#0f2405',
+    },
+    {
+      id: '1041',
+      nombre: 'MTN 94 RV-4010 Magenta 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Magenta',
+      colorHex: '#d90075',
+    },
+    {
+      id: '1061',
+      nombre: 'MTN 94 RV-165 Rosa Orquídea 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Rosa Orquídea',
+      colorHex: '#ec7faa',
+    },
+    {
+      id: '1071',
+      nombre: 'MTN 94 RV-170 Violeta Persia  400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Violeta Persia',
+      colorHex: '#c5add0',
+    },
+    {
+      id: '1081',
+      nombre: 'MTN 94 RV-3020 Rojo Claro 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Rojo Claro',
+      colorHex: '#ef3a38',
+    },
+    {
+      id: '1091',
+      nombre: 'MTN 94 RV-3001 Rojo Vivo 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Rojo Vivo',
+      colorHex: '#b3061e',
+    },
+    {
+      id: '1101',
+      nombre: 'MTN 94 RV-4003 Erika 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Erika',
+      colorHex: '#e85b99',
+    },
+    {
+      id: '1111',
+      nombre: 'MTN 94 RV-115 Tutti Frutti 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Tutti Frutti',
+      colorHex: '#ea949d',
+    },
+    {
+      id: '1121',
+      nombre: 'MTN 94 RV-96 Rosa Saudade 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Rosa Saudade',
+      colorHex: '#f2dddd',
+    },
+    {
+      id: '1131',
+      nombre: 'MTN 94 RV-106 Naranja Lava 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Naranja Lava',
+      colorHex: '#ef8407',
+    },
+    {
+      id: '1141',
+      nombre: 'MTN 94 RV-108 Naranja Fénix 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Naranja Fénix',
+      colorHex: '#be3819',
+    },
+    {
+      id: '1151',
+      nombre: 'MTN 94 RV-3004 Rojo Burdeos 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Rojo Burdeos',
+      colorHex: '#610819',
+    },
+    {
+      id: '1161',
+      nombre: 'MTN 94 RV-99 Marrón Glacé 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Marrón Glacé',
+      colorHex: '#7a3d24',
+    },
+    {
+      id: '1171',
+      nombre: 'MTN 94 RV-2004 Naranja Kalani 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Naranja Kalani',
+      colorHex: '#ea640d',
+    },
+    {
+      id: '1181',
+      nombre: 'MTN 94 RV-135 Marrón Safari 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Marrón Safari',
+      colorHex: '#eadfa8',
+    },
+    {
+      id: '1191',
+      nombre: 'MTN 94 RV-1021 Amarillo Claro 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Amarillo Claro',
+      colorHex: '#fedf00',
+    },
+    {
+      id: '1201',
+      nombre: 'MTN 94 RV-177 Eldorado  400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Eldorado ',
+      colorHex: '#f1c700',
+    },
+    {
+      id: '1211',
+      nombre: 'MTN 94 RV-110 Amarilo Yosemite 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Amarilo Yosemite',
+      colorHex: '#c7b300',
+    },
+    {
+      id: '1221',
+      nombre: 'MTN 94 RV-1013 Blanco Hueso 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Blanco Hueso',
+      colorHex: '#f3efd6',
+    },
+    {
+      id: '1231',
+      nombre: 'MTN 94 Blanco Mate 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Blanco Mate',
+      colorHex: '#ffffff',
+    },
+    {
+      id: '1241',
+      nombre: 'MTN 94 RV-189 Amarillo Ipanema 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Amarillo Ipanema',
+      colorHex: '#fff9c3',
+    },
+    {
+      id: '1251',
+      nombre: 'MTN 94 RV-1016 Amarillo Limón 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Amarillo Limón',
+      colorHex: '#dcd872',
+    },
+    {
+      id: '1261',
+      nombre: 'MTN 94 RV-7040 Gris Perla 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Gris Perla',
+      colorHex: '#b5b8ba',
+    },
+    {
+      id: '1271',
+      nombre: 'MTN 94 RV-120 Gris Lobo 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Gris Lobo',
+      colorHex: '#5b5b5e',
+    },
+    {
+      id: '1281',
+      nombre: 'MTN 94 RV-302 Gris Koala 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTN94-SinBG.png',
+      ColorAerosol: 'Gris Koala',
+      colorHex: '#d8cdc3',
+    },
+  ]
+},
+{
+  id: '1291',
+  nombre: 'Montana Hardcore Aerosol 400ml',
+  descripcion: '',
+  
+  imagen: '/img/Automotor/MTNHardcoreTARJETA.png', // Imagen principal o de la primera variante
+  categoria: 'Aerosoles',
+  marca: 'Montana',
+  seccion: "Automotor",
+  variantes: [
+    {
+      id: '1301',
+      nombre: 'MTN Hardcore RV-5 Verde Lutecia 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Verde Lutecia',
+      colorHex: '#005900',
+    },
+    {
+      id: '1311',
+      nombre: 'MTN Hardcore RV-236 Verde Mojito 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Verde Mojito',
+      colorHex: '#CED50A',
+    },
+    {
+      id: '1321',
+      nombre: 'MTN Hardcore RV-16 Verde Pistacho 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Verde Pistacho',
+      colorHex: '#B0C643',
+    },
+    {
+      id: '1331',
+      nombre: 'MTN Hardcore RV-34 Verde Guacamole 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Verde Guacamole',
+      colorHex: '#88B14F',
+    },
+    {
+      id: '1341',
+      nombre: 'MTN Hardcore RV-30 Azul Eléctrico 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Azul Eléctrico',
+      colorHex: '#007FC4',
+    },
+    {
+      id: '1351',
+      nombre: 'MTN Hardcore RV-231 Azul Cousteau 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Azul Cousteau',
+      colorHex: '#1BB2C4',
+    },
+    {
+      id: '1361',
+      nombre: 'MTN Hardcore RV-8 Azul Claro Carlota 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Azul Claro Carlota',
+      colorHex: '#60C5E7',
+    },
+    {
+      id: '1371',
+      nombre: 'MTN Hardcore RV-21 Verde Quirúrgico 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Verde Quirúrgico',
+      colorHex: '#009473',
+    },
+    {
+      id: '1381',
+      nombre: 'MTN Hardcore RV-215 Violeta Profeta 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Violeta Profeta',
+      colorHex: '#6D63A5',
+    },
+    {
+      id: '1391',
+      nombre: 'MTN Hardcore RV-214 Violeta 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Violeta',
+      colorHex: '#9993C3',
+    },
+    {
+      id: '1401',
+      nombre: 'MTN Hardcore RV-230 Azul Leviatán 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Azul Leviatán',
+      colorHex: '#0D0F49',
+    },
+    {
+      id: '1411',
+      nombre: 'MTN Hardcore RV-5005 Azul Oscuro 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Azul Oscuro',
+      colorHex: '#00659D',
+    },
+    {
+      id: '1421',
+      nombre: 'MTN Hardcore RV-4010 Magenta 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Magenta',
+      colorHex: '#DD1D5A',
+    },
+    {
+      id: '1431',
+      nombre: 'MTN Hardcore RV-211 Rosa Amor 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Rosa Amor',
+      colorHex: '#EE87AD',
+    },
+    {
+      id: '1441',
+      nombre: 'MTN Hardcore RV-4003 Erika 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Erika',
+      colorHex: '#DE336B',
+    },
+    {
+      id: '1451',
+      nombre: 'MTN Hardcore RV-226 Violeta Tube 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Violeta Tube',
+      colorHex: '#7C3F60',
+    },
+    {
+      id: '1461',
+      nombre: 'MTN Hardcore RV-3004 Rojo Burdeos 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Rojo Burdeos',
+      colorHex: '#82131D',
+    },
+    {
+      id: '1471',
+      nombre: 'MTN Hardcore RV-241 Rojo Madrid 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Rojo Madrid',
+      colorHex: '#C52332',
+    },
+    {
+      id: '1481',
+      nombre: 'MTN Hardcore RV-33 Rojo Colorado 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Rojo Colorado',
+      colorHex: '#E74F45',
+    },
+    {
+      id: '1491',
+      nombre: 'MTN Hardcore RV-212 Rojo Akari 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Rojo Akari',
+      colorHex: '#C50041',
+    },
+    {
+      id: '1501',
+      nombre: 'MTN Hardcore RV-7031 Gris Oscuro 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Gris Oscuro',
+      colorHex: '#616264',
+    },
+    {
+      id: '1511',
+      nombre: 'MTN Hardcore RV-9011 Negro Brillante 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Negro Brillante',
+      colorHex: '#000000',
+    },
+    {
+      id: '1571',
+      nombre: 'MTN Hardcore RV-7016 Gris Antracita 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Gris Antracita',
+      colorHex: '#464648',
+    },
+    {
+      id: '1531',
+      nombre: 'MTN Hardcore RV-7040 Gris Perla 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Gris Perla',
+      colorHex: '#7B7C7E',
+    },
+    {
+      id: '1541',
+      nombre: 'MTN Hardcore Blanco Satinado 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Blanco Satinado',
+      colorHex: '#FFFFFF',
+    },
+    {
+      id: '1551',
+      nombre: 'MTN Hardcore RV-248 Marrón Baobab 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Marrón Baobab',
+      colorHex: '#CC9456',
+    },
+    {
+      id: '1561',
+      nombre: 'MTN Hardcore RV-8002 Marrón Tostado 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Marrón Tostado',
+      colorHex: '#8A5531',
+    },
+    {
+      id: '1521',
+      nombre: 'MTN Hardcore RV-35 Marrón Chocolate 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Marrón Chocolate',
+      colorHex: '#4D2200',
+    },
+    {
+      id: '1581',
+      nombre: 'MTN Hardcore RV-1028 Amarillo Medio 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Amarillo Medio',
+      colorHex: '#F6A800',
+    },
+    {
+      id: '1591',
+      nombre: 'MTN Hardcore RV-2003 Naranja Pastel 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Naranja Pastel',
+      colorHex: '#EC753B',
+    },
+    {
+      id: '1601',
+      nombre: 'MTN Hardcore RV-210 Naranja Prometeo 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Naranja Prometeo',
+      colorHex: '#910e14',
+    },
+    {
+      id: '1611',
+      nombre: 'MTN Hardcore RV-11 Amarillo Ganges 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Amarillo Ganges',
+      colorHex: '#C8A10A',
+    },
+    {
+      id: '1621',
+      nombre: 'MTN Hardcore RV-206 Amarillo Atacama 400ml',
+      marca: 'Montana',
+      categoria: 'Aerosoles',
+      seccion: "Automotor",
+      imagen: '/img/Aerosoles/MTNHardcore-SinBg.png',
+      ColorAerosol: 'Amarillo Atacama',
+      colorHex: '#FBCB8C',
+    },
+  ]
+},
   {
     id: '241',
     nombre: 'Masilla Plastica Maxifill 3,6Kg Roberlo',
@@ -192,6 +1030,7 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Maxifill-Roberlo.png',
     categoria: 'Masillas',
     marca:'Roberlo',
+    seccion: "Automotor"
   },
   {
     id: '261',
@@ -202,26 +1041,82 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Eurocream-Roberlo.png',
     categoria: 'Masillas',
     marca:'Roberlo',
+    seccion: "Automotor"
   },
   {
-    id: '271',
-    nombre: 'Roberlo Siltex 800 Antigravilla Blanco/Gris/Negro',
+    id: '561',
+    nombre: 'Roberlo Siltex 800 Antigravilla Negro',
     descripcion:'',
-    precioOriginal: 31801,
-    off: 10,
-    imagen: '/img/Automotor/Siltex-Roberlo.png',
+    precioOriginal: 29500,
+    off: 8,
+    imagen: '/img/Automotor/Siltex-RoberloNegro.png',
     categoria: 'Texturados',
     marca:'Roberlo',
+    color: "Negro",
+    seccion: "Automotor",
+    variantes:[
+      {
+        id: '541',
+        nombre: 'Roberlo Siltex 800 Antigravilla Blanco',
+        descripcion:'',
+        precioOriginal: 29500,
+        off: 8,
+        imagen: '/img/Automotor/SiltexRoberloBlanco.png',
+        categoria: 'Texturados',
+        color:"Blanco",
+        marca:'Roberlo',
+        seccion: "Automotor",
+      },
+      {
+        id: '551',
+        nombre: 'Roberlo Siltex 800 Antigravilla Gris',
+        descripcion:'',
+        precioOriginal: 29500,
+        off: 8,
+        imagen: '/img/Automotor/SiltexRoberloGris.png',
+        categoria: 'Texturados',
+        color:"Gris",
+        marca:'Roberlo',
+        seccion: "Automotor",
+      },
+    ]
   },
+  {
+    id: '571',
+    nombre: 'Roberlo Hidrotex Antigravilla H2o 1k Negro',
+    descripcion:'',
+    imagen: '/img/Automotor/D_NQ_NP_2X_738435-MLA82912659994_032025-F.webp',
+    precioOriginal: 30050,
+    off: 8,
+    categoria: 'Texturados',
+    marca:'Roberlo',
+    color: "Negro",
+    seccion: "Automotor",
+    variantes:[
+        {
+          id: '621',
+          nombre: 'Roberlo Hidrotex Antigravilla H2o 1k Gris',
+          descripcion:'',
+          precioOriginal: 30050,
+          off: 8,
+          imagen: '/img/Automotor/D_NQ_NP_2X_683841-MLA83201586661_032025-F.webp',
+          categoria: 'Texturados',
+          marca:'Roberlo',
+          color: "Gris",
+          seccion: "Automotor",
+        },
+      ]
+    },
   {
     id: '281',
     nombre: 'Roberlo Bumper Color Negro',
     descripcion:'',
-    precioOriginal: 100755,
+    precioOriginal: 94250,
     off: 10,
     imagen: '/img/Automotor/Bumper-Roberlo.png',
     categoria: 'Texturados',
     marca:'Roberlo',
+    seccion: "Automotor"
   },
   {
     id: '291',
@@ -233,17 +1128,19 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Primers',
     marca:'Roberlo',
     capacidad:'4',
+    seccion: "Automotor",
     variantes:[
       {
         id: '311',
         nombre: 'Megax M1 Roberlo 1 Litro',
         descripcion:'',
-        precioOriginal: 37621,
+        precioOriginal: 37921,
         off:10,
         imagen: '/img/Automotor/MegaxM1Roberlo1l.webp',
         categoria: 'Primers',
         marca:'Roberlo',
-        capacidad:'1'
+        capacidad:'1',
+        seccion: "Automotor"
       }
     ]
   },
@@ -256,6 +1153,8 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Automotor/Isolcar-Roberlo.png',
     categoria: 'Primers',
     marca:'Roberlo',
+    capacidad: '1',
+    seccion: "Automotor"
   },
   {
     id: '471',
@@ -264,7 +1163,20 @@ export const productosAutomotor: Producto[] = [
     precio: 10454,
     imagen: '/img/Accesorios/CintaDobleFazIndasa.png',
     categoria: 'Cintas',
-    marca:'Indasa'
+    marca:'Indasa',
+    seccion: "Automotor"
+  },
+  {
+    id: '581',
+    nombre: 'Assorpol Gaza Barnizada Atrapa Polvo Roberlo X 5unid',
+    descripcion: '',
+    off: 5,
+    precioOriginal: 24990,
+    imagen: '/img/Automotor/D_NQ_NP_2X_686357-MLA83202039819_032025-F.webp',
+    imgOpcionales: ['/img/Automotor/D_NQ_NP_2X_734460-MLA83201769203_032025-F.webp'],
+    categoria: '',
+    marca:'Roberlo',
+    seccion: "Automotor"
   },
   {
     id: '511',
@@ -275,6 +1187,7 @@ export const productosAutomotor: Producto[] = [
     imagen: "/img/Otros/Sika221-sellador.webp",
     categoria: "Selladores",
     marca: 'Sika',
+    seccion: "Automotor"
   },
   {
     id: '50012',
@@ -286,6 +1199,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Masillas',
     marca:'Zeocar',
     kilos: '4',
+    seccion: "Automotor",
     variantes:[
       {
         id: '60012',
@@ -297,6 +1211,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Masillas',
         marca:'Zeocar',
         kilos: '2,5',
+        seccion: "Automotor"
       },
       {
         id: '70012',
@@ -308,6 +1223,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Masillas',
         marca:'Zeocar',
         kilos: '1',
+        seccion: "Automotor"
       }
     ]
   },
@@ -321,6 +1237,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Masillas',
     marca:'Zeocar',
     kilos: '4',
+    seccion: "Automotor",
     variantes:[
       {
         id: '90012',
@@ -332,6 +1249,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Masillas',
         marca:'Zeocar',
         kilos: '2,5',
+        seccion: "Automotor"
       },
       {
         id: '100012',
@@ -343,6 +1261,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Masillas',
         marca:'Zeocar',
         kilos: '1',
+        seccion: "Automotor"
       }
     ]
   },
@@ -355,6 +1274,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Masillas',
     marca:'Zeocar',
     kilos: '3,6',
+    seccion: "Automotor",
     variantes:[
       {
         id: '150012',
@@ -365,6 +1285,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Masillas',
         marca:'Zeocar',
         kilos: '1,5',
+        seccion: "Automotor"
       }
     ]
   },
@@ -377,6 +1298,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Masillas',
     marca:'Zeocar',
     capacidad: '2,25',
+    seccion: "Automotor",
     variantes:[
       {
         id: '170012',
@@ -387,18 +1309,9 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Masillas',
         marca:'Zeocar',
         capacidad: '1,45',
+        seccion: "Automotor"
       }
     ]
-  },
-  {
-    id: '521',
-    nombre: 'Paño',
-    descripcion: '',
-    
-    imagen: '/img/Automotor/Captura de pantalla 2025-06-26 124419.png',
-    imgOpcionales: ['/img/Automotor/Ejemplo.png','/img/Automotor/Ejemplo2.png'],
-    categoria: 'Pulidos',
-    marca:'Netso'
   },
   {
     id: '481',
@@ -408,7 +1321,8 @@ export const productosAutomotor: Producto[] = [
     imagen: '/img/Accesorios/FiltroDescartableFilpint.png',
     imagenHover: '/img/Accesorios/FiltroDescartableFilpintHover.png',
     categoria: 'Otros',
-    marca:'Filpint'
+    marca:'Filpint',
+    seccion: "Automotor"
   },
   {
     id: '491',
@@ -417,29 +1331,54 @@ export const productosAutomotor: Producto[] = [
     precio: 15163,
     imagen: '/img/Accesorios/MedigloveReforzado.png',
     categoria: 'Otros',
-    marca:'Mediglove'
+    marca:'Mediglove',
+    seccion: "Automotor"
   },
-    {
+  {
+    id: '631',
+    nombre: 'Cinta Acrilica Doble Faz 24mmx3m Würth Gris Oscuro',
+    descripcion: '',
+    off:5,
+    precioOriginal: 15150,
+    imagen: '/img/Automotor/D_NQ_NP_2X_859037-MLA86595663915_062025-F.webp',
+    categoria: 'Cintas',
+    marca:'Wurth',
+    seccion: "Automotor"
+  },
+  {
+    id: '601',
+    nombre: 'Catalizador Rapido P6000 Roberlo 1lt',
+    descripcion: '',
+    off:7,
+    precioOriginal: 56550,
+    imagen: '/img/Automotor/D_NQ_NP_2X_617806-MLA86026647010_062025-F.webp',
+    categoria: 'Catalizadores',
+    marca:'Roberlo',
+    seccion: "Automotor"
+  },
+  {
     id: '201',
     nombre: 'Kit Barniz Roberlo Hs Unix 150 + Catalizador 7,5 Litros',
     descripcion:'',
-    precioOriginal: 284100,
+    precioOriginal: 280590,
     off: 10,
     imagen: '/img/Automotor/Barniz-roberlo-150hs-5l.jpg',
     categoria: 'Barnices',
     marca:'Roberlo',
     capacidad:'7,5',
+    seccion: "Automotor",
     variantes:[
       {
         id: '211',
         nombre: 'Kit Barniz Roberlo Hs Unix 150 + Catalizador 1,5 Litros',
         descripcion:'',
-        precioOriginal: 83619,
+        precioOriginal: 62360,
         off: 10,
-        imagen: '/img/Automotor/Barniz-roberlo-1,5.png',
+        imagen: '/img/Automotor/D_NQ_NP_2X_636361-MLA86677130607_062025-F.webp',
         categoria: 'Barnices',
         marca:'Roberlo',
-        capacidad: '1,5'
+        capacidad: '1,5',
+        seccion: "Automotor"
       }
     ]
   },
@@ -453,6 +1392,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Barnices',
     marca:'Glasurit',
     capacidad: '7,5',
+    seccion: "Automotor",
     variantes:[
       {
         id: '111',
@@ -464,6 +1404,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Barnices',
         marca:'Glasurit',
         capacidad: '1,5',
+        seccion: "Automotor"
       }
     ]
   },
@@ -477,6 +1418,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Barnices',
     marca:'Glasurit',
     capacidad: '7,5',
+    seccion: "Automotor",
     variantes:[
       {
         id: '121',
@@ -488,6 +1430,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Barnices',
         marca:'Glasurit',
         capacidad: '1,5',
+        seccion: "Automotor",
       }
     ]
   },
@@ -501,6 +1444,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Barnices',
     marca:'Glasurit',
     capacidad: '7,5',
+    seccion: "Automotor",
     variantes:[
       {
         id: '131',
@@ -512,6 +1456,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Barnices',
         marca:'Glasurit',
         capacidad: '1,5',
+        seccion: "Automotor",
       }
     ]
   },
@@ -523,7 +1468,8 @@ export const productosAutomotor: Producto[] = [
     off: 10,
     imagen: '/img/Automotor/BarnizGlasurit-923-645.png',
     categoria: 'Barnices',
-    marca:'Glasurit'
+    marca:'Glasurit',
+    seccion: "Automotor"
   },
   {
     id: '181',
@@ -535,6 +1481,7 @@ export const productosAutomotor: Producto[] = [
     categoria: 'Diluyentes',
     marca:'Glasurit',
     capacidad: '5',
+    seccion: "Automotor",
     variantes:[
       {
         id: '191',
@@ -546,6 +1493,7 @@ export const productosAutomotor: Producto[] = [
         categoria: 'Diluyentes',
         marca:'Glasurit',
         capacidad: '1',
+        seccion: "Automotor"
       }
     ]
   },

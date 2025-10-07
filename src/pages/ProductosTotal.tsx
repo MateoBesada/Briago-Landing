@@ -1,12 +1,10 @@
-// pages/ProductosTotal.tsx
+import { useMemo } from "react";
+import CarruselDeProductos from "../components/CarruselDeProductos"; // Asegúrate que el nombre del import sea el correcto
 import { productosPinturas as pinturas } from "../data/Pinturas";
 import { productosAutomotor as automotor } from "../data/Automotor";
-import CarruselSinAnuncio from "../components/CarruselDeProductos";
 import type { Producto } from "@/types/Producto";
-import Automotor from "/img/Otros/OfertaPPG.png";
 
-
-
+// --- Lógica para agrupar y aplicar descuentos (sin cambios) ---
 const aplicarDescuento = (producto: Producto): Producto => {
   let nuevoPrecio = producto.precio;
   if (producto.precioOriginal && producto.off != null) {
@@ -21,7 +19,7 @@ const aplicarDescuento = (producto: Producto): Producto => {
 };
 
 const getBaseNombre = (nombre: string) =>
-  nombre.replace(/\s*\d+\s*(Litros?|Kg|Kilos?)$/i, "").trim();
+  nombre.replace(/\s*\d+\s*(Litros?|Kg|Kilos?|Lts|Lt)/gi, "").trim();
 
 const agruparPorBaseNombre = (productos: Producto[]) => {
   const map = new Map<string, Producto[]>();
@@ -34,34 +32,46 @@ const agruparPorBaseNombre = (productos: Producto[]) => {
 };
 
 const ProductosTotal = () => {
-  const pinturasConPrecio = pinturas.map(aplicarDescuento);
-  const automotorConPrecio = automotor.map(aplicarDescuento);
+  // Aplicamos descuentos y agrupamos los productos
+  const pinturasConPrecio = useMemo(() => pinturas.map(aplicarDescuento), []);
+  const automotorConPrecio = useMemo(() => automotor.map(aplicarDescuento), []);
 
-  const pinturasAgrupadas = agruparPorBaseNombre(pinturasConPrecio);
-  const automotorAgrupadas = agruparPorBaseNombre(automotorConPrecio);
+  const pinturasAgrupadas = useMemo(() => agruparPorBaseNombre(pinturasConPrecio), [pinturasConPrecio]);
+  const automotorAgrupadas = useMemo(() => agruparPorBaseNombre(automotorConPrecio), [automotorConPrecio]);
 
   return (
-    <div className="px-2 md:px-5 lg:px-0 w-full max-w-screen-2xl mx-auto">
-      {/* Carrusel de Pinturas (imagen por defecto) */}
-      <CarruselSinAnuncio
+    // He ajustado el padding y el overflow para un mejor layout
+    <div className="w-full space-y-0 overflow-hidden">
+      
+      {/* Carrusel de Pinturas (Hogar y Obra) */}
+      <CarruselDeProductos
+        // Título claro para la sección
         tituloElemento={
-          <h2 className="block lg: text-2xl font-bold text-center"></h2>
+          <h2 className="text-3xl font-bold text-gray-800">Hogar y Obra</h2>
         }
         rutaMas="/productos-pinturas"
         productosAgrupados={pinturasAgrupadas}
         direccion="left"
+        // --- Nuevas props de texto para el anuncio ---
+        anuncioTitulo="¡Renová Tus Espacios!"
+        anuncioDescripcion="Descubrí nuestra gama de látex, esmaltes, revestimientos y más."
+        anuncioCta="Explorar Productos"
         linkAnuncio="/productos-pinturas"
       />
 
-      {/* Carrusel de Automotor (imagen personalizada) */}
-      <CarruselSinAnuncio
+      {/* Carrusel de Automotor */}
+      <CarruselDeProductos
+        // Título claro para la sección
         tituloElemento={
-          <h2 className="block text-2xl font-bold text-center"></h2>
+          <h2 className="text-3xl font-bold text-gray-800">Línea Automotor</h2>
         }
         rutaMas="/productos-automotor"
         productosAgrupados={automotorAgrupadas}
         direccion="right"
-        imagenAnuncio={Automotor}
+        // --- Nuevas props de texto para el anuncio ---
+        anuncioTitulo="Acabado Profesional"
+        anuncioDescripcion="Encontrá todo lo que necesitás para la reparación y el repintado de vehículos. Calidad garantizada."
+        anuncioCta="Explorar Productos"
         linkAnuncio="/productos-automotor"
       />
     </div>

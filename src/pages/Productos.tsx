@@ -4,7 +4,7 @@ type Producto = {
   id: number;
   nombre: string;
   precio: number;
-  // Agregá más propiedades según tu base de datos
+  
 };
 
 const ProductosDesdeDB = () => {

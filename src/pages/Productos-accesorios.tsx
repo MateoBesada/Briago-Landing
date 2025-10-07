@@ -5,6 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { useSearch } from '@/context/SearchContext';
 import Filtros from '@/components/Filtros';
 import ProductoCard from '@/components/ProductoCard';
+import SeccionesTabs from "@/components/SeccionesTabs";
 
 const aplicarDescuento = (p: Producto): Producto =>
   p.precioOriginal && p.off != null
@@ -89,6 +90,7 @@ export default function AccesoriosPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen px-2 py-8">
+      <SeccionesTabs />
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-80">
