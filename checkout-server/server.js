@@ -3,27 +3,26 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import mercadopago from 'mercadopago';
 import dotenv from 'dotenv';
+import { Resend } from 'resend'; // 1. Se importa Resend
 
 dotenv.config();
 
 const app = express();
-
-// Middlewares
 app.use(cors());
 app.use(bodyParser.json());
 
-// Configura Mercado Pago con tu Access Token desde .env
+// 2. Se inicializa Resend con la API Key de tu archivo .env
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Configura Mercado Pago con tu Access Token de .env
 mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN,
 });
 
-// --- RUTA PARA CREAR LA PREFERENCIA DE PAGO ---
 app.post('/create_preference', async (req, res) => {
   try {
-    // Recibimos los datos del frontend
     const { items, payer, external_reference } = req.body;
 
-    // Medidas de seguridad y validación
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'La lista de productos (items) es inválida.' });
     }
@@ -52,13 +51,13 @@ app.post('/create_preference', async (req, res) => {
         }
       },
       back_urls: {
-        // IMPORTANTE: Reemplazá 'tu-sitio.com' con tu dominio real de Render
         success: "https://briago-pinturas.com/compra-exitosa",
         failure: "https://briago-pinturas.com/error-en-pago",
         pending: "https://briago-pinturas.com/pago-pendiente",
       },
       auto_return: "approved",
       external_reference: external_reference,
+      notification_url: "https://checkout-server-gehy.onrender.com/webhook-mercadopago",
     };
 
     const result = await mercadopago.preferences.create(preference);
@@ -68,6 +67,68 @@ app.post('/create_preference', async (req, res) => {
     console.error('Error al crear preferencia:', error.cause || error.message);
     res.status(500).json({ error: 'Error interno al procesar la solicitud de pago.' });
   }
+});
+
+// --- RUTA DEL WEBHOOK CON LÓGICA PARA ENVIAR EMAIL ---
+app.post('/webhook-mercadopago', async (req, res) => {
+  console.log('Webhook de Mercado Pago recibido');
+  const paymentId = req.body.data?.id;
+
+  if (req.body.type === 'payment' && paymentId) {
+    try {
+      // 3. Obtenemos los detalles completos del pago desde Mercado Pago
+      const payment = await mercadopago.payment.get(paymentId);
+      
+      // 4. Verificamos que el pago esté aprobado
+      if (payment.body.status === 'approved') {
+        console.log('Pago aprobado. Enviando email de notificación...');
+        
+        const itemsHtml = payment.body.additional_info.items.map(item => `
+          <tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.title}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
+          </tr>
+        `).join('');
+
+        // 5. Enviamos el email usando Resend
+        await resend.emails.send({
+          from: 'Tienda Briago <Administracion@briagopinturas.com>', // <-- Cambiá a tu dominio verificado
+          to: 'besadamateo@gmail.com', // <-- TU EMAIL para recibir el aviso
+          subject: `¡Nueva Venta! - Orden #${payment.body.external_reference}`,
+          html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+              <h1 style="color: #333; text-align: center;">¡Nueva Venta Realizada!</h1>
+              <p><strong>Orden:</strong> ${payment.body.external_reference}</p>
+              <p><strong>Comprador:</strong> ${payment.body.payer.first_name || ''} ${payment.body.payer.last_name || ''}</p>
+              <p><strong>Email:</strong> ${payment.body.payer.email}</p>
+              <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Detalle del Pedido</h2>
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr>
+                    <th style="padding: 8px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
+                    <th style="padding: 8px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
+                    <th style="padding: 8px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsHtml}
+                </tbody>
+              </table>
+              <h3 style="text-align: right; margin-top: 20px;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</h3>
+            </div>
+          `,
+        });
+
+        console.log('Email de notificación enviado con éxito.');
+      }
+    } catch (error) {
+      console.error('Error al procesar el webhook:', error);
+    }
+  }
+
+  // Siempre respondemos 200 OK a Mercado Pago
+  res.status(200).send('OK');
 });
 
 const port = process.env.PORT || 3000;
