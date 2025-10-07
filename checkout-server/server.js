@@ -88,7 +88,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
 
         await resend.emails.send({
           from: 'Tienda Briago <Administracion@briagopinturas.com>',
-          to: 'besadamateo@gmail.com',
+          to: 'briagopinturas@gmail.com',
           subject: `¡Nueva Venta! - Orden #${payment.body.external_reference}`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
