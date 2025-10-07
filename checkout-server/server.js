@@ -4,13 +4,12 @@ import bodyParser from 'body-parser';
 import mercadopago from 'mercadopago';
 import dotenv from 'dotenv';
 
-// Carga las variables de entorno del archivo .env
 dotenv.config();
 
 const app = express();
 
 // Middlewares
-app.use(cors()); // Permite peticiones desde tu frontend
+app.use(cors());
 app.use(bodyParser.json());
 
 // Configura Mercado Pago con tu Access Token desde .env
@@ -21,38 +20,42 @@ mercadopago.configure({
 // --- RUTA PARA CREAR LA PREFERENCIA DE PAGO ---
 app.post('/create_preference', async (req, res) => {
   try {
-    // Recibimos los 'items' y 'payer' que nos envía el frontend
+    // Recibimos los datos del frontend
     const { items, payer, external_reference } = req.body;
 
-    // Medida de seguridad: Validar que los datos existan
+    // Medidas de seguridad y validación
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'La lista de productos (items) es inválida.' });
+    }
+    if (!payer || typeof payer.email !== 'string') {
+        return res.status(400).json({ error: 'La información del comprador (payer) es inválida.' });
     }
 
     const preference = {
       items: items.map(item => ({
-        title: item.title,
-        unit_price: Number(item.unit_price), // Asegurarse de que el precio sea un número
-        quantity: Number(item.quantity),     // Asegurarse de que la cantidad sea un número
+        title: String(item.title),
+        unit_price: Number(item.unit_price),
+        quantity: Number(item.quantity),
         currency_id: 'ARS',
       })),
       payer: {
-        name: payer.name,
-        surname: payer.surname,
+        name: String(payer.name || ''),
+        surname: String(payer.surname || ''),
         email: payer.email,
         phone: {
-          area_code: "54", // Código de área para Argentina
-          number: Number(payer.phone.number)
+          area_code: "54",
+          number: Number(payer.phone?.number) || 0
         },
         address: {
-          zip_code: payer.address.zip_code,
-          street_name: payer.address.street_name,
+          zip_code: String(payer.address?.zip_code || ''),
+          street_name: String(payer.address?.street_name || ''),
         }
       },
       back_urls: {
-        success: "http://localhost:5173/compra-exitosa", // Cambiá a tu dominio real en producción
-        failure: "http://localhost:5173/error-en-pago",
-        pending: "http://localhost:5173/pago-pendiente",
+        // IMPORTANTE: Reemplazá 'tu-sitio.com' con tu dominio real de Render
+        success: "https://briago-pinturas.com/compra-exitosa",
+        failure: "https://briago-pinturas.com/error-en-pago",
+        pending: "https://briago-pinturas.com/pago-pendiente",
       },
       auto_return: "approved",
       external_reference: external_reference,
@@ -62,12 +65,12 @@ app.post('/create_preference', async (req, res) => {
     res.json({ preferenceId: result.body.id });
 
   } catch (error) {
-    console.error('Error al crear preferencia:', error);
+    console.error('Error al crear preferencia:', error.cause || error.message);
     res.status(500).json({ error: 'Error interno al procesar la solicitud de pago.' });
   }
 });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`Servidor corriendo en puerto ${port}`);
 });
