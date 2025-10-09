@@ -67,13 +67,17 @@ app.post('/create_preference', async (req, res) => {
   }
 });
 
-// --- RUTA DEL WEBHOOK CORREGIDA ---
+
 app.post('/webhook-mercadopago', async (req, res) => {
   console.log('Webhook de Mercado Pago recibido');
-  const paymentId = req.body.data?.id;
+  
+  try {
+    if (req.body.type === 'payment') {
+      const paymentId = req.body.data?.id;
+      if (!paymentId) {
+        throw new Error('No se encontró el ID del pago en la notificación.');
+      }
 
-  if (req.body.type === 'payment' && paymentId) {
-    try {
       const payment = await mercadopago.payment.get(paymentId);
       
       if (payment.body.status === 'approved') {
@@ -87,28 +91,30 @@ app.post('/webhook-mercadopago', async (req, res) => {
           </tr>
         `).join('');
 
-        // Extraemos la información del comprador y la dirección del objeto 'payer'
         const payerInfo = payment.body.payer;
+        
+        // --- CORRECCIÓN CLAVE AQUÍ ---
+        // Usamos 'name' y 'surname' que coinciden con lo que enviamos en la preferencia
+        const nombreCompleto = `${String(payerInfo.name || '')} ${String(payerInfo.surname || '')}`.trim();
 
         await resend.emails.send({
           from: 'Tienda Briago <Administracion@briagopinturas.com>',
           to: 'besadamateo@gmail.com',
           subject: `¡Nueva Venta! - Orden #${payment.body.external_reference}`,
-          // --- HTML DEL EMAIL ACTUALIZADO ---
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
               <h1 style="color: #333; text-align: center;">¡Nueva Venta Realizada!</h1>
               <p><strong>Orden:</strong> ${payment.body.external_reference}</p>
               
               <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Datos del Cliente</h2>
-              <p><strong>Nombre:</strong> ${payerInfo.first_name || ''} ${payerInfo.last_name || ''}</p>
+              <p><strong>Nombre:</strong> ${nombreCompleto}</p>
               <p><strong>Email:</strong> ${payerInfo.email}</p>
               <p><strong>Teléfono:</strong> ${payerInfo.phone?.number || 'No especificado'}</p>
               
               <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Dirección de Envío</h2>
               <p><strong>Dirección:</strong> ${payerInfo.address?.street_name || 'No especificada'}</p>
               <p><strong>Código Postal:</strong> ${payerInfo.address?.zip_code || 'No especificado'}</p>
-
+              
               <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Detalle del Pedido</h2>
               <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -129,13 +135,14 @@ app.post('/webhook-mercadopago', async (req, res) => {
 
         console.log('Email de notificación enviado con éxito.');
       }
-    } catch (error) {
-      console.error('Error al procesar el webhook:', error);
     }
+  } catch (error) {
+    console.error('Error al procesar el webhook:', error);
   }
-
+  
   res.status(200).send('OK');
 });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
