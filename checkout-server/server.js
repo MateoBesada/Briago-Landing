@@ -17,7 +17,6 @@ mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN,
 });
 
-// --- 1. "Base de datos" temporal en memoria para guardar las órdenes ---
 const pendingOrders = new Map();
 
 app.post('/create_preference', async (req, res) => {
@@ -31,7 +30,6 @@ app.post('/create_preference', async (req, res) => {
       return res.status(400).json({ error: 'La información del comprador es inválida.' });
     }
 
-    // --- 2. Guardamos los datos completos de la orden antes de crear la preferencia ---
     pendingOrders.set(external_reference, { items, payer });
 
     const preference = {
@@ -71,63 +69,78 @@ app.post('/webhook-mercadopago', async (req, res) => {
   try {
     if (req.body.type === 'payment') {
       const paymentId = req.body.data?.id;
+      if (!paymentId) throw new Error('No se encontró el ID del pago.');
+
       const payment = await mercadopago.payment.get(paymentId);
       
       if (payment.body.status === 'approved') {
         const external_reference = payment.body.external_reference;
         console.log(`Pago aprobado para la orden: ${external_reference}`);
         
-        // --- 3. Recuperamos los datos de la orden que guardamos ---
         const orderData = pendingOrders.get(external_reference);
 
         if (orderData) {
           const { items, payer } = orderData;
 
           const itemsHtml = items.map(item => `
-            <tr>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.title}</td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity}</td>
-              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
+            <tr style="border-bottom: 1px solid #eaeaea;">
+              <td style="padding: 12px 0;">${item.title}</td>
+              <td style="padding: 12px 0; text-align: center;">${item.quantity}</td>
+              <td style="padding: 12px 0; text-align: right; font-weight: 600;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
             </tr>
           `).join('');
 
           await resend.emails.send({
             from: 'Tienda Briago <Administracion@briagopinturas.com>',
+            // --- 1. SE ENVÍA A MÚLTIPLES DESTINATARIOS ---
             to: 'besadamateo@gmail.com',
-            subject: `¡Nueva Venta! - Orden #${external_reference}`,
+            subject: `¡Nueva Venta Realizada! - Orden #${external_reference}`,
+            // --- 2. NUEVO DISEÑO DE EMAIL PROFESIONAL ---
             html: `
-              <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-                <h1 style="color: #333; text-align: center;">¡Nueva Venta Realizada!</h1>
-                <p><strong>Orden:</strong> ${external_reference}</p>
-                
-                <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Datos del Cliente</h2>
-                <p><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
-                <p><strong>Email:</strong> ${payer.email}</p>
-                <p><strong>Teléfono:</strong> ${payer.phone?.number || 'No especificado'}</p>
-                
-                <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Dirección de Envío</h2>
-                <p><strong>Dirección:</strong> ${payer.address?.street_name || 'No especificada'}</p>
-                <p><strong>Código Postal:</strong> ${payer.address?.zip_code || 'No especificado'}</p>
-                
-                <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Detalle del Pedido</h2>
-                <table style="width: 100%; border-collapse: collapse;">
-                  <thead>
-                    <tr>
-                      <th style="padding: 8px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
-                      <th style="padding: 8px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
-                      <th style="padding: 8px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
-                    </tr>
-                  </thead>
-                  <tbody>${itemsHtml}</tbody>
-                </table>
-                <h3 style="text-align: right; margin-top: 20px;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</h3>
+              <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
+                <div style="background-color: #fff03b; padding: 24px; text-align: center;">
+                  <img src="https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png" alt="Briago Pinturas Logo" style="max-width: 150px; margin: auto;">
+                </div>
+                <div style="padding: 24px;">
+                  <h1 style="font-size: 24px; font-weight: 700; text-align: center;">¡Nueva Venta Realizada!</h1>
+                  <p style="text-align: center; color: #555;">Orden: <strong>${external_reference}</strong></p>
+                  
+                  <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
+
+                  <h2 style="font-size: 18px; font-weight: 600; color: #333;">Datos del Cliente</h2>
+                  <p style="margin: 4px 0;"><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
+                  <p style="margin: 4px 0;"><strong>Email:</strong> <a href="mailto:${payer.email}" style="color: #007bff;">${payer.email}</a></p>
+                  <p style="margin: 4px 0;"><strong>Teléfono:</strong> ${payer.phone?.number || 'No especificado'}</p>
+                  
+                  <h2 style="font-size: 18px; font-weight: 600; color: #333; margin-top: 24px;">Dirección de Envío</h2>
+                  <p style="margin: 4px 0;"><strong>Dirección:</strong> ${payer.address?.street_name || 'No especificada'}</p>
+                  <p style="margin: 4px 0;"><strong>Código Postal:</strong> ${payer.address?.zip_code || 'No especificado'}</p>
+                  
+                  <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
+
+                  <h2 style="font-size: 18px; font-weight: 600; color: #333;">Detalle del Pedido</h2>
+                  <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
+                    <thead>
+                      <tr>
+                        <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
+                        <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
+                        <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
+                      </tr>
+                    </thead>
+                    <tbody>${itemsHtml}</tbody>
+                  </table>
+                  <div style="text-align: right; margin-top: 24px;">
+                    <strong style="font-size: 20px;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</strong>
+                  </div>
+                </div>
+                <div style="background-color: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d;">
+                  Este es un correo de notificación automático.
+                </div>
               </div>
             `,
           });
           console.log('Email de notificación enviado con éxito.');
-          pendingOrders.delete(external_reference); // Limpiamos la orden de la memoria
-        } else {
-          console.error(`No se encontraron datos para la orden: ${external_reference}`);
+          pendingOrders.delete(external_reference);
         }
       }
     }
