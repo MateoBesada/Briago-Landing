@@ -17,36 +17,34 @@ mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN,
 });
 
+// --- 1. "Base de datos" temporal en memoria para guardar las órdenes ---
+const pendingOrders = new Map();
+
 app.post('/create_preference', async (req, res) => {
   try {
     const { items, payer, external_reference } = req.body;
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: 'La lista de productos (items) es inválida.' });
+    if (!items || !Array.isArray(items) || !items.length) {
+      return res.status(400).json({ error: 'La lista de productos es inválida.' });
     }
     if (!payer || typeof payer.email !== 'string') {
-      return res.status(400).json({ error: 'La información del comprador (payer) es inválida.' });
+      return res.status(400).json({ error: 'La información del comprador es inválida.' });
     }
+
+    // --- 2. Guardamos los datos completos de la orden antes de crear la preferencia ---
+    pendingOrders.set(external_reference, { items, payer });
 
     const preference = {
       items: items.map(item => ({
-        title: String(item.title || 'Producto'),
-        unit_price: Number(item.unit_price) || 0,
-        quantity: Number(item.quantity) || 1,
+        title: String(item.title),
+        unit_price: Number(item.unit_price),
+        quantity: Number(item.quantity),
         currency_id: 'ARS',
       })),
       payer: {
-        name: String(payer.name || ''),
-        surname: String(payer.surname || ''),
+        name: String(payer.name),
+        surname: String(payer.surname),
         email: payer.email,
-        phone: {
-          area_code: "54",
-          number: Number(payer.phone?.number) || 0
-        },
-        address: {
-          zip_code: String(payer.address?.zip_code || ''),
-          street_name: String(payer.address?.street_name || ''),
-        }
       },
       back_urls: {
         success: "https://briago-pinturas.com/compra-exitosa",
@@ -67,73 +65,70 @@ app.post('/create_preference', async (req, res) => {
   }
 });
 
-
 app.post('/webhook-mercadopago', async (req, res) => {
   console.log('Webhook de Mercado Pago recibido');
   
   try {
     if (req.body.type === 'payment') {
       const paymentId = req.body.data?.id;
-      if (!paymentId) {
-        throw new Error('No se encontró el ID del pago en la notificación.');
-      }
-
       const payment = await mercadopago.payment.get(paymentId);
       
       if (payment.body.status === 'approved') {
-        console.log('Pago aprobado. Enviando email de notificación...');
+        const external_reference = payment.body.external_reference;
+        console.log(`Pago aprobado para la orden: ${external_reference}`);
         
-        const itemsHtml = payment.body.additional_info.items.map(item => `
-          <tr>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.title}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
-          </tr>
-        `).join('');
+        // --- 3. Recuperamos los datos de la orden que guardamos ---
+        const orderData = pendingOrders.get(external_reference);
 
-        const payerInfo = payment.body.payer;
-        
-        // --- CORRECCIÓN CLAVE AQUÍ ---
-        // Usamos 'name' y 'surname' que coinciden con lo que enviamos en la preferencia
-        const nombreCompleto = `${String(payerInfo.name || '')} ${String(payerInfo.surname || '')}`.trim();
+        if (orderData) {
+          const { items, payer } = orderData;
 
-        await resend.emails.send({
-          from: 'Tienda Briago <Administracion@briagopinturas.com>',
-          to: 'besadamateo@gmail.com',
-          subject: `¡Nueva Venta! - Orden #${payment.body.external_reference}`,
-          html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-              <h1 style="color: #333; text-align: center;">¡Nueva Venta Realizada!</h1>
-              <p><strong>Orden:</strong> ${payment.body.external_reference}</p>
-              
-              <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Datos del Cliente</h2>
-              <p><strong>Nombre:</strong> ${nombreCompleto}</p>
-              <p><strong>Email:</strong> ${payerInfo.email}</p>
-              <p><strong>Teléfono:</strong> ${payerInfo.phone?.number || 'No especificado'}</p>
-              
-              <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Dirección de Envío</h2>
-              <p><strong>Dirección:</strong> ${payerInfo.address?.street_name || 'No especificada'}</p>
-              <p><strong>Código Postal:</strong> ${payerInfo.address?.zip_code || 'No especificado'}</p>
-              
-              <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Detalle del Pedido</h2>
-              <table style="width: 100%; border-collapse: collapse;">
-                <thead>
-                  <tr>
-                    <th style="padding: 8px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
-                    <th style="padding: 8px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
-                    <th style="padding: 8px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${itemsHtml}
-                </tbody>
-              </table>
-              <h3 style="text-align: right; margin-top: 20px;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</h3>
-            </div>
-          `,
-        });
+          const itemsHtml = items.map(item => `
+            <tr>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.title}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity}</td>
+              <td style="padding: 8px; border-bottom: 1px solid #ddd; text-align: right;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
+            </tr>
+          `).join('');
 
-        console.log('Email de notificación enviado con éxito.');
+          await resend.emails.send({
+            from: 'Tienda Briago <Administracion@briagopinturas.com>',
+            to: 'besadamateo@gmail.com',
+            subject: `¡Nueva Venta! - Orden #${external_reference}`,
+            html: `
+              <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                <h1 style="color: #333; text-align: center;">¡Nueva Venta Realizada!</h1>
+                <p><strong>Orden:</strong> ${external_reference}</p>
+                
+                <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Datos del Cliente</h2>
+                <p><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
+                <p><strong>Email:</strong> ${payer.email}</p>
+                <p><strong>Teléfono:</strong> ${payer.phone?.number || 'No especificado'}</p>
+                
+                <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Dirección de Envío</h2>
+                <p><strong>Dirección:</strong> ${payer.address?.street_name || 'No especificada'}</p>
+                <p><strong>Código Postal:</strong> ${payer.address?.zip_code || 'No especificado'}</p>
+                
+                <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Detalle del Pedido</h2>
+                <table style="width: 100%; border-collapse: collapse;">
+                  <thead>
+                    <tr>
+                      <th style="padding: 8px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
+                      <th style="padding: 8px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
+                      <th style="padding: 8px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
+                    </tr>
+                  </thead>
+                  <tbody>${itemsHtml}</tbody>
+                </table>
+                <h3 style="text-align: right; margin-top: 20px;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</h3>
+              </div>
+            `,
+          });
+          console.log('Email de notificación enviado con éxito.');
+          pendingOrders.delete(external_reference); // Limpiamos la orden de la memoria
+        } else {
+          console.error(`No se encontraron datos para la orden: ${external_reference}`);
+        }
       }
     }
   } catch (error) {
@@ -142,7 +137,6 @@ app.post('/webhook-mercadopago', async (req, res) => {
   
   res.status(200).send('OK');
 });
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
