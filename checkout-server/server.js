@@ -93,7 +93,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
           await resend.emails.send({
             from: 'Tienda Briago <Administracion@briagopinturas.com>',
             // --- 1. SE ENVÍA A MÚLTIPLES DESTINATARIOS ---
-            to: 'besadamateo@gmail.com',
+            to: ['besadamateo@gmail.com', 'briagopinturas@gmail.com'],
             subject: `¡Nueva Venta Realizada! - Orden #${external_reference}`,
             // --- 2. NUEVO DISEÑO DE EMAIL PROFESIONAL ---
             html: `
