@@ -11,25 +11,21 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// --- Inicialización de Servicios ---
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 mercadopago.configure({
   access_token: process.env.MP_ACCESS_TOKEN,
 });
 
-
-// --- RUTA PARA CREAR LA PREFERENCIA DE PAGO ---
 app.post('/create_preference', async (req, res) => {
   try {
     const { items, payer, external_reference } = req.body;
 
-    // Medidas de seguridad y validación
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'La lista de productos (items) es inválida.' });
     }
     if (!payer || typeof payer.email !== 'string') {
-        return res.status(400).json({ error: 'La información del comprador (payer) es inválida.' });
+      return res.status(400).json({ error: 'La información del comprador (payer) es inválida.' });
     }
 
     const preference = {
@@ -71,26 +67,17 @@ app.post('/create_preference', async (req, res) => {
   }
 });
 
-
-// --- RUTA DEL WEBHOOK CON LÓGICA PARA ENVIAR EMAIL ---
+// --- RUTA DEL WEBHOOK CORREGIDA ---
 app.post('/webhook-mercadopago', async (req, res) => {
   console.log('Webhook de Mercado Pago recibido');
-  
-  try {
-    // Mercado Pago puede enviar distintos tipos de notificaciones.
-    // Nos aseguramos de que sea una notificación de pago.
-    if (req.body.type === 'payment') {
-      const paymentId = req.body.data?.id;
-      if (!paymentId) {
-        throw new Error('No se encontró el ID del pago en la notificación.');
-      }
+  const paymentId = req.body.data?.id;
 
-      // Obtenemos los detalles completos del pago desde Mercado Pago
+  if (req.body.type === 'payment' && paymentId) {
+    try {
       const payment = await mercadopago.payment.get(paymentId);
       
-      // Verificamos que el pago esté aprobado
       if (payment.body.status === 'approved') {
-        console.log('Pago aprobado. Preparando email de notificación...');
+        console.log('Pago aprobado. Enviando email de notificación...');
         
         const itemsHtml = payment.body.additional_info.items.map(item => `
           <tr>
@@ -100,14 +87,14 @@ app.post('/webhook-mercadopago', async (req, res) => {
           </tr>
         `).join('');
 
+        // Extraemos la información del comprador y la dirección del objeto 'payer'
         const payerInfo = payment.body.payer;
-        const addressInfo = payerInfo.address;
 
-        // Enviamos el email usando Resend
         await resend.emails.send({
           from: 'Tienda Briago <Administracion@briagopinturas.com>',
           to: 'besadamateo@gmail.com',
           subject: `¡Nueva Venta! - Orden #${payment.body.external_reference}`,
+          // --- HTML DEL EMAIL ACTUALIZADO ---
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
               <h1 style="color: #333; text-align: center;">¡Nueva Venta Realizada!</h1>
@@ -119,9 +106,9 @@ app.post('/webhook-mercadopago', async (req, res) => {
               <p><strong>Teléfono:</strong> ${payerInfo.phone?.number || 'No especificado'}</p>
               
               <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Dirección de Envío</h2>
-              <p><strong>Dirección:</strong> ${addressInfo?.street_name || 'No especificada'}</p>
-              <p><strong>Código Postal:</strong> ${addressInfo?.zip_code || 'No especificado'}</p>
-              
+              <p><strong>Dirección:</strong> ${payerInfo.address?.street_name || 'No especificada'}</p>
+              <p><strong>Código Postal:</strong> ${payerInfo.address?.zip_code || 'No especificado'}</p>
+
               <h2 style="color: #333; border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">Detalle del Pedido</h2>
               <table style="width: 100%; border-collapse: collapse;">
                 <thead>
@@ -142,15 +129,13 @@ app.post('/webhook-mercadopago', async (req, res) => {
 
         console.log('Email de notificación enviado con éxito.');
       }
+    } catch (error) {
+      console.error('Error al procesar el webhook:', error);
     }
-  } catch (error) {
-    console.error('Error al procesar el webhook:', error);
   }
-  
-  // Siempre respondemos 200 OK a Mercado Pago para que no reintente
+
   res.status(200).send('OK');
 });
-
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
