@@ -71,7 +71,7 @@ const CheckoutPage = () => {
 
         const mp = new window.MercadoPago("APP_USR-9aa2c361-7d29-4154-885f-09dfc9c58c0e", { locale: "es-AR" });
 
-        // --- CORRECCIÓN CLAVE AQUÍ: ENVIAR DATOS COMPLETOS AL BACKEND ---
+        // --- CORRECCIÓN CLAVE AQUÍ: Se preparan los datos completos ---
         const mpItems = cart.map(item => ({
           title: item.nombre,
           unit_price: item.precio,
@@ -90,6 +90,7 @@ const CheckoutPage = () => {
         const res = await fetch("https://checkout-server-gehy.onrender.com/create_preference", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          // --- Se envía el body con la estructura correcta ---
           body: JSON.stringify({
             items: mpItems,
             payer: mpPayer,
@@ -97,7 +98,7 @@ const CheckoutPage = () => {
           }),
         });
         
-        if (!res.ok) { // Si la respuesta del servidor no es 2xx
+        if (!res.ok) {
             const errorData = await res.json();
             throw new Error(errorData.error || 'Error del servidor al crear la preferencia.');
         }
@@ -229,13 +230,13 @@ const CheckoutPage = () => {
                 <button
                   type="submit" form="checkout-form"
                   className="mt-6 w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded-md transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
-                  disabled={isPreferenceLoading}
+                  disabled={false}
                 >
-                  Continuar al Pago
+                  Pagar
                 </button>
               )}
               <Link to="/productos" className="block mt-2 w-full text-center text-sm text-gray-600 hover:underline">
-                &larr; Volver y seguir comprando
+                Volver y seguir comprando
               </Link>
             </div>
           </div>
