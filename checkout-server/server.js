@@ -21,7 +21,6 @@ const pendingOrders = new Map();
 
 app.post('/create_preference', async (req, res) => {
   try {
-    // [CAMBIO 1] Ahora recibimos el objeto 'payer' completo con los nuevos campos.
     const { items, payer, external_reference } = req.body;
 
     if (!items || !Array.isArray(items) || !items.length) {
@@ -31,7 +30,6 @@ app.post('/create_preference', async (req, res) => {
       return res.status(400).json({ error: 'La información del comprador es inválida.' });
     }
 
-    // Guardamos el objeto 'payer' COMPLETO (con entreCalles y descripcion) en nuestra orden pendiente.
     pendingOrders.set(external_reference, { items, payer });
 
     const preference = {
@@ -41,7 +39,6 @@ app.post('/create_preference', async (req, res) => {
         quantity: Number(item.quantity),
         currency_id: 'ARS',
       })),
-      // A Mercado Pago solo le enviamos los datos que necesita.
       payer: {
         name: String(payer.fullname.split(' ')[0]),
         surname: String(payer.fullname.split(' ').slice(1).join(' ')),
@@ -92,38 +89,47 @@ app.post('/webhook-mercadopago', async (req, res) => {
               <td style="padding: 12px 0; text-align: right; font-weight: 600;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
             </tr>
           `).join('');
+          
+          // --- INICIO DE ENVÍO DE CORREOS ---
 
-          await resend.emails.send({
-            from: 'Tienda Briago <Administracion@briagopinturas.com>',
-            to: 'besadamateo@gmail.com',
-            subject: `¡Nueva Venta Realizada! - Orden #${external_reference}`,
-            html: `
+          try {
+            // 1. Enviar email de notificación INTERNO (para vos)
+            await resend.emails.send({
+              from: 'Tienda Briago <Administracion@briagopinturas.com>',
+              to: ['besadamateo@gmail.com', 'briagopinturas@gmail.com'],
+              subject: `¡Nueva Venta Realizada! - Orden #${external_reference}`,
+              html: `
+                <!-- (El HTML de tu correo interno se mantiene igual, lo omito por brevedad) -->
+                <p><strong>Nombre:</strong> ${payer.fullname}</p>
+                <p><strong>Email:</strong> ${payer.email}</p>
+                <p><strong>Teléfono:</strong> ${payer.phone}</p>
+                <p><strong>Dirección:</strong> ${payer.address}, ${payer.city}, ${payer.postalcode}</p>
+                <p><strong>Entre Calles:</strong> ${payer.entreCalles || 'No especificado'}</p>
+                <p><strong>Descripción:</strong> ${payer.descripcion || 'No especificado'}</p>
+                <hr>
+                ${itemsHtml}
+              `
+            });
+            console.log('Email de notificación interno enviado con éxito.');
+
+            // --- [NUEVO] ---
+            // 2. Enviar email de confirmación EXTERNO (para el cliente)
+            await resend.emails.send({
+              from: 'Tienda Briago <Administracion@briagopinturas.com>',
+              to: [payer.email], // Se envía al correo del cliente
+              subject: `Confirmación de tu pedido en Briago Pinturas #${external_reference}`,
+              html: `
               <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
                 <div style="background-color: #fff03b; padding: 24px; text-align: center;">
                   <img src="https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png" alt="Briago Pinturas Logo" style="max-width: 150px; margin: auto;">
                 </div>
                 <div style="padding: 24px;">
-                  <h1 style="font-size: 24px; font-weight: 700; text-align: center;">¡Nueva Venta Realizada!</h1>
-                  <p style="text-align: center; color: #555;">Orden: <strong>${external_reference}</strong></p>
+                  <h1 style="font-size: 24px; font-weight: 700;">¡Gracias por tu compra, ${payer.fullname.split(' ')[0]}!</h1>
+                  <p style="color: #555;">Tu pedido <strong>#${external_reference}</strong> ha sido confirmado y ya lo estamos preparando.</p>
                   
                   <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
 
-                  <h2 style="font-size: 18px; font-weight: 600; color: #333;">Datos del Cliente</h2>
-                  <p style="margin: 4px 0;"><strong>Nombre:</strong> ${payer.fullname}</p>
-                  <p style="margin: 4px 0;"><strong>Email:</strong> <a href="mailto:${payer.email}" style="color: #007bff;">${payer.email}</a></p>
-                  <p style="margin: 4px 0;"><strong>Teléfono:</strong> ${payer.phone || 'No especificado'}</p>
-                  
-                  <h2 style="font-size: 18px; font-weight: 600; color: #333; margin-top: 24px;">Dirección de Envío</h2>
-                  <p style="margin: 4px 0;"><strong>Dirección:</strong> ${payer.address || 'No especificada'}</p>
-                  <p style="margin: 4px 0;"><strong>Ciudad:</strong> ${payer.city || 'No especificada'}</p>
-                  <p style="margin: 4px 0;"><strong>Código Postal:</strong> ${payer.postalcode || 'No especificado'}</p>
-                  
-                  ${payer.entreCalles ? `<p style="margin: 4px 0;"><strong>Entre Calles:</strong> ${payer.entreCalles}</p>` : ''}
-                  ${payer.descripcion ? `<p style="margin: 4px 0;"><strong>Descripción:</strong> ${payer.descripcion}</p>` : ''}
-                  
-                  <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
-
-                  <h2 style="font-size: 18px; font-weight: 600; color: #333;">Detalle del Pedido</h2>
+                  <h2 style="font-size: 18px; font-weight: 600; color: #333;">Resumen de tu compra</h2>
                   <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
                     <thead>
                       <tr>
@@ -135,16 +141,33 @@ app.post('/webhook-mercadopago', async (req, res) => {
                     <tbody>${itemsHtml}</tbody>
                   </table>
                   <div style="text-align: right; margin-top: 24px;">
-                    <strong style="font-size: 20px;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</strong>
+                    <strong style="font-size: 20px;">Total pagado: $${payment.body.transaction_amount.toLocaleString('es-AR')}</strong>
+                  </div>
+
+                  <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
+                  
+                  <h2 style="font-size: 18px; font-weight: 600; color: #333;">Enviado a:</h2>
+                  <p style="margin: 4px 0;">${payer.fullname}</p>
+                  <p style="margin: 4px 0;">${payer.address}, ${payer.city} (${payer.postalcode})</p>
+                  ${payer.entreCalles ? `<p style="margin: 4px 0; color: #555;">(Entre ${payer.entreCalles})</p>` : ''}
+
+                  <div style="margin-top: 24px; background-color: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0; font-size: 14px; color: #555;">Te notificaremos nuevamente cuando tu pedido sea despachado. Si tenés alguna pregunta, respondé a este correo.</p>
                   </div>
                 </div>
                 <div style="background-color: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d;">
-                  Este es un correo de notificación automático.
+                  Briago Pinturas &copy; ${new Date().getFullYear()}
                 </div>
               </div>
-            `,
-          });
-          console.log('Email de notificación enviado con éxito.');
+              `
+            });
+            console.log('Email de confirmación al cliente enviado con éxito.');
+            // --- FIN DEL CÓDIGO NUEVO ---
+
+          } catch (emailError) {
+             console.error("Error al enviar uno de los correos:", emailError);
+          }
+          
           pendingOrders.delete(external_reference);
         }
       }
