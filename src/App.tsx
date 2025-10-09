@@ -37,6 +37,7 @@ import AboutSection from "@/components/AboutSection";
 import Marcas from "@/components/MarcasSection";
 import AboutPage from './pages/AboutPage';
 import CartPanel from './components/CartPanel'; // Importamos el nuevo panel
+import CompraExitosaPage from './pages/CompraExitosa';
 
 function HomePageWrapper() {
   return (
@@ -110,6 +111,7 @@ function App() {
               {/* Mantienes la ruta /carrito para la página completa si aún la necesitas */}
               <Route path="/carrito" element={<Carrito />} /> 
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/compra-exitosa" element={<CompraExitosaPage />} />
               <Route path="/buscar" element={<Buscar />} />
               <Route path="/producto/:id" element={<ProductoPage />} />
               <Route path="/terminos" element={<TerminosYCondiciones />} />

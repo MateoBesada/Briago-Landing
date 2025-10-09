@@ -21,6 +21,7 @@ const pendingOrders = new Map();
 
 app.post('/create_preference', async (req, res) => {
   try {
+    // [CAMBIO 1] Ahora recibimos el objeto 'payer' completo con los nuevos campos.
     const { items, payer, external_reference } = req.body;
 
     if (!items || !Array.isArray(items) || !items.length) {
@@ -30,6 +31,7 @@ app.post('/create_preference', async (req, res) => {
       return res.status(400).json({ error: 'La información del comprador es inválida.' });
     }
 
+    // Guardamos el objeto 'payer' COMPLETO (con entreCalles y descripcion) en nuestra orden pendiente.
     pendingOrders.set(external_reference, { items, payer });
 
     const preference = {
@@ -39,9 +41,10 @@ app.post('/create_preference', async (req, res) => {
         quantity: Number(item.quantity),
         currency_id: 'ARS',
       })),
+      // A Mercado Pago solo le enviamos los datos que necesita.
       payer: {
-        name: String(payer.name),
-        surname: String(payer.surname),
+        name: String(payer.fullname.split(' ')[0]),
+        surname: String(payer.fullname.split(' ').slice(1).join(' ')),
         email: payer.email,
       },
       back_urls: {
@@ -92,10 +95,8 @@ app.post('/webhook-mercadopago', async (req, res) => {
 
           await resend.emails.send({
             from: 'Tienda Briago <Administracion@briagopinturas.com>',
-            // --- 1. SE ENVÍA A MÚLTIPLES DESTINATARIOS ---
-            to: ['besadamateo@gmail.com', 'briagopinturas@gmail.com'],
+            to: 'besadamateo@gmail.com',
             subject: `¡Nueva Venta Realizada! - Orden #${external_reference}`,
-            // --- 2. NUEVO DISEÑO DE EMAIL PROFESIONAL ---
             html: `
               <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
                 <div style="background-color: #fff03b; padding: 24px; text-align: center;">
@@ -108,13 +109,17 @@ app.post('/webhook-mercadopago', async (req, res) => {
                   <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
 
                   <h2 style="font-size: 18px; font-weight: 600; color: #333;">Datos del Cliente</h2>
-                  <p style="margin: 4px 0;"><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
+                  <p style="margin: 4px 0;"><strong>Nombre:</strong> ${payer.fullname}</p>
                   <p style="margin: 4px 0;"><strong>Email:</strong> <a href="mailto:${payer.email}" style="color: #007bff;">${payer.email}</a></p>
-                  <p style="margin: 4px 0;"><strong>Teléfono:</strong> ${payer.phone?.number || 'No especificado'}</p>
+                  <p style="margin: 4px 0;"><strong>Teléfono:</strong> ${payer.phone || 'No especificado'}</p>
                   
                   <h2 style="font-size: 18px; font-weight: 600; color: #333; margin-top: 24px;">Dirección de Envío</h2>
-                  <p style="margin: 4px 0;"><strong>Dirección:</strong> ${payer.address?.street_name || 'No especificada'}</p>
-                  <p style="margin: 4px 0;"><strong>Código Postal:</strong> ${payer.address?.zip_code || 'No especificado'}</p>
+                  <p style="margin: 4px 0;"><strong>Dirección:</strong> ${payer.address || 'No especificada'}</p>
+                  <p style="margin: 4px 0;"><strong>Ciudad:</strong> ${payer.city || 'No especificada'}</p>
+                  <p style="margin: 4px 0;"><strong>Código Postal:</strong> ${payer.postalcode || 'No especificado'}</p>
+                  
+                  ${payer.entreCalles ? `<p style="margin: 4px 0;"><strong>Entre Calles:</strong> ${payer.entreCalles}</p>` : ''}
+                  ${payer.descripcion ? `<p style="margin: 4px 0;"><strong>Descripción:</strong> ${payer.descripcion}</p>` : ''}
                   
                   <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
 
