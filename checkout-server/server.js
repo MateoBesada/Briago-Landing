@@ -100,7 +100,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
               subject: `¡Nueva Venta! - Orden #${external_reference}`,
               html: `
               <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
-                <div style="background-color: #333; padding: 20px; text-align: center;">
+                <div style="background-color: #fff03b; padding: 20px; text-align: center;">
                   <img src="https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png" alt="Briago Pinturas Logo" style="max-width: 150px; margin: auto;">
                 </div>
                 <div style="padding: 24px;">
@@ -132,14 +132,14 @@ app.post('/webhook-mercadopago', async (req, res) => {
                     <thead>
                       <tr>
                         <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
-                        <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
+                        <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: right;">Cant.</th>
                         <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
                       </tr>
                     </thead>
                     <tbody>${itemsHtml}</tbody>
                   </table>
                   <div style="text-align: right; margin-top: 24px;">
-                    <strong style="font-size: 20px;">Total Cobrado: $${payment.body.transaction_amount.toLocaleString('es-AR')}</strong>
+                    <strong style="font-size: 20px;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</strong>
                   </div>
                 </div>
                 <div style="background-color: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d;">
@@ -176,15 +176,19 @@ app.post('/webhook-mercadopago', async (req, res) => {
                     <tbody>${itemsHtml}</tbody>
                   </table>
                   <div style="text-align: right; margin-top: 24px;">
-                    <strong style="font-size: 20px;">Total pagado: $${payment.body.transaction_amount.toLocaleString('es-AR')}</strong>
+                    <strong style="font-size: 20px;">Total Pagado: $${payment.body.transaction_amount.toLocaleString('es-AR')}</strong>
                   </div>
                   <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
                   <h2 style="font-size: 18px; font-weight: 600; color: #333;">Enviado a:</h2>
                   <p style="margin: 4px 0;">${payer.fullname}</p>
                   <p style="margin: 4px 0;">${payer.address}, ${payer.city} (${payer.postalcode})</p>
                   ${payer.entreCalles ? `<p style="margin: 4px 0; color: #555;">(Entre ${payer.entreCalles})</p>` : ''}
+                  <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
                   <div style="margin-top: 24px; background-color: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center;">
-                    <p style="margin: 0; font-size: 14px; color: #555;">Si tenés alguna pregunta, respondé a este correo.</p>
+                    <p style="margin: 0; font-size: 14px; color: #555;">Esto es un correo automatico. Si tenés alguna consulta mandanos un mail a briagopinturas@gmail.com con tu nombre completo.</p>
+                  </div>
+                  <div style="margin-top: 6px; background-color: #f8f9fa; padding: 3px; border-radius: 8px; text-align: center;">
+                    <p style="margin: 0; font-size: 14px; color: #555;">¡Muchas Gracias!.</p>
                   </div>
                 </div>
                 <div style="background-color: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d;">
