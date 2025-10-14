@@ -83,7 +83,7 @@ export const productosAutomotor: Producto[] = [
     id: '361',
     nombre: 'Diluyente Medio Sin Sedronar D807P 5 Lts PPG',
     descripcion:'',
-    precio: 20,
+    precio: 1,
     imagen: '/img/Automotor/DiluyentePPGblanco.webp',
     categoria: 'Diluyentes',
     marca:'PPG',

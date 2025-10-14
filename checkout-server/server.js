@@ -152,7 +152,8 @@ app.post('/webhook-mercadopago', async (req, res) => {
                   ${payer.entreCalles ? `<p style="margin: 4px 0; color: #555;">(Entre ${payer.entreCalles})</p>` : ''}
 
                   <div style="margin-top: 24px; background-color: #f8f9fa; padding: 16px; border-radius: 8px; text-align: center;">
-                    <p style="margin: 0; font-size: 14px; color: #555;">Te notificaremos nuevamente cuando tu pedido sea despachado. Si tenés alguna pregunta, respondé a este correo.</p>
+                    <p style="margin: 0; font-size: 14px; color: #555;">Esto es un correo automatico.</p>
+                    <p style="margin: 0; font-size: 14px; color: #555;">Por favor, si tiene alguna consulta mandenos un correo con su nombre completo a briagopinturas@gmail.com</p>
                   </div>
                 </div>
                 <div style="background-color: #f8f9fa; padding: 16px; text-align: center; font-size: 12px; color: #6c757d;">
