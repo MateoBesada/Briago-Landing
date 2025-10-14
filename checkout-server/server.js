@@ -45,9 +45,9 @@ app.post('/create_preference', async (req, res) => {
         email: payer.email,
       },
       back_urls: {
-        success: "https://briago-pinturas.com/compra-exitosa",
-        failure: "https://briago-pinturas.com/error-en-pago",
-        pending: "https://briago-pinturas.com/pago-pendiente",
+        success: "https://briagopinturas.com/compra-exitosa",
+        failure: "https://briagopinturas.com/error-en-pago",
+        pending: "https://briagopinturas.com/pago-pendiente",
       },
       auto_return: "approved",
       external_reference: external_reference,
