@@ -159,7 +159,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
               </div>
               <div style="background-color: #f8f9fa; padding: 24px; text-align: center;">
                 <p style="margin: 0 0 16px 0; font-size: 14px; color: #555;">Si tenés alguna consulta, respondé a este correo o contactanos a <a href="mailto:briagopinturas@gmail.com" style="color:#007bff; text-decoration:none;">briagopinturas@gmail.com</a>.</p>
-                <a href="https://briagopinturas.com" style="background-color: #212529; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">Volver a la Tienda</a>
+                <a href="https://briagopinturas.com" style="background-color: #fff03b; border: 2px; border-color: #333; color: #333; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">Volver a la Tienda</a>
               </div>
               <div style="background-color: #333; color: #fff; padding: 16px; text-align: center; font-size: 12px;">
                 Briago Pinturas &copy; ${new Date().getFullYear()}
@@ -171,8 +171,8 @@ app.post('/webhook-mercadopago', async (req, res) => {
             // 1. Enviar email de notificación INTERNO
             await resend.emails.send({
               from: 'Tienda Briago <Administracion@briagopinturas.com>',
-              to: ['besadamateo@gmail.com', 'briagopinturas@gmail.com'],
-              subject: `✅ Venta Confirmada - Orden #${external_reference}`,
+              to: 'besadamateo@gmail.com',
+              subject: `Nueva Venta Realizada - Orden #${external_reference}`,
               html: sellerEmailHtml
             });
             console.log('Email de notificación interno enviado con éxito.');
