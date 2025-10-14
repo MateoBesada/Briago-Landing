@@ -78,101 +78,79 @@ app.post('/webhook-mercadopago', async (req, res) => {
 
           const itemsHtml = items.map(item => `
             <tr style="border-bottom: 1px solid #eaeaea;">
-              <td style="padding: 12px 0; vertical-align: top;">${item.title}</td>
-              <td style="padding: 12px 0; text-align: center; vertical-align: top;">${item.quantity}</td>
-              <td style="padding: 12px 0; text-align: right; font-weight: 600; vertical-align: top;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
+              <td style="padding: 10px 5px; vertical-align: top;">${item.title}</td>
+              <td style="padding: 10px 5px; text-align: center; vertical-align: top;">${item.quantity}</td>
+              <td style="padding: 10px 5px; text-align: right; font-weight: 600; vertical-align: top;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
             </tr>
           `).join('');
           
-          // --- [INICIO DE PLANTILLAS DE CORREO MEJORADAS] ---
+          // --- [INICIO DE PLANTILLAS DE CORREO CORTAS Y DIRECTAS] ---
           const sellerEmailHtml = `
-            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
-              <div style="background-color: #212529; color: #fff; padding: 20px; text-align: center;">
-                <h1 style="margin:0; font-size: 24px;">Nueva Orden de Trabajo</h1>
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ccc;">
+              <div style="background-color: #333; color: #fff; padding: 12px 15px;">
+                <h1 style="margin:0; font-size: 20px;">Nueva Venta: #${external_reference}</h1>
               </div>
-              <div style="padding: 24px;">
-                <p style="color: #555; font-size: 16px;">Orden de Compra: <strong style="color: #000;">#${external_reference}</strong></p>
-                <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
-                <h2 style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 12px; border-left: 4px solid #ffc107; padding-left: 12px;">Datos del Cliente</h2>
-                <div style="background-color: #f8f9fa; padding: 16px; border-radius: 8px;">
-                  <p style="margin: 4px 0;"><strong>Nombre:</strong> ${payer.fullname}</p>
-                  <p style="margin: 4px 0;"><strong>Email:</strong> <a href="mailto:${payer.email}" style="color: #007bff; text-decoration: none;">${payer.email}</a></p>
-                  <p style="margin: 4px 0;"><strong>Teléfono:</strong> ${payer.phone}</p>
+              <div style="padding: 15px;">
+                <h2 style="font-size: 16px; margin: 0 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px;">Datos para Despacho</h2>
+                <p style="margin: 4px 0;"><strong>Cliente:</strong> ${payer.fullname}</p>
+                <p style="margin: 4px 0;"><strong>Teléfono:</strong> ${payer.phone}</p>
+                <p style="margin: 4px 0;"><strong>Email:</strong> ${payer.email}</p>
+                <hr style="border: none; border-top: 1px solid #eee; margin: 10px 0;">
+                <p style="margin: 4px 0;"><strong>Dirección:</strong> ${payer.address}, ${payer.city} (${payer.postalcode})</p>
+                <p style="margin: 4px 0;"><strong>Entre Calles:</strong> ${payer.entreCalles || 'N/A'}</p>
+                <div style="background-color: #fffbe6; border: 1px solid #ffe58f; padding: 10px; border-radius: 4px; margin-top: 15px;">
+                  <strong>Notas del Cliente:</strong>
+                  <p style="margin: 5px 0 0 0;"><em>${payer.descripcion || 'Sin notas.'}</em></p>
                 </div>
-                <h2 style="font-size: 18px; font-weight: 600; color: #333; margin-top: 24px; margin-bottom: 12px; border-left: 4px solid #ffc107; padding-left: 12px;">Datos de Envío</h2>
-                <div style="background-color: #f8f9fa; padding: 16px; border-radius: 8px;">
-                  <p style="margin: 4px 0;"><strong>Dirección:</strong> ${payer.address}, ${payer.city} (${payer.postalcode})</p>
-                  <p style="margin: 4px 0;"><strong>Entre Calles:</strong> ${payer.entreCalles || 'No especificado'}</p>
-                  <p style="margin: 4px 0;"><strong>Notas Adicionales:</strong> <em>${payer.descripcion || 'Ninguna'}</em></p>
-                </div>
-                <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
-                <h2 style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 12px; border-left: 4px solid #ffc107; padding-left: 12px;">Detalle del Pedido</h2>
-                <table style="width: 100%; border-collapse: collapse;">
+                <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                   <thead>
                     <tr>
-                      <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
-                      <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
-                      <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
+                      <th style="padding-bottom: 8px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
+                      <th style="padding-bottom: 8px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
+                      <th style="padding-bottom: 8px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
                     </tr>
                   </thead>
                   <tbody>${itemsHtml}</tbody>
                 </table>
-                <div style="text-align: right; margin-top: 24px; padding-top: 16px; border-top: 2px solid #333;">
-                  <strong style="font-size: 22px; color: #000;">Total de la Venta: $${totalAmount}</strong>
+                <div style="text-align: right; margin-top: 15px; padding-top: 10px; border-top: 2px solid #333;">
+                  <strong style="font-size: 18px;">Total: $${totalAmount}</strong>
                 </div>
               </div>
             </div>`;
           
           const customerEmailHtml = `
-            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 20px auto; border: 1px solid #ddd; border-radius: 12px; overflow: hidden;">
-              <div style="background-color: #fff03b; padding: 24px; text-align: center;">
-                <img src="https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png" alt="Briago Pinturas Logo" style="max-width: 150px; margin: auto;">
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: auto; border: 1px solid #eee;">
+              <div style="background-color: #fff03b; padding: 20px; text-align: center;">
+                <img src="https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png" alt="Briago Pinturas Logo" style="max-width: 130px;">
               </div>
-              <div style="padding: 24px;">
-                <h1 style="font-size: 24px; font-weight: 700;">¡Gracias por tu compra, ${payer.fullname.split(' ')[0]}!</h1>
-                <p style="color: #555;">Tu pedido <strong>#${external_reference}</strong> ha sido confirmado y ya lo estamos preparando.</p>
-                <div style="background-color: #f8f9fa; padding: 16px; border-radius: 8px; margin-top: 24px; text-align: left;">
-                  <h3 style="margin-top: 0; font-size: 16px; font-weight: 600;">Próximos Pasos:</h3>
-                  <p style="margin: 4px 0; color: #555;">1. Estamos preparando tu pedido para el despacho.</p>
-                  <p style="margin: 4px 0; color: #555;">2. Recibirás una notificación en cuanto salga para entrega.</p>
-                </div>
-                <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
-                <h2 style="font-size: 18px; font-weight: 600; color: #333;">Resumen de tu compra</h2>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 12px;">
-                  <thead>
-                    <tr>
-                      <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
-                      <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
-                      <th style="padding-bottom: 12px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
-                    </tr>
-                  </thead>
+              <div style="padding: 20px 20px 15px 20px;">
+                <h1 style="font-size: 22px; margin: 0 0 10px 0;">¡Tu compra está confirmada!</h1>
+                <p style="color: #555; margin: 0;"><strong>N° de Pedido:</strong> #${external_reference}</p>
+                <p style="color: #555; margin: 0 0 20px 0;"><strong>Total Pagado:</strong> $${totalAmount}</p>
+                <div style="border-top: 2px solid #eee; margin-bottom: 20px;"></div>
+                <h2 style="font-size: 16px; margin: 0 0 10px 0;">Resumen</h2>
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                   <tbody>${itemsHtml}</tbody>
                 </table>
-                <div style="text-align: right; margin-top: 24px; padding-top: 16px; border-top: 2px solid #333;">
-                  <strong style="font-size: 22px; color: #000;">Total Pagado: $${totalAmount}</strong>
-                </div>
-                <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
-                <h2 style="font-size: 18px; font-weight: 600; color: #333;">Enviado a:</h2>
-                <p style="margin: 4px 0; color: #555;">${payer.fullname}</p>
-                <p style="margin: 4px 0; color: #555;">${payer.address}, ${payer.city} (${payer.postalcode})</p>
-                ${payer.entreCalles ? `<p style="margin: 4px 0; color: #555;">(Entre ${payer.entreCalles})</p>` : ''}
+                <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
+                <h2 style="font-size: 16px; margin: 0 0 10px 0;">Datos de Envío</h2>
+                <p style="margin: 0; color: #555; font-size: 14px;">${payer.fullname}</p>
+                <p style="margin: 0; color: #555; font-size: 14px;">${payer.address}, ${payer.city} (${payer.postalcode})</p>
+                ${payer.entreCalles ? `<p style="margin: 0; color: #555; font-size: 14px;"><em>(Entre: ${payer.entreCalles})</em></p>` : ''}
               </div>
-              <div style="background-color: #f8f9fa; padding: 24px; text-align: center;">
-                <p style="margin: 0 0 16px 0; font-size: 14px; color: #555;">Si tenés alguna consulta, respondé a este correo o contactanos a <a href="mailto:briagopinturas@gmail.com" style="color:#007bff; text-decoration:none;">briagopinturas@gmail.com</a>.</p>
-                <a href="https://briagopinturas.com" style="background-color: #fff03b; border: 2px; border-color: #333; color: #333; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block;">Volver a la Tienda</a>
-              </div>
-              <div style="background-color: #333; color: #fff; padding: 16px; text-align: center; font-size: 12px;">
-                Briago Pinturas &copy; ${new Date().getFullYear()}
+              <div style="background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; border-top: 1px solid #eee;">
+                <p style="margin:0;">¿Dudas? Respondé a este email o contactanos a briagopinturas@gmail.com</p>
               </div>
             </div>`;
-          // --- [FIN DE PLANTILLAS DE CORREO MEJORADAS] ---
+          // --- [FIN DE PLANTILLAS DE CORREO CORTAS Y DIRECTAS] ---
 
           try {
             // 1. Enviar email de notificación INTERNO
             await resend.emails.send({
               from: 'Tienda Briago <Administracion@briagopinturas.com>',
-              to: 'besadamateo@gmail.com',
-              subject: `Nueva Venta Realizada - Orden #${external_reference}`,
+              to: ['besadamateo@gmail.com', 'briagopinturas@gmail.com'],
+              subject: `Venta Confirmada: #${external_reference}`,
               html: sellerEmailHtml
             });
             console.log('Email de notificación interno enviado con éxito.');
@@ -181,7 +159,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
             await resend.emails.send({
               from: 'Tienda Briago <Administracion@briagopinturas.com>',
               to: [payer.email],
-              subject: `¡Confirmamos tu pedido en Briago Pinturas! Orden #${external_reference}`,
+              subject: `¡Confirmamos tu pedido #${external_reference}!`,
               html: customerEmailHtml
             });
             console.log('Email de confirmación al cliente enviado con éxito.');
