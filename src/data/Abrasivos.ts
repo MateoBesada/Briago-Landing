@@ -21,14 +21,14 @@ export const productosAbrasivos: Producto[] = [
         "/img/Abrasivos/buflexverde-costado.png"
       ],
       marca: "Kovax",
-      precio: 150,
+      precio: 1,
       abrasivo: 'Disco',
       grano: "2000",
       seccion: "Abrasivos",
       tipoVenta: {
         caja: {
           unidadesPorCaja: 50, // Cantidad de unidades en una caja
-          precio: 6000,        // Precio por caja (50 unidades), que resulta en $120/unidad             // Opcional: descuento aplicable solo a la compra por caja (si aplica, respecto a un precio de caja "sin descuento")
+          precio: 2,        // Precio por caja (50 unidades), que resulta en $120/unidad             // Opcional: descuento aplicable solo a la compra por caja (si aplica, respecto a un precio de caja "sin descuento")
         }
       },
     },
