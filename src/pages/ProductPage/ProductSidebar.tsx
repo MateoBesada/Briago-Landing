@@ -179,31 +179,34 @@ export default function ProductSidebar({
       </div>
 
       {/* Agregar al carrito */}
-      <div className="space-y-3">
-        <button
-          disabled={!precioFinalUnitario}
-          onClick={() => {
-            if (precioFinalUnitario > 0) {
-              addItem({
-                ...producto,
-                cantidad,
-                precio: precioTipoVenta,
-                modoVenta,
-              });
-              toast.success("Producto agregado al carrito");
-            }
-          }}
-          className={clsx(
-            "w-full px-6 py-3 rounded-xl font-semibold transition text-white",
-            !precioFinalUnitario
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-gray-900 hover:bg-gray-800"
-          )}
-        >
-          {!precioFinalUnitario
-            ? "Producto no disponible"
-            : "Agregar al carrito"}
-        </button>
+<div className="space-y-3">
+      <button
+        disabled={!precioFinalUnitario}
+        onClick={() => {
+          if (precioFinalUnitario > 0) {
+            addItem({
+              ...producto,
+              cantidad,
+              precio: precioTipoVenta, // Este ya es el precio correcto según el modoVenta
+              modoVenta, // <-- AGREGAR ESTO AQUÍ
+              // Si necesitas saber cuántas unidades realmente se compran en modo caja,
+              // puedes agregar:
+              // unidadesCompradas: modoVenta === 'caja' && producto.tipoVenta?.caja ? cantidad * producto.tipoVenta.caja.unidadesPorCaja : cantidad,
+            });
+            toast.success("Producto agregado al carrito");
+          }
+        }}
+        className={clsx(
+          "w-full px-6 py-3 rounded-xl font-semibold transition text-white",
+          !precioFinalUnitario
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-gray-900 hover:bg-gray-800"
+        )}
+      >
+        {!precioFinalUnitario
+          ? "Producto no disponible"
+          : "Agregar al carrito"}
+      </button>
         <div className="flex items-center justify-center gap-2 text-blue-600 font-semibold text-sm">
           <MdLocationOn className="text-lg" />
           <span>Retirá GRATIS en nuestra sucursal</span>

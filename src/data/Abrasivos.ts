@@ -13,7 +13,7 @@ export const productosAbrasivos: Producto[] = [
   variantes: [
     {
       id: "83",
-      nombre: "Lijas en Disco Kovax En Seco Tela Granos 2000",
+      nombre: "Lija Tela Kovax Super Buflex Grano 2000 Terminacion",
       categoria: "Lijas",
       imagen: "/img/Abrasivos/buflexverde-prota.png",
       imgOpcionales: [
@@ -21,16 +21,20 @@ export const productosAbrasivos: Producto[] = [
         "/img/Abrasivos/buflexverde-costado.png"
       ],
       marca: "Kovax",
+      precio: 150,
       abrasivo: 'Disco',
       grano: "2000",
       seccion: "Abrasivos",
       tipoVenta: {
-
-        },
+        caja: {
+          unidadesPorCaja: 50, // Cantidad de unidades en una caja
+          precio: 6000,        // Precio por caja (50 unidades), que resulta en $120/unidad             // Opcional: descuento aplicable solo a la compra por caja (si aplica, respecto a un precio de caja "sin descuento")
+        }
+      },
     },
     {
       id: "93",
-      nombre: "Lija Tela Kovax Super Buflex Grano 3000 152mm Terminacion",
+      nombre: "Lija Tela Kovax Super Buflex Grano 3000 Terminacion",
       categoria: "Lijas",
       imagen: "/img/Abrasivos/buflexnegro-prota.png",
       imgOpcionales: [
@@ -913,7 +917,7 @@ export const productosAbrasivos: Producto[] = [
   },
   {
     id: "143",
-    nombre: "",
+    nombre: "Interface velour 152mm Kovax",
     categoria: "Interfaces",
     imagen: "/img/Abrasivos/IntefazKovaxDisco1.png",
     imgOpcionales: ["/img/Abrasivos/IntefazKovaxDisco2.png"],
