@@ -110,12 +110,12 @@ app.post('/webhook-mercadopago', async (req, res) => {
         <h3 style="font-size: 15px; font-weight: 600; color: #374151; margin: 0 0 4px 0;">Contacto del Cliente</h3>
         <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Nombre:</strong> ${payer.fullname}</p>
         <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Email:</strong> <a href="mailto:${payer.email}" style="color: #007bff;">${payer.email}</a></p>
-        <p style="margin: 0 0 16px 0; color: #374151; font-size: 14px;"><strong>Teléfono:</strong> $${payer.phone} || 'No especificado'}</p>
+        <p style="margin: 0 0 16px 0; color: #374151; font-size: 14px;"><strong>Teléfono:</strong> ${payer.phone || 'No especificado'}</p>
         
         <h3 style="font-size: 15px; font-weight: 600; color: #374151; margin: 0 0 4px 0;">Dirección de Envío</h3>
-        <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Dirección:</strong> ${payer.address}, ${payer.city} || 'No especificada'}</p>
+        <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Dirección:</strong> ${payer.address}, ${payer.city || 'No especificado'}</p>
         <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Entre Calles:</strong> ${payer.entreCalles || 'No especificado'}</p>
-        <p style="margin: 0 0 16px 0; color: #374151; font-size: 14px;"><strong>Código Postal:</strong> ${payer.postalcode} || 'No especificado'}</p>
+        <p style="margin: 0 0 16px 0; color: #374151; font-size: 14px;"><strong>Código Postal:</strong> ${payer.postalcode || 'No especificado'}</p>
 
         ${payer.descripcion ? `
           <div style="background-color: #fffbe6; border-left: 4px solid #facc15; padding: 12px; margin-top: 16px;">
