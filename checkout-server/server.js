@@ -121,7 +121,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 </p>
                 <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
                 <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px;">
-                  <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0 0 16px 0;">
+                  <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0 0 0 0;">
                     Datos para el Despacho
                   </h2>
                   <h3 style="font-size: 15px; font-weight: 600; color: #374151; margin: 0 0 4px 0;">Contacto del Cliente</h3>
@@ -185,7 +185,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 <img src="https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png" alt="Briago Pinturas Logo" style="max-width: 130px;">
               </div>
               <div style="padding: 20px 20px 15px 20px;">
-                <h1 style="font-size: 22px; margin: 0 0 10px 0;">¡Tu compra está confirmada, ${payer.name}!</h1>
+                <h1 style="font-size: 22px; margin: 0 0 10px 0;">¡Tu compra está confirmada, ${payer.fullname}!</h1>
                 <p style="color: #555; margin: 0;"><strong>N° de Pedido:</strong> #${external_reference}</p>
                 <p style="color: #555; margin: 0 0 20px 0;"><strong>Total Pagado:</strong> $${totalAmount}</p>
                 
