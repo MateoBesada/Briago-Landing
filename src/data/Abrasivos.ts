@@ -20,13 +20,12 @@ export const productosAbrasivos: Producto[] = [
         "/img/Abrasivos/buflexverde-discos.png",
         "/img/Abrasivos/buflexverde-costado.png"
       ],
-      
       marca: "Kovax",
       abrasivo: 'Disco',
       grano: "2000",
       seccion: "Abrasivos",
       tipoVenta: {
-        
+
         },
     },
     {
@@ -237,7 +236,7 @@ export const productosAbrasivos: Producto[] = [
     variantes:[
       {
         id: "223",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P80",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -247,7 +246,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "233",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P100",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -257,7 +256,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "243",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P120",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -267,7 +266,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "253",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P150",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -277,7 +276,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "263",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P180",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -287,7 +286,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "273",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P220",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -297,7 +296,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "283",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P240",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -307,7 +306,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "293",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P320",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -317,7 +316,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "303",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P400",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -327,7 +326,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "313",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P500",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -337,7 +336,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "323",
-        nombre: "Lija En Tira Maxfilm Kovax 70x198mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x198mm P600",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_756315-MLA53541828363_012023-F.webp",
         marca:'Kovax',
@@ -358,7 +357,7 @@ export const productosAbrasivos: Producto[] = [
     variantes:[
       {
         id: "333",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P80",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -368,7 +367,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "343",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P100",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -378,7 +377,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "353",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P120",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -388,7 +387,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "363",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P150",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -398,7 +397,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "373",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P180",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -408,7 +407,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "383",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P220",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -418,7 +417,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "393",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P240",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -428,7 +427,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "403",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P320",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -438,7 +437,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "413",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P400",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -448,7 +447,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "423",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P500",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -458,7 +457,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "433",
-        nombre: "Lija En Tira Maxfilm Kovax 70x126mm",
+        nombre: "Lija En Tira Maxfilm Kovax 70x126mm P600",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/D_NQ_NP_2X_723682-MLA85084553135_052025-F.webp",
         marca:'Kovax',
@@ -480,7 +479,7 @@ export const productosAbrasivos: Producto[] = [
     variantes:[
       {
         id: "453",
-        nombre: "Abranet Ace Mirka 70x198mm",
+        nombre: "Abranet Ace Mirka 70x198mm P80",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/AC15005012-006.webp",
         imgOpcionales: ["/img/Abrasivos/AC15005012-005.webp"],
@@ -491,7 +490,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "463",
-        nombre: "Abranet Ace Mirka 70x198mm",
+        nombre: "Abranet Ace Mirka 70x198mm P120",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/AC15005012-006.webp",
         imgOpcionales: ["/img/Abrasivos/AC15005012-005.webp"],
@@ -502,7 +501,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "473",
-        nombre: "Abranet Ace Mirka 70x198mm",
+        nombre: "Abranet Ace Mirka 70x198mm P150",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/AC15005012-006.webp",
         imgOpcionales: ["/img/Abrasivos/AC15005012-005.webp"],
@@ -513,7 +512,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "483",
-        nombre: "Abranet Ace Mirka 70x198mm",
+        nombre: "Abranet Ace Mirka 70x198mm P180",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/AC15005012-006.webp",
         imgOpcionales: ["/img/Abrasivos/AC15005012-005.webp"],
@@ -524,7 +523,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "493",
-        nombre: "Abranet Ace Mirka 70x198mm",
+        nombre: "Abranet Ace Mirka 70x198mm P240",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/AC15005012-006.webp",
         imgOpcionales: ["/img/Abrasivos/AC15005012-005.webp"],
@@ -535,7 +534,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "503",
-        nombre: "Abranet Ace Mirka 70x198mm",
+        nombre: "Abranet Ace Mirka 70x198mm P320",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/AC15005012-006.webp",
         imgOpcionales: ["/img/Abrasivos/AC15005012-005.webp"],
@@ -546,7 +545,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "513",
-        nombre: "Abranet Ace Mirka 70x198mm",
+        nombre: "Abranet Ace Mirka 70x198mm P400",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/AC15005012-006.webp",
         imgOpcionales: ["/img/Abrasivos/AC15005012-005.webp"],
@@ -569,7 +568,7 @@ export const productosAbrasivos: Producto[] = [
     variantes:[
       {
         id: "533",
-        nombre: "Abranet Ace Mirka 70x420mm",
+        nombre: "Abranet Ace Mirka 70x420mm P80",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],
@@ -580,8 +579,9 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "543",
-        nombre: "Abranet Ace Mirka  70x420mm",
+        nombre: "Abranet Ace Mirka  70x420mm P120",
         categoria: "Lijas",
+        precioOriginal: 1,
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],
         marca:'Kovax',
@@ -591,7 +591,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "553",
-        nombre: "Abranet Ace Mirka  70x420mm",
+        nombre: "Abranet Ace Mirka  70x420mm P150",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],
@@ -602,7 +602,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "563",
-        nombre: "Abranet Ace Mirka  70x420mm",
+        nombre: "Abranet Ace Mirka  70x420mm  P180",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],
@@ -613,7 +613,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "573",
-        nombre: "Abranet Ace Mirka  70x420mm",
+        nombre: "Abranet Ace Mirka  70x420mm P240",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],
@@ -624,7 +624,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "583",
-        nombre: "Abranet Ace Mirka  70x420mm",
+        nombre: "Abranet Ace Mirka  70x420mm P320",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],
@@ -635,7 +635,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "593",
-        nombre: "Abranet Ace Mirka  70x420mm",
+        nombre: "Abranet Ace Mirka  70x420mm P400",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],
@@ -646,7 +646,7 @@ export const productosAbrasivos: Producto[] = [
       },
       {
         id: "603",
-        nombre: "Abranet Ace Mirka  70x420mm",
+        nombre: "Abranet Ace Mirka  70x420mm P500",
         categoria: "Lijas",
         imagen: "/img/Abrasivos/5415105012-005.webp",
         imgOpcionales: ["/img/Abrasivos/5415105012-004.webp"],

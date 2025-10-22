@@ -86,38 +86,71 @@ app.post('/webhook-mercadopago', async (req, res) => {
           
           // --- [INICIO DE PLANTILLAS DE CORREO CORTAS Y DIRECTAS] ---
           const sellerEmailHtml = `
-            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ccc;">
-              <div style="background-color: #333; color: #fff; padding: 12px 15px;">
-                <h1 style="margin:0; font-size: 20px;">Nueva Venta: #${external_reference}</h1>
+            <div style="font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; max-width: 600px; margin: 40px auto; border: 1px solid #eaeaea; border-radius: 12px; overflow: hidden;">
+              
+              <div style="background-color: #fff03b; padding: 24px; text-align: center;">
+                <img src="https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png" alt="Briago Pinturas Logo" style="max-width: 160px; margin: auto;">
               </div>
-              <div style="padding: 15px;">
-                <h2 style="font-size: 16px; margin: 0 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px;">Datos para Despacho</h2>
-                <p style="margin: 4px 0;"><strong>Cliente:</strong> ${payer.fullname}</p>
-                <p style="margin: 4px 0;"><strong>Teléfono:</strong> ${payer.phone}</p>
-                <p style="margin: 4px 0;"><strong>Email:</strong> ${payer.email}</p>
-                <hr style="border: none; border-top: 1px solid #eee; margin: 10px 0;">
-                <p style="margin: 4px 0;"><strong>Dirección:</strong> ${payer.address}, ${payer.city} (${payer.postalcode})</p>
-                <p style="margin: 4px 0;"><strong>Entre Calles:</strong> ${payer.entreCalles || 'N/A'}</p>
-                <div style="background-color: #fffbe6; border: 1px solid #ffe58f; padding: 10px; border-radius: 4px; margin-top: 15px;">
-                  <strong>Notas del Cliente:</strong>
-                  <p style="margin: 5px 0 0 0;"><em>${payer.descripcion || 'Sin notas.'}</em></p>
+              
+              <div style="padding: 32px;">
+                <h1 style="font-size: 24px; font-weight: 700; text-align: center; color: #111827; margin: 0 0 10px 0;">
+                  ¡Recibiste un nuevo pedido!
+                </h1>
+                <p style="color: #374151; margin: 0; text-align: center; font-size: 16px;">
+                  Orden: <strong>#${external_reference}</strong>
+                </p>
+                
+                <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
+                
+                <div style="background-color: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px;">
+                  <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0 0 16px 0;">
+                    Datos para el Despacho
+                  </h2>
+                  
+                  <h3 style="font-size: 15px; font-weight: 600; color: #374151; margin: 0 0 4px 0;">Contacto del Cliente</h3>
+                  <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
+                  <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Email:</strong> <a href="mailto:${payer.email}" style="color: #007bff;">${payer.email}</a></p>
+                  <p style="margin: 0 0 16px 0; color: #374151; font-size: 14px;"><strong>Teléfono:</strong> ${payer.phone?.number || 'No especificado'}</p>
+                  
+                  <h3 style="font-size: 15px; font-weight: 600; color: #374151; margin: 0 0 4px 0;">Dirección de Envío</h3>
+                  <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Dirección:</strong> ${payer.address?.street_name || 'No especificada'}</p>
+                  <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Entre Calles:</strong> ${payer.entreCalles || 'No especificado'}</p>
+                  <p style="margin: 0 0 16px 0; color: #374151; font-size: 14px;"><strong>Código Postal:</strong> ${payer.address?.zip_code || 'No especificado'}</p>
+
+                  ${payer.descripcion ? `
+                    <div style="background-color: #fffbe6; border-left: 4px solid #facc15; padding: 12px; margin-top: 16px;">
+                      <p style="margin: 0; font-size: 14px; font-weight: 600; color: #78350f;">Nota del Cliente:</p>
+                      <p style="margin: 4px 0 0 0; font-size: 14px; color: #78350f;"><em>${payer.descripcion}</em></p>
+                    </div>
+                  ` : ''}
                 </div>
-                <hr style="border: none; border-top: 1px solid #ccc; margin: 20px 0;">
+                
+                <div style="border-top: 1px solid #eaeaea; margin: 24px 0;"></div>
+
+                <h2 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0 0 16px 0;">
+                  Items del Pedido
+                </h2>
                 <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
                   <thead>
                     <tr>
-                      <th style="padding-bottom: 8px; border-bottom: 2px solid #333; text-align: left;">Producto</th>
-                      <th style="padding-bottom: 8px; border-bottom: 2px solid #333; text-align: center;">Cant.</th>
-                      <th style="padding-bottom: 8px; border-bottom: 2px solid #333; text-align: right;">Precio</th>
+                      <th style="padding: 10px; border-bottom: 2px solid #374151; text-align: left; color: #374151;">Producto</th>
+                      <th style="padding: 10px; border-bottom: 2px solid #374151; text-align: center; color: #374151;">Cant.</th>
+                      <th style="padding: 10px; border-bottom: 2px solid #374151; text-align: right; color: #374151;">Precio</th>
                     </tr>
                   </thead>
                   <tbody>${itemsHtml}</tbody>
                 </table>
-                <div style="text-align: right; margin-top: 15px; padding-top: 10px; border-top: 2px solid #333;">
-                  <strong style="font-size: 18px;">Total: $${totalAmount}</strong>
+                
+                <div style="text-align: right; margin-top: 24px; padding-top: 16px; border-top: 2px solid #374151;">
+                  <strong style="font-size: 22px; color: #111827;">Total Pagado: $${totalAmount}</strong>
                 </div>
+                
               </div>
-            </div>`;
+              <div style="padding: 16px; text-align: center; font-size: 12px; color: #6c757d;">
+                Email de notificación de Briago Pinturas.
+              </div>
+            </div>
+          `;
           
           const customerEmailHtml = `
             <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 500px; margin: auto; border: 1px solid #eee;">
@@ -134,13 +167,13 @@ app.post('/webhook-mercadopago', async (req, res) => {
                   <tbody>${itemsHtml}</tbody>
                 </table>
                 <div style="border-top: 2px solid #eee; margin: 20px 0;"></div>
-                <h2 style="font-size: 16px; margin: 0 0 10px 0;">Datos de Envío</h2>
+                <h2 style="font-size: 16px; margin: 0 0 10px 0;">Datos del Comprador:</h2>
                 <p style="margin: 0; color: #555; font-size: 14px;">${payer.fullname}</p>
                 <p style="margin: 0; color: #555; font-size: 14px;">${payer.address}, ${payer.city} (${payer.postalcode})</p>
                 ${payer.entreCalles ? `<p style="margin: 0; color: #555; font-size: 14px;"><em>(Entre: ${payer.entreCalles})</em></p>` : ''}
               </div>
               <div style="background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; border-top: 1px solid #eee;">
-                <p style="margin:0;">¿Dudas? Respondé a este email o contactanos a briagopinturas@gmail.com</p>
+                <p style="margin:0;">¿Dudas? Contactanos a briagopinturas@gmail.com</p>
               </div>
             </div>`;
           // --- [FIN DE PLANTILLAS DE CORREO CORTAS Y DIRECTAS] ---
