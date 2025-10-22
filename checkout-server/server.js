@@ -129,10 +129,10 @@ app.post('/webhook-mercadopago', async (req, res) => {
                   <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Dirección:</strong> ${payer.address}, ${payer.city}</p>
                   <p style="margin: 0 0 4px 0; color: #374151; font-size: 14px;"><strong>Entre Calles:</strong> ${payer.entreCalles || 'No especificado'}</p>
                   <p style="margin: 0 0 16px 0; color: #374151; font-size: 14px;"><strong>Código Postal:</strong> ${payer.postalcode || 'No especificado'}</p>
-                  ${additional_info.descripcion ? `
+                  ${payer.descripcion ? `
                     <div style="background-color: #fffbe6; border-left: 4px solid #facc15; padding: 12px; margin-top: 16px;">
                       <p style="margin: 0; font-size: 14px; font-weight: 600; color: #78350f;">Nota del Cliente:</p>
-                      <p style="margin: 4px 0 0 0; font-size: 14px; color: #78350f;"><em>${additional_info.descripcion}</em></p>
+                      <p style="margin: 4px 0 0 0; font-size: 14px; color: #78350f;"><em>${payer.descripcion}</em></p>
                     </div>
                   ` : ''}
                 </div>

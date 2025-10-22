@@ -258,7 +258,7 @@ const CheckoutPage = () => {
                   className="mt-6 w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded-md transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
                   disabled={isPreferenceLoading}
                 >
-                  Continuar al Pago
+                  Momentáneamente deshabilitado
                 </button>
               )}
               <Link to="/productos" className="block mt-2 w-full text-center text-sm text-gray-600 hover:underline">
