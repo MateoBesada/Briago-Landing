@@ -3,7 +3,7 @@ import { useCart } from '@/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, ArrowLeft, ShieldCheck, Lock, CreditCard } from 'lucide-react';
+import { Loader2, ArrowLeft, ShieldCheck, Lock, CreditCard, Store, Truck } from 'lucide-react';
 import CalculadoraEnvio from '@/components/CalculadoraEnvio';
 
 declare global {
@@ -47,8 +47,15 @@ const CheckoutPage = () => {
   const [isBrickVisible, setIsBrickVisible] = useState(false);
   const [isPreferenceLoading, setIsPreferenceLoading] = useState(false);
 
+  // Estados para envío
+  const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup');
+  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingDetail, setShippingDetail] = useState('');
+  const [calculatorZip, setCalculatorZip] = useState('');
+
   const [formData, setFormData] = useState({
     fullname: "", email: "", address: "", city: "", postalcode: "", phone: "",
+    dni: "",
     entreCalles: "",
     descripcion: "",
   });
@@ -58,7 +65,8 @@ const CheckoutPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const total = cart.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const subtotal = cart.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+  const total = subtotal + shippingCost;
 
   useEffect(() => {
     if (cart.length === 0 && !isBrickVisible) {
@@ -82,13 +90,22 @@ const CheckoutPage = () => {
           unit_price: item.precio,
           quantity: item.cantidad,
         }));
+
+        if (deliveryMethod === 'delivery' && shippingCost > 0) {
+          mpItems.push({
+            title: "Costo de envío",
+            unit_price: shippingCost,
+            quantity: 1
+          });
+        }
         const [firstName, ...lastNameParts] = formData.fullname.trim().split(' ');
         const mpPayer = {
           name: firstName || '',
           surname: lastNameParts.join(' ') || '',
           email: formData.email,
           phone: { number: formData.phone },
-          address: { zip_code: formData.postalcode, street_name: formData.address }
+          address: { zip_code: formData.postalcode, street_name: formData.address },
+          identification: { type: "DNI", number: formData.dni }
         };
         const res = await fetch("https://checkout-server-gehy.onrender.com/create_preference", {
           method: "POST",
@@ -145,13 +162,36 @@ const CheckoutPage = () => {
 
   const handleProceedToPayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const requiredFields: (keyof typeof formData)[] = ['fullname', 'email', 'address', 'city', 'postalcode', 'phone'];
+
+    // Campos obligatorios básicos (Siempre requeridos)
+    const requiredFields: (keyof typeof formData)[] = ['fullname', 'email', 'phone', 'dni'];
     const isInvalid = requiredFields.some(field => formData[field].trim() === "");
 
     if (isInvalid) {
       toast.error("Por favor, completá todos tus datos obligatorios para continuar.");
       return;
     }
+
+    if (deliveryMethod === 'delivery') {
+      const requiredDeliveryFields: (keyof typeof formData)[] = ['address', 'city', 'postalcode', 'dni'];
+      const isDeliveryInvalid = requiredDeliveryFields.some(field => formData[field].trim() === "");
+
+      if (isDeliveryInvalid) {
+        toast.error("Por favor, completá los datos de envío.");
+        return;
+      }
+
+      if (shippingCost === 0) {
+        toast.error("Por favor, calculá y seleccioná una opción de envío.");
+        return;
+      }
+
+      if (formData.postalcode.trim() !== calculatorZip.trim()) {
+        toast.error(`El Código Postal del formulario (${formData.postalcode}) no coincide con el calculado (${calculatorZip}). Por favor, corregilo.`);
+        return;
+      }
+    }
+
     setIsBrickVisible(true);
   };
 
@@ -189,8 +229,49 @@ const CheckoutPage = () => {
                     <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                       <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
                         <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-[#fff03b] font-bold text-xl">1</div>
-                        <h3 className="text-xl font-bold text-black uppercase tracking-tight">Datos de Envío</h3>
+                        <h3 className="text-xl font-bold text-black uppercase tracking-tight">Datos de Entrega</h3>
                       </div>
+
+                      {/* Selector de Método de Entrega */}
+                      <div className="grid grid-cols-2 gap-4 mb-8">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setDeliveryMethod('pickup');
+                            setShippingCost(0);
+                            setShippingDetail('');
+                            setCalculatorZip('');
+                          }}
+                          className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${deliveryMethod === 'pickup'
+                            ? 'bg-black text-[#fff03b] border-black'
+                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                            }`}
+                        >
+                          <Store className="w-6 h-6" />
+                          <span className="font-bold text-sm uppercase">Retiro en Tienda</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDeliveryMethod('delivery')}
+                          className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${deliveryMethod === 'delivery'
+                            ? 'bg-black text-[#fff03b] border-black'
+                            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                            }`}
+                        >
+                          <Truck className="w-6 h-6" />
+                          <span className="font-bold text-sm uppercase">Envío a Domicilio</span>
+                        </button>
+                      </div>
+
+                      {deliveryMethod === 'delivery' && (
+                        <div className="mb-8">
+                          <CalculadoraEnvio onSelect={(costo, detalle, cp) => {
+                            setShippingCost(costo);
+                            setShippingDetail(detalle);
+                            setCalculatorZip(cp);
+                          }} />
+                        </div>
+                      )}
 
                       <form id="checkout-form" onSubmit={handleProceedToPayment} className="space-y-6">
                         <FloatingLabelInput id="fullname" name="fullname" type="text" value={formData.fullname} onChange={handleInputChange} placeholder="Nombre Completo" />
@@ -198,21 +279,35 @@ const CheckoutPage = () => {
                           <FloatingLabelInput id="email" name="email" type="email" value={formData.email} onChange={handleInputChange} placeholder="Correo Electrónico" />
                           <FloatingLabelInput id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="Teléfono" />
                         </div>
-                        <FloatingLabelInput id="address" name="address" type="text" value={formData.address} onChange={handleInputChange} placeholder="Dirección de Envío" />
+                        <FloatingLabelInput id="dni" name="dni" type="text" value={formData.dni} onChange={handleInputChange} placeholder="DNI / CUIT" />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <FloatingLabelInput id="city" name="city" type="text" value={formData.city} onChange={handleInputChange} placeholder="Ciudad" />
-                          <FloatingLabelInput id="postalcode" name="postalcode" type="text" value={formData.postalcode} onChange={handleInputChange} placeholder="Código Postal" />
-                        </div>
-                        <FloatingLabelInput
-                          id="entreCalles"
-                          name="entreCalles"
-                          type="text"
-                          value={formData.entreCalles}
-                          onChange={handleInputChange}
-                          placeholder="Entre qué calles (Opcional)"
-                          required={false}
-                        />
+                        <AnimatePresence>
+                          {deliveryMethod === 'delivery' && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="space-y-6 overflow-hidden"
+                            >
+                              <FloatingLabelInput id="address" name="address" type="text" value={formData.address} onChange={handleInputChange} placeholder="Dirección de Envío" />
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FloatingLabelInput id="city" name="city" type="text" value={formData.city} onChange={handleInputChange} placeholder="Ciudad" />
+                                <FloatingLabelInput id="postalcode" name="postalcode" type="text" value={formData.postalcode} onChange={handleInputChange} placeholder="Código Postal (Debe coincidir con la cotización)" />
+                              </div>
+                              <FloatingLabelInput
+                                id="entreCalles"
+                                name="entreCalles"
+                                type="text"
+                                value={formData.entreCalles}
+                                onChange={handleInputChange}
+                                placeholder="Entre qué calles (Opcional)"
+                                required={false}
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
                         <FloatingLabelInput
                           id="descripcion"
                           name="descripcion"
@@ -236,8 +331,6 @@ const CheckoutPage = () => {
                 </AnimatePresence>
               </div>
             </div>
-
-            <CalculadoraEnvio />
 
             <div className="flex items-center justify-center gap-6 text-gray-400 grayscale opacity-70">
               <div className="flex items-center gap-2">
@@ -277,12 +370,19 @@ const CheckoutPage = () => {
               <div className="border-t border-gray-800 pt-6 space-y-4">
                 <div className="flex justify-between text-gray-400">
                   <span>Subtotal</span>
-                  <span>{formatearPrecio(total)}</span>
+                  <span>{formatearPrecio(subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-gray-400">
                   <span>Envío</span>
-                  <span className="text-[#fff03b] text-xs font-bold uppercase">Gratis</span>
+                  <span className={`text-md ${shippingCost > 0 ? 'text-gray-400' : 'text-gray-400'}`}>
+                    {deliveryMethod === 'pickup' ? '-' : shippingCost > 0 ? formatearPrecio(shippingCost) : 'Por calcular'}
+                  </span>
                 </div>
+                {shippingDetail && (
+                  <div className="text-xs text-gray-500 text-right -mt-2">
+                    {shippingDetail}
+                  </div>
+                )}
                 <div className="flex justify-between items-end pt-4 border-t border-gray-800">
                   <span className="text-lg font-bold">Total</span>
                   <span className="text-3xl font-black text-[#fff03b]">{formatearPrecio(total)}</span>
