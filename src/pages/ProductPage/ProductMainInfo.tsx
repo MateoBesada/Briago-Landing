@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import type { Producto } from "@/types/Producto";
 import { useEffect, useMemo, useState } from "react";
-import ImageZoom from "@/components/ImageZoom"; // <-- 1. Se importa el nuevo componente
+import ImageZoom from "@/components/ImageZoom";
 
 interface ProductMainInfoProps {
   producto: Producto;
@@ -34,7 +34,7 @@ export default function ProductMainInfo({
   setVarianteSeleccionada,
 }: ProductMainInfoProps) {
   if (!producto) return null;
-  
+
   const [tieneOverflow, setTieneOverflow] = useState(false);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function ProductMainInfo({
     }
     return Array.from(setDeImagenes);
   }, [producto]);
-  
+
   const handleThumbnailClick = (img: string) => {
     setMainImage(img);
   }
@@ -77,24 +77,26 @@ export default function ProductMainInfo({
     varianteSeleccionada.color ||
     'Seleccioná un color';
 
-  const usarVistaDeColorDinamico = 
+  const usarVistaDeColorDinamico =
     AEROSOLES_GENERICOS.includes(varianteSeleccionada.imagen ?? '') &&
     !!varianteSeleccionada.colorHex;
 
   return (
-    <div className="flex flex-col gap-4 md:gap-6 md:basis-[60%] max-w-[100%] md:max-w-[60%]">
-      <div className="flex flex-col-reverse md:flex-row gap-4">
+    <div className="flex flex-col gap-8 md:basis-[60%] max-w-[100%] md:max-w-[60%]">
+      <div className="flex flex-col-reverse md:flex-row gap-6">
         {/* Miniaturas */}
-        <div className="flex flex-row md:flex-col gap-2 md:max-h-[480px] overflow-auto pr-2 custom-scrollbar">
+        <div className="flex flex-row md:flex-col gap-3 md:max-h-[500px] overflow-auto pr-2 custom-scrollbar">
           {imagenes.map((img, idx) => (
-            <div key={idx} className="p-1 flex-shrink-0">
+            <div key={idx} className="flex-shrink-0">
               <img
                 src={img}
                 alt={`${producto.nombre} ${idx + 1}`}
                 onClick={() => handleThumbnailClick(img)}
                 className={clsx(
-                  "w-16 h-16 md:w-20 md:h-20 object-cover border-2 rounded-md cursor-pointer transition",
-                  mainImage === img ? "border-yellow-500" : "border-transparent hover:border-yellow-300"
+                  "w-16 h-16 md:w-20 md:h-20 object-contain bg-gray-50 rounded-xl cursor-pointer transition-all duration-200",
+                  mainImage === img
+                    ? "ring-2 ring-[#fff03b] ring-offset-2"
+                    : "hover:bg-gray-100 opacity-70 hover:opacity-100"
                 )}
               />
             </div>
@@ -102,11 +104,11 @@ export default function ProductMainInfo({
         </div>
 
         {/* --- 2. SECCIÓN DE IMAGEN PRINCIPAL ACTUALIZADA --- */}
-        <div className="relative w-full aspect-square md:aspect-auto md:h-[480px] border rounded-xl shadow-sm">
+        <div className="relative w-full aspect-square md:aspect-auto md:h-[500px] bg-white rounded-3xl overflow-hidden group">
           {usarVistaDeColorDinamico ? (
             <>
               <div
-                className="absolute inset-0 rounded-xl transition-colors duration-300"
+                className="absolute inset-0 transition-colors duration-300"
                 style={{ backgroundColor: varianteSeleccionada.colorHex }}
               />
               {/* Se usa ImageZoom para la vista de aerosoles */}
@@ -114,18 +116,18 @@ export default function ProductMainInfo({
                 key={varianteSeleccionada.id}
                 src={varianteSeleccionada.imagen}
                 alt={varianteSeleccionada.nombre || producto.nombre}
-                className="absolute inset-0 w-full h-full p-4 z-10"
+                className="absolute inset-0 w-full h-full p-8 z-10 object-contain mix-blend-multiply"
                 galleryImages={imagenes}
               />
             </>
           ) : (
-            <div className="w-full h-full bg-white rounded-xl flex items-center justify-center">
+            <div className="w-full h-full flex items-center justify-center bg-gray-50/50">
               {/* Se usa ImageZoom para la vista normal */}
               <ImageZoom
                 key={mainImage}
                 src={mainImage}
                 alt={varianteSeleccionada.nombre || producto.nombre}
-                className="w-full h-full p-4"
+                className="w-full h-full p-6 object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                 galleryImages={imagenes} // Se pasa el array de imágenes
               />
             </div>
@@ -134,7 +136,7 @@ export default function ProductMainInfo({
             <img
               src={logosMarca[normalizarMarca(producto.marca)]}
               alt={producto.marca}
-              className="absolute top-3 left-3 w-20 h-auto opacity-70 z-20 pointer-events-none" 
+              className="absolute top-4 left-4 w-16 h-auto opacity-50 z-20 pointer-events-none mix-blend-multiply"
             />
           )}
         </div>
@@ -142,21 +144,22 @@ export default function ProductMainInfo({
 
       {/* Selector de Colores (sin cambios) */}
       {variantesDeColor.length > 0 && (
-        <div className="bg-white border rounded-xl p-4 shadow-sm">
-          <p className="font-semibold text-sm text-gray-800 mb-3">
-            Color: <span className="font-normal text-gray-600">{nombreColorSeleccionado}</span>
+        <div className="space-y-3">
+          <p className="font-bold text-sm text-black uppercase tracking-wide">
+            Color Seleccionado: <span className="text-gray-600 font-medium normal-case">{nombreColorSeleccionado}</span>
           </p>
-          <div className="overflow-x-auto pb-2 -mb-2 custom-scrollbar py-2 px-2">
+          <div className="overflow-x-auto pb-2 -mb-2 custom-scrollbar">
             <div className="flex flex-nowrap gap-3">
               {variantesDeColor.map((variante) => (
                 <button
                   key={variante.id}
                   onClick={() => handleColorClick(variante)}
-                  className="flex-shrink-0 w-10 h-10 rounded-full border-2 transition-transform duration-200 hover:scale-110 focus:outline-none"
+                  className="flex-shrink-0 w-10 h-10 rounded-full transition-all duration-200 hover:scale-110 focus:outline-none shadow-sm"
                   style={{
                     backgroundColor: variante.colorHex,
-                    outline: variante.id === varianteSeleccionada.id ? '2px solid #FBBF24' : 'none',
-                    outlineOffset: '2px'
+                    boxShadow: variante.id === varianteSeleccionada.id
+                      ? '0 0 0 2px white, 0 0 0 4px #000'
+                      : 'inset 0 0 0 1px rgba(0,0,0,0.1)'
                   }}
                   aria-label={`Seleccionar color ${variante.ColorAerosol || variante.color}`}
                 />
@@ -166,28 +169,30 @@ export default function ProductMainInfo({
         </div>
       )}
 
-      {/* Descripción (sin cambios) */}
-      <div className="bg-white border rounded-xl p-5 text-sm shadow-sm text-gray-700">
-        <p className="font-semibold text-base text-gray-800 mb-2">
-          Descripción del producto:
-        </p>
-        <p
-          ref={descripcionRef as React.RefObject<HTMLParagraphElement>}
-          className={clsx(
-            "whitespace-pre-line leading-relaxed transition-all duration-300",
-            !mostrarDescripcionCompleta && "line-clamp-3"
-          )}
-        >
-          {producto.descripcion || "Sin descripción disponible."}
-        </p>
-        {producto.descripcion && tieneOverflow && (
-          <button
-            className="mt-2 text-blue-600 hover:underline text-xs font-semibold"
-            onClick={() => setMostrarDescripcionCompleta(!mostrarDescripcionCompleta)}
+      {/* Descripción */}
+      <div className="space-y-4 pt-4 border-t border-gray-100">
+        <h3 className="font-bold text-lg text-black">
+          Descripción
+        </h3>
+        <div className="relative">
+          <p
+            ref={descripcionRef as React.RefObject<HTMLParagraphElement>}
+            className={clsx(
+              "text-gray-600 leading-relaxed whitespace-pre-line text-base",
+              !mostrarDescripcionCompleta && "line-clamp-4"
+            )}
           >
-            {mostrarDescripcionCompleta ? "Leer menos" : "Leer más..."}
-          </button>
-        )}
+            {producto.descripcion || "Sin descripción disponible."}
+          </p>
+          {producto.descripcion && tieneOverflow && (
+            <button
+              className="mt-3 text-black font-bold hover:text-gray-500 text-sm uppercase tracking-wide transition-colors flex items-center gap-1"
+              onClick={() => setMostrarDescripcionCompleta(!mostrarDescripcionCompleta)}
+            >
+              {mostrarDescripcionCompleta ? "Mostrar menos" : "Leer descripción completa"}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

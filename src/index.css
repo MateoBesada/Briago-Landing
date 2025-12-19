@@ -4,7 +4,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ===== CONFIGURACIÓN BASE ===== */
-body, html {
+body,
+html {
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
@@ -81,48 +82,76 @@ body, html {
 @layer base {
   * {
     /* --- CORRECCIÓN AQUÍ --- */
-    border-color: theme('colors.border'); /* Se aplica el color del tema directamente */
-    outline-color: theme('colors.ring / 50%'); /* Se aplica el color del tema con opacidad */
+    border-color: theme('colors.border');
+    /* Se aplica el color del tema directamente */
+    outline-color: theme('colors.ring / 50%');
+    /* Se aplica el color del tema con opacidad */
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: 'gotham', sans-serif;
+    background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  ::selection {
+    background-color: #facc15;
+    color: black;
   }
 }
 
 /* ===== COMPONENTES Y UTILIDADES PERSONALIZADAS ===== */
 @layer components {
+
   /* --- Estilos para el Carrusel 3D de SATA --- */
   .sata-carousel-item .slick-slide {
     transform: scale(0.75);
     opacity: 0.5;
     transition: all 0.4s ease-in-out;
   }
+
   .sata-carousel-item .slick-center {
     transform: scale(1);
     opacity: 1;
   }
+
   .sata-carousel-item .slick-list {
     padding: 20px 0 !important;
   }
+
   .sata-carousel-item .slick-track {
     display: flex !important;
     align-items: center;
   }
-  
+
   /* --- Scrollbar Personalizado --- */
-  .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #d1d5db; /* gris-300 */
+    background-color: #d1d5db;
+    /* gris-300 */
     border-radius: 20px;
-    border: 2px solid #f9fafb; /* bg-slate-50 */
+    border: 2px solid #f9fafb;
+    /* bg-slate-50 */
   }
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: #facc15; /* yellow-400 */
+    background-color: #facc15;
+    /* yellow-400 */
   }
-  .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #d1d5db #f9fafb; }
-  
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #d1d5db #f9fafb;
+  }
+
   /* --- Fade para el carrusel de marcas --- */
   [data-fade="true"]::before,
   [data-fade="true"]::after {
@@ -134,20 +163,53 @@ body, html {
     z-index: 10;
     pointer-events: none;
   }
-  [data-fade="true"]::before { left: 0; background: linear-gradient(to right, white, transparent); }
-  [data-fade="true"]::after { right: 0; background: linear-gradient(to left, white, transparent); }
+
+  [data-fade="true"]::before {
+    left: 0;
+    background: linear-gradient(to right, white, transparent);
+  }
+
+  [data-fade="true"]::after {
+    right: 0;
+    background: linear-gradient(to left, white, transparent);
+  }
 }
 
 @layer utilities {
+
   /* --- Utilidades de Fuente --- */
-  .font-gotham-book { font-family: 'gotham', sans-serif; font-weight: 400; font-style: normal; }
-  .font-gotham-book-italic { font-family: 'gotham', sans-serif; font-weight: 400; font-style: italic; }
-  .font-gotham-bold { font-family: 'gotham', sans-serif; font-weight: 700; font-style: normal; }
-  .font-gotham-bold-italic { font-family: 'gotham', sans-serif; font-weight: 700; font-style: italic; }
+  .font-gotham-book {
+    font-family: 'gotham', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .font-gotham-book-italic {
+    font-family: 'gotham', sans-serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .font-gotham-bold {
+    font-family: 'gotham', sans-serif;
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  .font-gotham-bold-italic {
+    font-family: 'gotham', sans-serif;
+    font-weight: 700;
+    font-style: italic;
+  }
 
   /* --- Ocultar Scrollbar --- */
-  .scrollbar-hide { scrollbar-width: none; }
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide {
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 
   /* --- Otras Utilidades --- */
   input[type="search"]::-webkit-search-cancel-button {
@@ -155,7 +217,8 @@ body, html {
     appearance: none;
     display: none;
   }
-  .search-dimmed #root > :not(header) {
+
+  .search-dimmed #root> :not(header) {
     filter: brightness(0.4);
     transition: filter 0.3s ease;
     pointer-events: none;

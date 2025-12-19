@@ -95,7 +95,7 @@ export default function HeroSlider() {
   // Detectar si es móvil
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
-    handleResize(); 
+    handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -110,10 +110,10 @@ export default function HeroSlider() {
     }, delay);
     return () => { if (timeoutRef.current) clearTimeout(timeoutRef.current) };
   }, [current, slides.length]);
-  
+
   const goToSlide = (newIndex: number) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    
+
     // Determinamos la dirección solo si el índice es diferente
     if (newIndex !== current) {
       setDirection(newIndex > current ? 1 : -1);
@@ -138,8 +138,8 @@ export default function HeroSlider() {
     };
 
     return (
-      <div className="w-full bg-white p-2">
-        <div className="relative w-full aspect-[1/1] overflow-hidden rounded-xl shadow-lg">
+      <div className="w-full bg-gray-50">
+        <div className="relative w-full overflow-hidden shadow-sm">
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={current}
@@ -151,42 +151,53 @@ export default function HeroSlider() {
               transition={{
                 x: { type: "spring", stiffness: 300, damping: 30 },
               }}
-              className="w-full h-full absolute top-0 left-0"
+              className="w-full flex flex-col absolute top-0 left-0"
               drag="x"
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
               onDragEnd={onDragEnd}
             >
-              <div 
-                className="relative w-full h-full cursor-pointer bg-gray-200"
+              <div
+                className="w-full flex flex-col bg-white"
                 onClick={() => handleClick(slides[current].link)}
               >
-                <img src={slides[current].img} alt={slides[current].alt} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-                <div className="absolute bottom-0 left-0 p-4 w-full">
-                  <h3 className="text-xl font-bold leading-tight text-white">{slides[current].title}</h3>
-                  <p className="text-sm mt-1 text-white/90">{slides[current].description}</p>
-                  <div className="mt-4 text-center">
-                    <div 
-                      className="inline-block relative bottom-0.5 bg-[#fff03b] text-black text-sm font-bold px-5 py-2.5 rounded-full"
-                    >
+                {/* 1. Imagen (Top) */}
+                <div className="w-full aspect-[4/3] relative overflow-hidden">
+                  <img src={slides[current].img} alt={slides[current].alt} className="w-full h-full object-cover" />
+                </div>
+
+                {/* 2. Contenido (Bottom) */}
+                <div className="p-6 text-center flex flex-col items-center justify-center min-h-[200px]">
+                  <h3 className="text-2xl font-black leading-none text-black uppercase tracking-tight mb-3">{slides[current].title}</h3>
+                  <p className="text-gray-500 font-medium text-sm leading-relaxed max-w-xs">{slides[current].description}</p>
+
+                  <div className="mt-6">
+                    <span className="inline-block bg-black text-white text-xs font-bold px-6 py-3 rounded-full uppercase tracking-wider shadow-lg">
                       {slides[current].cta}
-                    </div>
+                    </span>
                   </div>
                 </div>
               </div>
             </motion.div>
           </AnimatePresence>
-          
-          <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-            {slides.map((_, index) => (
-              <button 
-                key={index}
-                onClick={() => goToSlide(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${current === index ? 'w-6 bg-white' : 'w-2 bg-white/50'}`} 
-              />
-            ))}
+
+          {/* Spacer div to give height to the relative container because absolute children don't give height */}
+          <div className="w-full invisible pointer-events-none">
+            <div className="w-full aspect-[4/3]"></div>
+            <div className="min-h-[200px]"></div>
           </div>
+
+        </div>
+
+        {/* Paginación (Dots) fuera del slider */}
+        <div className="flex justify-center gap-2 mt-4">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`h-1.5 rounded-full transition-all duration-300 ${current === index ? 'w-6 bg-black' : 'w-1.5 bg-gray-300'}`}
+            />
+          ))}
         </div>
       </div>
     );
@@ -235,20 +246,26 @@ export default function HeroSlider() {
           </motion.div>
         </AnimatePresence>
 
-        <div className="absolute bottom-6 right-12 z-30 flex items-center gap-4">
-          <div className="text-sm font-semibold text-gray-700">
-            <span className="font-bold text-base">{String(current + 1).padStart(2, '0')}</span>
-            <span className="text-gray-400 mx-1">/</span>
-            <span>{String(slides.length).padStart(2, '0')}</span>
+        <div className="absolute bottom-6 left-0 w-full z-30 flex justify-center items-center gap-6">
+          <button onClick={prevSlide} className="p-3 rounded-full bg-white/80 backdrop-blur-sm shadow-md transition-all hover:bg-[#fff03b] hover:scale-110 group">
+            <ArrowLeft size={20} className="text-gray-800 group-hover:text-black" />
+          </button>
+
+          <div className="flex gap-3 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-full">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`h-2.5 rounded-full transition-all duration-300 ${current === index ? "w-8 bg-[#fff03b]" : "w-2.5 bg-gray-400 hover:bg-gray-600"
+                  }`}
+                aria-label={`Ir a slide ${index + 1}`}
+              />
+            ))}
           </div>
-          <div className="flex gap-2">
-            <button onClick={prevSlide} className="p-2 rounded-full bg-white/50 backdrop-blur-sm shadow-md transition-colors hover:bg-white">
-              <ArrowLeft size={20} className="text-gray-800" />
-            </button>
-            <button onClick={nextSlide} className="p-2 rounded-full bg-white/50 backdrop-blur-sm shadow-md transition-colors hover:bg-white">
-              <ArrowRight size={20} className="text-gray-800" />
-            </button>
-          </div>
+
+          <button onClick={nextSlide} className="p-3 rounded-full bg-white/80 backdrop-blur-sm shadow-md transition-all hover:bg-[#fff03b] hover:scale-110 group">
+            <ArrowRight size={20} className="text-gray-800 group-hover:text-black" />
+          </button>
         </div>
       </div>
     </div>

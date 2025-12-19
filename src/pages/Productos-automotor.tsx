@@ -46,7 +46,7 @@ function AutomotorPage() {
     categoria: string | null;
     marca: string | null;
   }>({ categoria: null, marca: null });
-  
+
   useEffect(() => {
     _setFiltroActivo({
       categoria: categoriaInicial,
@@ -69,7 +69,7 @@ function AutomotorPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-  
+
   const setFiltroActivo = (nuevoFiltro: {
     categoria: string | null;
     marca: string | null;
@@ -77,7 +77,7 @@ function AutomotorPage() {
     _setFiltroActivo(nuevoFiltro);
     cambiarPagina(1); // Usamos la nueva función para resetear a página 1
   };
-  
+
   // Se elimina el useEffect que hacía scroll al cambiar 'paginaActual'
 
   const productosFiltrados = Object.entries(agrupados).filter(([_, vars]) =>
@@ -119,7 +119,7 @@ function AutomotorPage() {
         <SeccionesTabs />
         <BannerSata />
         <div className="flex flex-col md:flex-row gap-8">
-          <aside className="w-full md:w-80 md:self-start md:sticky md:top-28">
+          <aside className="w-full md:w-80 md:self-start">
             <Filtros
               filtros={filtrosDisponibles}
               filtroActivo={filtroActivo}
@@ -155,11 +155,10 @@ function AutomotorPage() {
                         <button
                           key={i}
                           onClick={() => cambiarPagina(i + 1)}
-                          className={`w-10 h-10 rounded ${
-                            paginaActual === i + 1
-                              ? 'bg-yellow-400 text-black font-bold'
-                              : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
-                          }`}
+                          className={`w-10 h-10 rounded ${paginaActual === i + 1
+                            ? 'bg-yellow-400 text-black font-bold'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                            }`}
                         >
                           {i + 1}
                         </button>

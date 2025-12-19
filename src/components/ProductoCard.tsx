@@ -1,6 +1,9 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import type { Producto } from "@/types/Producto";
+import { useCart } from "@/context/CartContext";
+import toast from "react-hot-toast";
+import { ShoppingCart } from "lucide-react";
 
 type Props = {
   variantes: Producto[];
@@ -8,23 +11,38 @@ type Props = {
 };
 
 export default function ProductoCard({ variantes }: Props) {
-  const [activo] = useState(variantes[0]);
-
+  const { addItem } = useCart();
   const {
+    mejorVariant,
     mejorPrecio,
     precioOriginal,
     porcentajeOff,
-    ahorro,
   } = useMemo(() => {
-    const precios = variantes
-      .map((v) => ({
-        precio: v.precio ?? v.precioOriginal ?? 0,
-        original: v.precioOriginal ?? v.precio ?? 0,
-      }))
-      .filter(p => p.precio > 0 && p.original > 0);
+    // 1. Calcular precio real para cada variante
+    const opciones = variantes
+      .map((v) => {
+        const rawPrice = v.precio ?? v.precioOriginal ?? 0;
+        const rawOriginal = v.precioOriginal ?? rawPrice;
+        const off = v.off ?? 0;
 
-    if (precios.length === 0) {
+        let finalPrice = rawPrice;
+
+        if (off > 0 && rawOriginal > 0) {
+          finalPrice = Math.round(rawOriginal * (1 - off / 100));
+        }
+
+        return {
+          variant: v,
+          precio: finalPrice,
+          original: rawOriginal,
+          off: off,
+        };
+      })
+      .filter(op => op.precio > 0);
+
+    if (opciones.length === 0) {
       return {
+        mejorVariant: variantes[0],
         mejorPrecio: 0,
         precioOriginal: null,
         porcentajeOff: null,
@@ -32,87 +50,108 @@ export default function ProductoCard({ variantes }: Props) {
       };
     }
 
-    const mejor = precios.reduce((acc, val) =>
+    // 2. Encontrar la mejor opción (menor precio)
+    const mejor = opciones.reduce((acc, val) =>
       val.precio < acc.precio ? val : acc
-    , precios[0]);
+      , opciones[0]);
 
-    const off = mejor.original > mejor.precio
-      ? Math.round(((mejor.original - mejor.precio) / mejor.original) * 100)
-      : null;
+    // 3. Calcular datos finales
+    const tieneDescuento = mejor.off > 0 || mejor.original > mejor.precio;
+    const finalOff = mejor.off > 0
+      ? mejor.off
+      : (mejor.original > mejor.precio ? Math.round(((mejor.original - mejor.precio) / mejor.original) * 100) : null);
 
     return {
+      mejorVariant: mejor.variant,
       mejorPrecio: mejor.precio,
-      precioOriginal: mejor.original !== mejor.precio ? mejor.original : null,
-      porcentajeOff: off,
-      ahorro: off ? mejor.original - mejor.precio : null,
+      precioOriginal: tieneDescuento ? mejor.original : null,
+      porcentajeOff: finalOff,
+      ahorro: tieneDescuento ? mejor.original - mejor.precio : null,
     };
   }, [variantes]);
+
+  // Usamos la mejor variante calculada en lugar del estado inicial fijo
+  const activo = mejorVariant;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    addItem({
+      ...activo,
+      cantidad: 1,
+      precioFinal: mejorPrecio,
+      precio: mejorPrecio,
+    });
+    toast.success("Producto agregado al carrito");
+  };
 
   return (
     <Link
       to={`/producto/${activo.id}`}
-      className="rounded-2xl shadow-md transition-all duration-300 flex flex-col w-[193px] sm:w-[209px] h-[420px] border border-gray-300 bg-white font-gotham relative overflow-hidden hover:shadow-lg hover:border-neutral-800 "
+      className="group bg-white relative overflow-hidden flex flex-col w-full max-w-[220px] mx-auto h-[440px] rounded-3xl transition-all duration-300 hover:shadow-2xl"
     >
-      {/* Badge de descuento en verde */}
+      {/* Badge de descuento - Diseño Premium Amarillo Top-Right */}
       {porcentajeOff !== null && (
-  <div className="absolute top-3 left-3 z-10">
-    <div className="bg-[#ffd426] text-gray-800 font-extrabold rounded-lg w-[46px] h-[46px] flex flex-col items-center justify-center shadow-md leading-tight">
-      <span className="text-[19px]">{porcentajeOff}%</span>
-      <span className="text-[11px] font-bold">OFF</span>
-    </div>
-  </div>
-)}
+        <div className="absolute top-0 right-0 z-10">
+          <div className="bg-green-200 text-black font-black text-sm px-3 py-1.5 rounded-bl-2xl shadow-sm border-l border-b border-black/5">
+            {porcentajeOff}% OFF
+          </div>
+        </div>
+      )}
 
-      {/* Imagen */}
-      <div className="relative h-[180px] flex items-center justify-center border-b bg-white">
+      {/* Imagen con fondo sutil */}
+      <div className="relative h-[220px] flex items-center justify-center group-hover:bg-[#fff03b]/5 transition-colors duration-500 rounded-t-3xl overflow-hidden p-6">
         <img
           src={activo.imagen}
           alt={`Imagen de ${activo.nombre}`}
-          className="max-h-[150px] object-contain transition-transform duration-300 hover:scale-105"
+          className="max-h-full w-auto object-contain transition-transform duration-500 group-hover:scale-110 mix-blend-multiply"
         />
       </div>
 
-      {/* Info */}
-      <div className="p-3 flex flex-col justify-between flex-grow text-sm text-center">
-        <div className="mb-2">
-          {/* Aquí sin line-clamp para mostrar título completo */}
+      {/* Info Content */}
+      <div className="p-5 flex flex-col justify-between flex-grow">
+        <div>
+          {/* Marca */}
+          <p className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-2">
+            {activo.marca}
+          </p>
+          {/* Nombre */}
           <h2
-            className="font-semibold text-gray-900 text-[15px] leading-tight"
+            className="font-bold text-black text-[15px] leading-snug mb-2"
             title={activo.nombre}
           >
             {activo.nombre}
           </h2>
-          <p className="text-blue-700 font-medium text-[13px] mt-1">
-            {activo.marca}
-          </p>
         </div>
 
-        <hr className="border-t border-gray-300 my-2 w-3/4 mx-auto" />
-
-        <div className="mt-auto flex flex-col gap-[2px] text-center">
-          {precioOriginal && (
-            <span className="line-through text-gray-500 text-[13px]">
-              ${precioOriginal.toLocaleString("es-AR")}
-            </span>
-          )}
-
-          <span className="text-[18px] font-bold text-gray-900">
-            ${mejorPrecio.toLocaleString("es-AR")}
-          </span>
-
-          {ahorro && (
-            <div className="text-yellow-700 text-[12px] font-semibold mt-0.5">
-              <span className="bg-yellow-200 px-2 py-0.5 rounded-full">
-                Ahorrás ${ahorro.toLocaleString("es-AR")}
+        {/* Precios y Botón */}
+        <div className="mt-auto space-y-3">
+          <div className="flex flex-col items-start gap-1">
+            {precioOriginal && (
+              <span className="line-through text-gray-400 text-sm font-medium">
+                ${precioOriginal.toLocaleString("es-AR")}
               </span>
+            )}
+
+            <div className="flex flex-col w-full">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-black tracking-tight">
+                  ${mejorPrecio.toLocaleString("es-AR")}
+                </span>
+              </div>
             </div>
-          )}
+          </div>
+
+          <button
+            onClick={handleAddToCart}
+            className="w-full bg-black text-white font-bold text-xs py-3 rounded-xl hidden md:flex items-center justify-center gap-2 hover:bg-[#fff03b] hover:text-black transition-all duration-300 shadow-md group-hover:shadow-lg active:scale-95 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100"
+          >
+            <ShoppingCart size={14} />
+            AGREGAR CARRITO
+          </button>
         </div>
       </div>
-
-      <p className="text-[11px] text-gray-500 text-center italic mb-2 px-2">
-        Click para ver más variantes
-      </p>
     </Link>
   );
 }

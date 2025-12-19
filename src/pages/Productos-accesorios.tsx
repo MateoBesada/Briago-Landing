@@ -1,28 +1,30 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { productosAccesorios as productos } from '../data/Accesorios';
 import type { Producto } from '@/types/Producto';
 import { useCart } from '@/context/CartContext';
-import { useSearch } from '@/context/SearchContext';
 import Filtros from '@/components/Filtros';
 import ProductoCard from '@/components/ProductoCard';
 import SeccionesTabs from "@/components/SeccionesTabs";
 
-const aplicarDescuento = (p: Producto): Producto =>
-  p.precioOriginal && p.off != null
-    ? { ...p, precio: Math.round(p.precioOriginal * (1 - p.off / 100)) }
-    : p;
-
-const limpiarNombre = (n: string): string =>
-  n
-    .replace(/\d+\s*(Litros?|Kg|Kilos?|cm|mm|unidades?|uds?)/gi, '')
-    .replace(/\d+/, '')
-    .trim();
-
 export default function AccesoriosPage() {
-  useSearch();
   useCart();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
-  useEffect(() => window.scrollTo(0, 0), []);
+  const filtroInicial = searchParams.get("filtro");
+  const paginaInicial = parseInt(searchParams.get("pagina") || "1", 10);
+
+  const aplicarDescuento = (p: Producto): Producto =>
+    p.precioOriginal && p.off != null
+      ? { ...p, precio: Math.round(p.precioOriginal * (1 - p.off / 100)) }
+      : p;
+
+  const limpiarNombre = (n: string): string =>
+    n
+      .replace(/\d+\s*(Litros?|Kg|Kilos?|cm|mm|unidades?|uds?)/gi, '')
+      .replace(/\d+/, '')
+      .trim();
 
   const productosConPrecio = useMemo(() => productos.map(aplicarDescuento), []);
 
@@ -33,16 +35,19 @@ export default function AccesoriosPage() {
     agrupados[base].push(p, ...(p.variantes ?? []));
   });
 
-  const [] = useState<Record<string, Producto>>(() => {
-    const ini: Record<string, Producto> = {};
-    for (const base in agrupados) ini[base] = agrupados[base][0];
-    return ini;
-  });
-
   const [filtroActivo, setFiltroActivo] = useState<{
     categoria: string | null;
     marca: string | null;
   }>({ categoria: null, marca: null });
+
+  useEffect(() => {
+    if (filtroInicial) {
+      setFiltroActivo((prev) => ({ ...prev, categoria: filtroInicial }));
+    }
+  }, [filtroInicial]);
+
+  const [paginaActual, setPaginaActual] = useState(paginaInicial);
+  const productosPorPagina = 20;
 
   const productosFiltrados = Object.entries(agrupados).filter(([_, vars]) =>
     vars.some(
@@ -52,27 +57,33 @@ export default function AccesoriosPage() {
     ),
   );
 
+  const totalPaginas = Math.ceil(productosFiltrados.length / productosPorPagina);
+  const productosPaginados = productosFiltrados.slice(
+    (paginaActual - 1) * productosPorPagina,
+    paginaActual * productosPorPagina
+  );
+
+  const cambiarPagina = (nuevaPagina: number) => {
+    const totalPaginasCalc = Math.ceil(productosFiltrados.length / productosPorPagina);
+    if (nuevaPagina >= 1 && nuevaPagina <= totalPaginasCalc) {
+      setPaginaActual(nuevaPagina);
+      const nuevosParams = new URLSearchParams(searchParams);
+      nuevosParams.set("pagina", nuevaPagina.toString());
+      navigate(`?${nuevosParams.toString()}`, { replace: true });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   const { filtrosDisponibles } = useMemo(() => {
     const catSet = new Set<string>();
     const marcaSet = new Set<string>();
-    const catCnt: Record<string, number> = {};
-    const marcaCnt: Record<string, number> = {};
 
     productosConPrecio.forEach((p) => {
-      if (
-        (!filtroActivo.marca || p.marca === filtroActivo.marca) &&
-        p.categoria
-      ) {
+      if ((!filtroActivo.marca || p.marca === filtroActivo.marca) && p.categoria) {
         catSet.add(p.categoria);
-        catCnt[p.categoria] = (catCnt[p.categoria] || 0) + 1;
       }
-
-      if (
-        (!filtroActivo.categoria || p.categoria === filtroActivo.categoria) &&
-        p.marca
-      ) {
+      if ((!filtroActivo.categoria || p.categoria === filtroActivo.categoria) && p.marca) {
         marcaSet.add(p.marca);
-        marcaCnt[p.marca] = (marcaCnt[p.marca] || 0) + 1;
       }
     });
 
@@ -81,41 +92,74 @@ export default function AccesoriosPage() {
         categoria: [...catSet],
         marca: [...marcaSet],
       },
-      cantidades: {
-        categoria: catCnt,
-        marca: marcaCnt,
-      },
     };
   }, [productosConPrecio, filtroActivo]);
 
   return (
     <div className="bg-gray-100 min-h-screen px-2 py-8">
-      <SeccionesTabs />
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-full md:w-80">
-            <div className="md:fixed md:top-28">
-              <Filtros
-                filtros={filtrosDisponibles}
-                filtroActivo={filtroActivo}
-                onFiltroChange={setFiltroActivo}
-                productos={productosConPrecio}
-                titulo="ACCESORIOS"
-              />
-            </div>
-          </div>
+        <SeccionesTabs />
+        <div className="flex flex-col md:flex-row gap-8">
+          <aside className="w-full md:w-80 md:self-start">
+            <Filtros
+              filtros={filtrosDisponibles}
+              filtroActivo={filtroActivo}
+              onFiltroChange={(nuevoFiltro) => {
+                setFiltroActivo(nuevoFiltro);
+                cambiarPagina(1);
+              }}
+              productos={productosConPrecio}
+              titulo="ACCESORIOS"
+            />
+          </aside>
 
-          {productosFiltrados.length === 0 ? (
-            <p className="text-center text-gray-500 text-lg mt-10 w-full">
-              No se encontraron productos que coincidan con los filtros.
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4 flex-grow">
-              {productosFiltrados.map(([base, variantes]) => (
-                <ProductoCard key={base} variantes={variantes} baseNombre={base} />
-              ))}
-            </div>
-          )}
+          <main className="flex-grow">
+            {productosFiltrados.length === 0 ? (
+              <p className="text-center text-gray-500 text-lg mt-10 w-full">
+                No se encontraron productos que coincidan con los filtros.
+              </p>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+                  {productosPaginados.map(([base, variantes]) => (
+                    <ProductoCard key={base} variantes={variantes} baseNombre={base} />
+                  ))}
+                </div>
+                {totalPaginas > 1 && (
+                  <div className="flex justify-center mt-10">
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => cambiarPagina(paginaActual - 1)}
+                        disabled={paginaActual === 1}
+                        className="px-3 py-1 rounded border bg-white border-gray-300 hover:bg-gray-200 disabled:opacity-50"
+                      >
+                        ‹
+                      </button>
+                      {Array.from({ length: totalPaginas }, (_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => cambiarPagina(i + 1)}
+                          className={`w-10 h-10 rounded ${paginaActual === i + 1
+                            ? 'bg-yellow-400 text-black font-bold'
+                            : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-100'
+                            }`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                      <button
+                        onClick={() => cambiarPagina(paginaActual + 1)}
+                        disabled={paginaActual === totalPaginas}
+                        className="px-3 py-1 rounded border bg-white border-gray-300 hover:bg-gray-200 disabled:opacity-50"
+                      >
+                        ›
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </main>
         </div>
       </div>
     </div>

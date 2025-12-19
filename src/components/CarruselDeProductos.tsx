@@ -99,22 +99,25 @@ const CarruselDeProductos = ({
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-2 grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-          
-          <Link to={linkAnuncio || "#"} className="hidden lg:block w-full h-full rounded-lg overflow-hidden group relative">
-            <div className="absolute top-0 left-0 h-1.5 w-full bg-[#fff03b] origin-left transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out z-10"></div>
-            
-            <div 
-              className="relative w-full h-full bg-gray-100 p-8 flex flex-col justify-between text-black transition-colors duration-300 group-hover:bg-gray-200"
-              style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'6\' height=\'6\' viewBox=\'0 0 6 6\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%239ca3af\' fill-opacity=\'0.1\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M5 0h1L0 6V5zM6 5v1H5z\'/%3E%3C/g%3E%3C/svg%3E")' }}
-            >
+
+          <Link to={linkAnuncio || "#"} className="hidden lg:block w-full h-full rounded-2xl overflow-hidden group relative shadow-lg hover:shadow-xl transition-all duration-300 bg-white hover:bg-[#fff03b]">
+            {/* Patrón de puntos decorativo */}
+            <div
+              className="absolute inset-0 opacity-10"
+              style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '16px 16px' }}
+            ></div>
+
+            <div className="relative h-full p-8 flex flex-col justify-between text-black z-10">
               <div>
-                <h3 className="text-3xl font-black leading-tight text-gray-900">{anuncioTitulo}</h3>
-                <p className="mt-4 text-gray-700">{anuncioDescripcion}</p>
+                <div className="w-12 h-1 bg-black mb-6"></div>
+                <h3 className="text-4xl font-extrabold leading-tight tracking-tight mb-4">{anuncioTitulo}</h3>
+                <p className="text-lg font-medium opacity-90 leading-relaxed">{anuncioDescripcion}</p>
               </div>
-              {/* --- CONTENEDOR DEL BOTÓN MODIFICADO --- */}
-              <div className="mt-8 text-center">
-                <div className="inline-flex items-center justify-center bg-black text-white font-bold text-lg px-6 py-3 rounded-full">
-                  <span className="whitespace-nowrap">{anuncioCta}</span>
+
+              <div className="mt-8">
+                <div className="inline-flex items-center gap-2 font-bold text-lg border-b-2 border-black pb-1 group-hover:gap-4 transition-all duration-300">
+                  <span>{anuncioCta}</span>
+                  <ChevronRight size={20} strokeWidth={3} />
                 </div>
               </div>
             </div>
@@ -124,8 +127,8 @@ const CarruselDeProductos = ({
             {datosValidos ? (
               <Slider {...sliderSettings} className="w-full">
                 {productosAgrupados.slice(0, 14).map(([baseNombre, variantes]) => (
-                  <div key={baseNombre} className="px-1 py-2 w-full !block"> 
-                      <ProductoCard variantes={variantes} baseNombre={baseNombre} />
+                  <div key={baseNombre} className="px-1 py-2 w-full !block">
+                    <ProductoCard variantes={variantes} baseNombre={baseNombre} />
                   </div>
                 ))}
               </Slider>

@@ -1,4 +1,4 @@
-import type {Producto} from "@/types/Producto";
+import type { Producto } from "@/types/Producto";
 
 export const productosPinturas: Producto[] = [
   {
@@ -30,8 +30,6 @@ Acabado: Mate`,
     categoria: "Latex Interior",
     capacidad: "20",
     marca: 'Sherwin Williams',
-    acabado: "Mate",
-    color: "Blanco",
     seccion: "Hogar y Obra",
     variantes: [
       {
@@ -95,15 +93,15 @@ Acabado: Mate`,
         marca: 'Sherwin Williams',
         capacidad: '4',
         acabado: "Mate",
-        color: "Blanco", 
+        color: "Blanco",
         seccion: "Hogar y Obra",
       }
     ],
   },
   {
-  id: '40',
-  nombre: "Latex Interior Quantum 20 Litros Sherwin Williams",
-  descripcion: `Látex Acrílico Interior Mate es un látex de máxima blancura con poder antihongo y extra cubritivo, formulado para decorar y proteger paredes interiores. Se aplica muy fácilmente con mínimo salpicado y muy buena terminación.
+    id: '40',
+    nombre: "Latex Interior Quantum 20 Litros Sherwin Williams",
+    descripcion: `Látex Acrílico Interior Mate es un látex de máxima blancura con poder antihongo y extra cubritivo, formulado para decorar y proteger paredes interiores. Se aplica muy fácilmente con mínimo salpicado y muy buena terminación.
   
 Color: Blanco
 
@@ -112,18 +110,18 @@ Aplicación: A pincel, rodillo o soplete airless. Se recomienda aplicar sin dilu
 Rendimiento: De 10 a 14 m2 por litro y por mano, según la absorción de la superficie.  
 Secado: 1 hora al tacto en condiciones normales de temperatura y humedad. Repintar luego de transcurridas 3 horas.  
 Acabado: Mate.`,
-  precioOriginal: 156104,
-  off: 10,
-  imagen: "/img/Productos/latex-quantum-azul-20lts.webp",
-  categoria: "Latex Interior",
-  marca: "Sherwin Williams",
-  capacidad: "20",
-  seccion: "Hogar y Obra",
-  variantes: [
-    {
-      id: '50',
-      nombre: "Latex Interior Quantum 4 Litros Sherwin Williams",
-      descripcion: `Látex Acrílico Interior Mate es un látex de máxima blancura con poder antihongo y extra cubritivo, formulado para decorar y proteger paredes interiores. Se aplica muy fácilmente con mínimo salpicado y muy buena terminación.
+    precioOriginal: 156104,
+    off: 10,
+    imagen: "/img/Productos/latex-quantum-azul-20lts.webp",
+    categoria: "Latex Interior",
+    marca: "Sherwin Williams",
+    capacidad: "20",
+    seccion: "Hogar y Obra",
+    variantes: [
+      {
+        id: '50',
+        nombre: "Latex Interior Quantum 4 Litros Sherwin Williams",
+        descripcion: `Látex Acrílico Interior Mate es un látex de máxima blancura con poder antihongo y extra cubritivo, formulado para decorar y proteger paredes interiores. Se aplica muy fácilmente con mínimo salpicado y muy buena terminación.
     
 Color: Blanco
 
@@ -132,20 +130,20 @@ Aplicación: A pincel, rodillo o soplete airless. Se recomienda aplicar sin dilu
 Rendimiento: De 10 a 14 m2 por litro y por mano, según la absorción de la superficie.  
 Secado: 1 hora al tacto en condiciones normales de temperatura y humedad. Repintar luego de transcurridas 3 horas.  
 Acabado: Mate.`,
-      precioOriginal: 52680,
-      off: 10,
-      imagen: "/img/Productos/latex-quantum-azul-4lts.webp",
-      categoria: "Latex Interior",
-      marca: "Sherwin Williams",
-      capacidad: "4",
-      seccion: "Hogar y Obra",
-    }
-  ]
-},
+        precioOriginal: 52680,
+        off: 10,
+        imagen: "/img/Productos/latex-quantum-azul-4lts.webp",
+        categoria: "Latex Interior",
+        marca: "Sherwin Williams",
+        capacidad: "4",
+        seccion: "Hogar y Obra",
+      }
+    ]
+  },
   {
-  id: '60',
-  nombre: "Latex Interior Exterior Quantum 20 Litros Sherwin Williams",
-  descripcion: `Látex de alta resistencia a la intemperie, de muy buena blancura y cubritivo, con poder antihongo y antialga, desarrollado especialmente para decorar y proteger paredes exteriores e interiores. Se aplica muy fácilmente, logrando una terminación profesional.
+    id: '60',
+    nombre: "Latex Interior Exterior Quantum 20 Litros Sherwin Williams",
+    descripcion: `Látex de alta resistencia a la intemperie, de muy buena blancura y cubritivo, con poder antihongo y antialga, desarrollado especialmente para decorar y proteger paredes exteriores e interiores. Se aplica muy fácilmente, logrando una terminación profesional.
 
 Color: Blanco
 
@@ -154,18 +152,18 @@ Aplicación: A pincel, rodillo o soplete airless. Se recomienda aplicar sin dilu
 Rendimiento: De 10 a 14 m² por litro y por mano, según la absorción de la superficie.  
 Secado: 1 hora al tacto en condiciones normales de temperatura y humedad. Repintar luego de transcurridas 3 horas.  
 Acabado: Mate.`,
-  precioOriginal: 173066,
-  off: 10,
-  imagen: "/img/Productos/Quantum-rojo-lts20.webp",
-  categoria: "Látex Interior/Exterior",
-  marca: "Sherwin Williams",
-  capacidad: "20",
-  seccion: "Hogar y Obra",
-  variantes: [
-    {
-      id: '70',
-      nombre: "Latex Interior Exterior Quantum 4 Litros Sherwin Williams",
-      descripcion: `Látex de alta resistencia a la intemperie, de muy buena blancura y cubritivo, con poder antihongo y antialga, desarrollado especialmente para decorar y proteger paredes exteriores e interiores. Se aplica muy fácilmente, logrando una terminación profesional.
+    precioOriginal: 173066,
+    off: 10,
+    imagen: "/img/Productos/Quantum-rojo-lts20.webp",
+    categoria: "Látex Interior/Exterior",
+    marca: "Sherwin Williams",
+    capacidad: "20",
+    seccion: "Hogar y Obra",
+    variantes: [
+      {
+        id: '70',
+        nombre: "Latex Interior Exterior Quantum 4 Litros Sherwin Williams",
+        descripcion: `Látex de alta resistencia a la intemperie, de muy buena blancura y cubritivo, con poder antihongo y antialga, desarrollado especialmente para decorar y proteger paredes exteriores e interiores. Se aplica muy fácilmente, logrando una terminación profesional.
 
 Color: Blanco
 
@@ -174,20 +172,20 @@ Aplicación: A pincel, rodillo o soplete airless. Se recomienda aplicar sin dilu
 Rendimiento: De 10 a 14 m² por litro y por mano, según la absorción de la superficie.  
 Secado: 1 hora al tacto en condiciones normales de temperatura y humedad. Repintar luego de transcurridas 3 horas.  
 Acabado: Mate.`,
-      precioOriginal: 54229,
-      off: 10,
-      imagen: "/img/Productos/Quantum-rojo-4lts.webp",
-      categoria: "Látex Interior/Exterior",
-      marca: "Sherwin Williams",
-      capacidad: "4",
-      seccion: "Hogar y Obra",
-    }
-  ]
-},
+        precioOriginal: 54229,
+        off: 10,
+        imagen: "/img/Productos/Quantum-rojo-4lts.webp",
+        categoria: "Látex Interior/Exterior",
+        marca: "Sherwin Williams",
+        capacidad: "4",
+        seccion: "Hogar y Obra",
+      }
+    ]
+  },
   {
-  id: '80',
-  nombre: "Fijador Quantum 20 Litros Sherwin Williams",
-  descripcion: `Fijador base agua formulado con cargas minerales y resinas acrílicas de excelente adherencia. Ideal para preparar superficies interiores antes de pintar, facilitando el lijado y alisado. Corrige imperfecciones y garantiza una terminación uniforme y duradera.
+    id: '80',
+    nombre: "Fijador Quantum 20 Litros Sherwin Williams",
+    descripcion: `Fijador base agua formulado con cargas minerales y resinas acrílicas de excelente adherencia. Ideal para preparar superficies interiores antes de pintar, facilitando el lijado y alisado. Corrige imperfecciones y garantiza una terminación uniforme y duradera.
 
 • Presentaciones: 4 y 20 litros  
 • Color: Blanco
@@ -195,18 +193,18 @@ Acabado: Mate.`,
 • Rendimiento: 1 a 2 m² por litro y por mano  
 • Secado: Lijado a las 6 h. Repintar con fondo a las 8 h. Esperar 24 h si se aplica esmalte sintético.  
 • Acabado: Mate`,
-  precioOriginal: 98000,
-  off: 10,
-  imagen: "/img/Productos/Fijador-quantum-20.webp",
-  categoria: "Fijadores",
-  marca: "Sherwin Williams",
-  capacidad: "20",
-  seccion: "Hogar y Obra",
-  variantes: [
-    {
-      id: '90',
-      nombre: "Fijador Quantum 4 Litros Sherwin Williams",
-      descripcion: `Fijador base agua formulado con cargas minerales y resinas acrílicas de excelente adherencia. Ideal para preparar superficies interiores antes de pintar, facilitando el lijado y alisado. Corrige imperfecciones y garantiza una terminación uniforme y duradera.
+    precioOriginal: 98000,
+    off: 10,
+    imagen: "/img/Productos/Fijador-quantum-20.webp",
+    categoria: "Fijadores",
+    marca: "Sherwin Williams",
+    capacidad: "20",
+    seccion: "Hogar y Obra",
+    variantes: [
+      {
+        id: '90',
+        nombre: "Fijador Quantum 4 Litros Sherwin Williams",
+        descripcion: `Fijador base agua formulado con cargas minerales y resinas acrílicas de excelente adherencia. Ideal para preparar superficies interiores antes de pintar, facilitando el lijado y alisado. Corrige imperfecciones y garantiza una terminación uniforme y duradera.
 
 • Presentaciones: 4 y 20 litros  
 • Color: Blanco
@@ -214,20 +212,20 @@ Acabado: Mate.`,
 • Rendimiento: 1 a 2 m² por litro y por mano  
 • Secado: Lijado a las 6 h. Repintar con fondo a las 8 h. Esperar 24 h si se aplica esmalte sintético.  
 • Acabado: Mate`,
-      precioOriginal: 18900,
-      off: 10,
-      imagen: "/img/Productos/Fijador-quantum-4.webp",
-      categoria: "Fijadores",
-      marca: "Sherwin Williams",
-      capacidad: "4",
-      seccion: "Hogar y Obra",
-    }
-  ]
-},
+        precioOriginal: 18900,
+        off: 10,
+        imagen: "/img/Productos/Fijador-quantum-4.webp",
+        categoria: "Fijadores",
+        marca: "Sherwin Williams",
+        capacidad: "4",
+        seccion: "Hogar y Obra",
+      }
+    ]
+  },
   {
-  id: '100',
-  nombre: "Enduido Quantum 20 Litros Sherwin Williams",
-  descripcion: `Es un producto base agua formulado con cargas y resinas seleccionadas, que permiten lograr un fácil lijado y alisado de superficies interiores. Su alta adherencia y capacidad de corregir imperfecciones le otorgan una excelente terminación a lo largo del tiempo.
+    id: '100',
+    nombre: "Enduido Quantum 20 Litros - Sherwin Williams",
+    descripcion: `Es un producto base agua formulado con cargas y resinas seleccionadas, que permiten lograr un fácil lijado y alisado de superficies interiores. Su alta adherencia y capacidad de corregir imperfecciones le otorgan una excelente terminación a lo largo del tiempo.
 
 Color: Blanco
 
@@ -236,18 +234,18 @@ Aplicación: Se aplica con espátula o llana metálica en su consistencia origin
 Rendimiento: De 1 a 2 m² por litro y por mano, según el tipo de aplicación.  
 Secado: Para lijar, dejar secar 6 horas en condiciones normales de temperatura y humedad. Aplicar el fondo seleccionado (diluido) luego de transcurridas como mínimo 8 horas de haber enduido. Finalmente, aplicar el producto de terminación. En caso de usar un esmalte sintético como terminación, dejar secar el enduido 24 horas como mínimo.  
 Acabado: Mate.`,
-  precioOriginal: 70729,
-  off: 10,
-  imagen: "/img/Productos/Enduido-quantum-20l.webp",
-  categoria: "Enduidos",
-  marca: "Sherwin Williams",
-  capacidad: "20",
-  seccion: "Hogar y Obra",
-  variantes: [
-    {
-      id: '110',
-      nombre: "Enduido Quantum 10 Litros Sherwin Williams",
-      descripcion: `Es un producto base agua formulado con cargas y resinas seleccionadas, que permiten lograr un fácil lijado y alisado de superficies interiores. Su alta adherencia y capacidad de corregir imperfecciones le otorgan una excelente terminación a lo largo del tiempo.
+    precioOriginal: 70729,
+    off: 10,
+    imagen: "/img/Productos/Enduido-quantum-20l.webp",
+    categoria: "Enduidos",
+    marca: "Sherwin Williams",
+    capacidad: "20",
+    seccion: "Hogar y Obra",
+    variantes: [
+      {
+        id: '110',
+        nombre: "Enduido Quantum 10 Litros Sherwin Williams",
+        descripcion: `Es un producto base agua formulado con cargas y resinas seleccionadas, que permiten lograr un fácil lijado y alisado de superficies interiores. Su alta adherencia y capacidad de corregir imperfecciones le otorgan una excelente terminación a lo largo del tiempo.
 
 Color: Blanco
 
@@ -256,18 +254,18 @@ Aplicación: Se aplica con espátula o llana metálica en su consistencia origin
 Rendimiento: De 1 a 2 m² por litro y por mano, según el tipo de aplicación.  
 Secado: Para lijar, dejar secar 6 horas en condiciones normales de temperatura y humedad. Aplicar el fondo seleccionado (diluido) luego de transcurridas como mínimo 8 horas de haber enduido. Finalmente, aplicar el producto de terminación. En caso de usar un esmalte sintético como terminación, dejar secar el enduido 24 horas como mínimo.  
 Acabado: Mate.`,
-      precioOriginal: 48033,
-      off: 10,
-      imagen: "/img/Productos/Enduido-quantum-20l.webp",
-      categoria: "Enduidos",
-      capacidad: "10",
-      marca: "Sherwin Williams",
-      seccion: "Hogar y Obra",
-    },
-    {
-      id: '120',
-      nombre: "Enduido Quantum 4 Litros Sherwin Williams",
-      descripcion: `Es un producto base agua formulado con cargas y resinas seleccionadas, que permiten lograr un fácil lijado y alisado de superficies interiores. Su alta adherencia y capacidad de corregir imperfecciones le otorgan una excelente terminación a lo largo del tiempo.
+        precioOriginal: 48033,
+        off: 10,
+        imagen: "/img/Productos/Enduido-quantum-20l.webp",
+        categoria: "Enduidos",
+        capacidad: "10",
+        marca: "Sherwin Williams",
+        seccion: "Hogar y Obra",
+      },
+      {
+        id: '120',
+        nombre: "Enduido Quantum 4 Litros Sherwin Williams",
+        descripcion: `Es un producto base agua formulado con cargas y resinas seleccionadas, que permiten lograr un fácil lijado y alisado de superficies interiores. Su alta adherencia y capacidad de corregir imperfecciones le otorgan una excelente terminación a lo largo del tiempo.
 
 Color: Blanco
 
@@ -276,58 +274,58 @@ Aplicación: Se aplica con espátula o llana metálica en su consistencia origin
 Rendimiento: De 1 a 2 m² por litro y por mano, según el tipo de aplicación.  
 Secado: Para lijar, dejar secar 6 horas en condiciones normales de temperatura y humedad. Aplicar el fondo seleccionado (diluido) luego de transcurridas como mínimo 8 horas de haber enduido. Finalmente, aplicar el producto de terminación. En caso de usar un esmalte sintético como terminación, dejar secar el enduido 24 horas como mínimo.  
 Acabado: Mate.`,
-      precioOriginal: 14072,
-      off: 10,
-      imagen: "/img/Productos/Enduido-quantum-4l.webp",
-      categoria: "Enduidos",
-      capacidad: "4",
-      marca: "Sherwin Williams",
-      seccion: "Hogar y Obra",
-    }
-  ]
-},
+        precioOriginal: 14072,
+        off: 10,
+        imagen: "/img/Productos/Enduido-quantum-4l.webp",
+        categoria: "Enduidos",
+        capacidad: "4",
+        marca: "Sherwin Williams",
+        seccion: "Hogar y Obra",
+      }
+    ]
+  },
   {
-  id: '130',
-  nombre: "Látex Interior Exterior Blanco Mate Rapifix 4 Litros",
-  descripcion: `Pintura látex de acabado mate, formulada para proteger y decorar paredes interiores y exteriores. Ofrece buena blancura, rendimiento y facilidad de aplicación, ideal para trabajos domésticos y profesionales.
+    id: '130',
+    nombre: "Látex Interior Exterior Blanco Mate Rapifix 4 Litros",
+    descripcion: `Pintura látex de acabado mate, formulada para proteger y decorar paredes interiores y exteriores. Ofrece buena blancura, rendimiento y facilidad de aplicación, ideal para trabajos domésticos y profesionales.
 
 • Presentación: 4 litros  
 • Color: Blanco
 • Aplicación: Pincel, rodillo o soplete airless. Se recomienda aplicar sin diluir o con hasta un 10% de agua.  
 • Secado: 1 hora al tacto. Repintar a las 3 horas  
 • Acabado: Mate uniforme`,
-  precioOriginal: 12555,
-  off: 10,
-  imagen: "/img/Productos/Rapifix-4.webp",
-  categoria: "Látex Interior/Exterior",
-  marca: "Rapifix",
-  capacidad: "4",
-  color: "Blanco",
-  acabado: "Mate",
-  seccion: "Hogar y Obra",
-},
+    precioOriginal: 12555,
+    off: 10,
+    imagen: "/img/Productos/Rapifix-4.webp",
+    categoria: "Látex Interior/Exterior",
+    marca: "Rapifix",
+    capacidad: "4",
+    color: "Blanco",
+    acabado: "Mate",
+    seccion: "Hogar y Obra",
+  },
   {
-  id: '140',
-  nombre: "Fijador Interior Rapifix 4 Litros",
-  descripcion: `Fijador al agua de alta penetración, ideal para preparar superficies interiores antes de pintar. Sella fondos absorbentes, mejora la adherencia de la pintura final y unifica la absorción del sustrato.
+    id: '140',
+    nombre: "Fijador Interior Rapifix 4 Litros",
+    descripcion: `Fijador al agua de alta penetración, ideal para preparar superficies interiores antes de pintar. Sella fondos absorbentes, mejora la adherencia de la pintura final y unifica la absorción del sustrato.
 
 • Presentación: 4 litros  
 • Aplicación: A pincel, rodillo o soplete. Puede diluirse con agua en proporción 1:1 según la porosidad de la superficie  
 • Superficies recomendadas: Revoques nuevos, enduidos, yeso, ladrillo, paneles de construcción en seco  
 • Secado: Al tacto en 1 hora. Repintado luego de 3 a 4 horas  
 • Acabado: Incoloro al secar, no altera el color de la pintura de terminación`,
-  precioOriginal: 8344,
-  off: 10,
-  imagen: "/img/Productos/Rapifix-sellador-4l.webp",
-  categoria: "Fijadores",
-  marca: "Rapifix",
-  capacidad: "4",
-  seccion: "Hogar y Obra",
-},
+    precioOriginal: 8344,
+    off: 10,
+    imagen: "/img/Productos/Rapifix-sellador-4l.webp",
+    categoria: "Fijadores",
+    marca: "Rapifix",
+    capacidad: "4",
+    seccion: "Hogar y Obra",
+  },
   {
-  id: '150',
-  nombre: "Sikalastic 560 Membrana Líquida 20 Litros Sika",
-  descripcion: `Sikalastic®-560 es una membrana líquida impermeabilizante de altas prestaciones, con base en poliuretano modificado con tecnología Pure. Forma una película elástica, continua y sin uniones, ideal para impermeabilización de techos y terrazas.
+    id: '150',
+    nombre: "Sikalastic 560 Membrana Líquida 20 Litros Sika",
+    descripcion: `Sikalastic®-560 es una membrana líquida impermeabilizante de altas prestaciones, con base en poliuretano modificado con tecnología Pure. Forma una película elástica, continua y sin uniones, ideal para impermeabilización de techos y terrazas.
 
 • Aplicación: A rodillo, pinceleta o equipo airless en al menos dos manos.  
 • Presentaciones: 5, 10 y 20 litros  
@@ -337,18 +335,18 @@ Acabado: Mate.`,
 • Secado: Secado al tacto en 4-6 horas. Tránsito liviano luego de 24 horas.  
 • Uso: Ideal para techos planos o inclinados, losas, terrazas, cubiertas metálicas, fibrocemento y membranas bituminosas.  
 • Acabado: Mate satinado, altamente reflectivo, mejora la eficiencia energética.`,
-  precioOriginal: 293190,
-  off: 15,
-  imagen: "/img/Productos/Sikalastic560-20.webp",
-  categoria: "Membranas",
-  capacidad: "20",
-  marca: "Sika",
-  seccion: "Hogar y Obra",
-  variantes: [
-    {
-      id: '160',
-      nombre: "Sikalastic 560 Membrana Líquida 10 Litros Sika",
-      descripcion: `Sikalastic®-560 es una membrana líquida impermeabilizante de altas prestaciones, con base en poliuretano modificado con tecnología Pure. Forma una película elástica, continua y sin uniones, ideal para impermeabilización de techos y terrazas.
+    precioOriginal: 293190,
+    off: 15,
+    imagen: "/img/Productos/Sikalastic560-20.webp",
+    categoria: "Membranas",
+    capacidad: "20",
+    marca: "Sika",
+    seccion: "Hogar y Obra",
+    variantes: [
+      {
+        id: '160',
+        nombre: "Sikalastic 560 Membrana Líquida 10 Litros Sika",
+        descripcion: `Sikalastic®-560 es una membrana líquida impermeabilizante de altas prestaciones, con base en poliuretano modificado con tecnología Pure. Forma una película elástica, continua y sin uniones, ideal para impermeabilización de techos y terrazas.
 
 • Aplicación: A rodillo, pinceleta o equipo airless en al menos dos manos.  
 • Presentaciones: 5, 10 y 20 litros  
@@ -358,18 +356,18 @@ Acabado: Mate.`,
 • Secado: Secado al tacto en 4-6 horas. Tránsito liviano luego de 24 horas.  
 • Uso: Ideal para techos planos o inclinados, losas, terrazas, cubiertas metálicas, fibrocemento y membranas bituminosas.  
 • Acabado: Mate satinado, altamente reflectivo, mejora la eficiencia energética.`,
-      precioOriginal: 167216,
-      off: 10,
-      imagen: "/img/Productos/Sikalastic560-10.webp",
-      categoria: "Membranas",
-      capacidad: "10",
-      marca: "Sika",
-      seccion: "Hogar y Obra",
-    },
-    {
-      id: '170',
-      nombre: "Sikalastic 560 Membrana Líquida 5 Litros Sika",
-      descripcion: `Sikalastic®-560 es una membrana líquida impermeabilizante de altas prestaciones, con base en poliuretano modificado con tecnología Pure. Forma una película elástica, continua y sin uniones, ideal para impermeabilización de techos y terrazas.
+        precioOriginal: 167216,
+        off: 10,
+        imagen: "/img/Productos/Sikalastic560-10.webp",
+        categoria: "Membranas",
+        capacidad: "10",
+        marca: "Sika",
+        seccion: "Hogar y Obra",
+      },
+      {
+        id: '170',
+        nombre: "Sikalastic 560 Membrana Líquida 5 Litros Sika",
+        descripcion: `Sikalastic®-560 es una membrana líquida impermeabilizante de altas prestaciones, con base en poliuretano modificado con tecnología Pure. Forma una película elástica, continua y sin uniones, ideal para impermeabilización de techos y terrazas.
 
 • Aplicación: A rodillo, pinceleta o equipo airless en al menos dos manos.  
 • Presentaciones: 5, 10 y 20 litros  
@@ -379,19 +377,19 @@ Acabado: Mate.`,
 • Secado: Secado al tacto en 4-6 horas. Tránsito liviano luego de 24 horas.  
 • Uso: Ideal para techos planos o inclinados, losas, terrazas, cubiertas metálicas, fibrocemento y membranas bituminosas.  
 • Acabado: Mate satinado, altamente reflectivo, mejora la eficiencia energética.`,
-      precioOriginal: 88547,
-      off: 5,
-      imagen: "/img/Productos/Sikalastic560-5.webp",
-      categoria: "Membranas",
-      marca: "Sika",
-      capacidad: "5",
-      seccion: "Hogar y Obra",
-    }
-  ]
-},
+        precioOriginal: 88547,
+        off: 5,
+        imagen: "/img/Productos/Sikalastic560-5.webp",
+        categoria: "Membranas",
+        marca: "Sika",
+        capacidad: "5",
+        seccion: "Hogar y Obra",
+      }
+    ]
+  },
   {
     id: '510',
-    nombre: "Pintura Para Piletas Sherwin Williams Acrílico Azul Mediterraneo",
+    nombre: "Pintura Para Piletas Sherwin Williams Acrílico Azul Mediterraneo 10L",
     descripcion: "",
     precio: 161290,
     imagen: "/img/Productos/SWPiscinasAzulMediterraneo10.png",
@@ -521,7 +519,7 @@ Acabado: Mate.`,
     id: '620',
     nombre: "Loxon Pro Interior Mate 20 Litros Sherwin Williams",
     descripcion: "",
-    
+
     imagen: "/img/Productos/LoxonPro.webp",
     categoria: "Latex Interior",
     marca: 'Sherwin Williams',
@@ -533,7 +531,7 @@ Acabado: Mate.`,
     id: '610',
     nombre: "Shertex",
     descripcion: "Impermeabilizante texturado de excelente elasticidad y óptima resistencia a los cambios climáticos y a la radiación ultravioleta. La aplicación del SherTex Revoque Plástico puede reemplazar el esquema tradicional de revoque fino, enduido, sellador y pintura logrando un importante ahorro en materiales y mano de obra.",
-    
+
     imagen: "/img/Productos/ShertexGrande_optimized_.png",
     categoria: "Revestimientos",
     marca: 'Sherwin Williams',
@@ -581,12 +579,12 @@ Acabado: Mate.`,
   },
   {
     id: '430',
-    nombre:'Masilla Interior Para Placas de Yeso 32Kg Andina',
-    descripcion:'',
+    nombre: 'Masilla Interior Para Placas de Yeso 32Kg Andina',
+    descripcion: '',
     off: 10,
     precioOriginal: 54166,
-    imagen:'/img/Productos/Masilla-Andina.webp',
-    categoria:'Masilla',
+    imagen: '/img/Productos/Masilla-Andina.webp',
+    categoria: 'Masilla',
     marca: 'Andina',
     seccion: "Hogar y Obra",
   },
@@ -617,7 +615,7 @@ Acabado: Mate.`,
     nombre: "Esmalte Sintético Antióxido Blanco Satinado Sherwin Williams Quantum 4 Litros",
     descripcion: "",
     precioOriginal: 81850,
-    off:10,
+    off: 10,
     imagen: "/img/Productos/Quantum-sintetico-antioxido.webp",
     categoria: "Esmalte Sintético",
     marca: 'Sherwin Williams',
@@ -630,7 +628,7 @@ Acabado: Mate.`,
         nombre: "Esmalte Sintético Antióxido Negro Satinado Sherwin Williams Quantum 4 Litros",
         descripcion: "",
         precioOriginal: 81850,
-        off:10,
+        off: 10,
         imagen: "/img/Productos/Captura de pantalla 2025-06-18 150612_optimized_.webp",
         categoria: "Esmalte Sintético",
         marca: 'Sherwin Williams',
@@ -645,7 +643,7 @@ Acabado: Mate.`,
     nombre: "Esmalte Sintético Antióxido Blanco Brillante Sherwin Williams Quantum 4 Litros",
     descripcion: "",
     precioOriginal: 81850,
-    off:10,
+    off: 10,
     imagen: "/img/Productos/Quantum-sintetico-antioxido.webp",
     categoria: "Esmalte Sintético",
     marca: 'Sherwin Williams',
@@ -658,7 +656,7 @@ Acabado: Mate.`,
         nombre: "Esmalte Sintético Antióxido Negro Brillante Sherwin Williams Quantum 4 Litros",
         descripcion: "",
         precioOriginal: 81850,
-        off:10,
+        off: 10,
         imagen: "/img/Productos/Quantum-sintetico-antioxido.webp",
         categoria: "Esmalte Sintético",
         marca: 'Sherwin Williams',
@@ -673,7 +671,7 @@ Acabado: Mate.`,
     nombre: "Esmalte Sintético Antióxido Blanco Brillante Albalux 4 Litros",
     descripcion: "",
     precioOriginal: 95818,
-    off:10,
+    off: 10,
     imagen: "/img/Productos/Alba-sintetico-antioxido.webp",
     categoria: "Esmalte Sintético",
     marca: 'Alba',
@@ -684,7 +682,7 @@ Acabado: Mate.`,
     nombre: "Esmalte Sintético Antióxido Negro Brillante Albalux 4 Litros",
     descripcion: "",
     precioOriginal: 95818,
-    off:10,
+    off: 10,
     imagen: "/img/Productos/Alba-sintetico-antioxido.webp",
     categoria: "Esmalte Sintético",
     marca: 'Alba',
@@ -695,7 +693,7 @@ Acabado: Mate.`,
     nombre: "Esmalte Sintético Antióxido Color Albalux 4 Litros",
     descripcion: "",
     precioOriginal: 95818,
-    off:10,
+    off: 10,
     imagen: "/img/Productos/Alba-sintetico-antioxido.webp",
     categoria: "Esmalte Sintético",
     marca: 'Alba',
@@ -724,7 +722,7 @@ Acabado: Mate.`,
     seccion: "Hogar y Obra",
     acabado: "Brillante",
     capacidad: "20",
-    variantes:[
+    variantes: [
       {
         id: '350',
         nombre: "Venier Denzel Protector Para Maderas Brillante 4 Litros",
@@ -742,8 +740,8 @@ Acabado: Mate.`,
         id: '370',
         nombre: "Venier Denzel Protector Para Maderas Brillante 1 Litro",
         descripcion: "",
-        precioOriginal:16865,
-        off:10,
+        precioOriginal: 16865,
+        off: 10,
         imagen: "/img/Productos/Denzel-1l.webp",
         categoria: "impregnantes",
         marca: 'Venier',
@@ -765,7 +763,7 @@ Acabado: Mate.`,
     acabado: "Satinado",
     capacidad: "20",
     seccion: "Hogar y Obra",
-    variantes:[
+    variantes: [
       {
         id: '360',
         nombre: "Venier Denzel Protector Para Maderas Satinado 4 Litros",
@@ -783,13 +781,13 @@ Acabado: Mate.`,
         id: '380',
         nombre: "Venier Denzel Protector Para Maderas Satinado 1 Litro",
         descripcion: "",
-        precioOriginal:14243,
-        off:10,
+        precioOriginal: 14243,
+        off: 10,
         imagen: "/img/Productos/Denzel-1l.webp",
         categoria: "impregnantes",
         marca: 'Venier',
         seccion: "Hogar y Obra",
-        acabado: "Satinado",  
+        acabado: "Satinado",
         capacidad: "1",
       },
     ]
@@ -798,14 +796,14 @@ Acabado: Mate.`,
     id: '410',
     nombre: "Sellador Para Madera Nitrocelulosico Madeplast Sinteplast 4 Litros",
     descripcion: "",
-    precioOriginal:55608,
-    off:10,
+    precioOriginal: 55608,
+    off: 10,
     imagen: "/img/Productos/Madeplast-4l.webp",
     categoria: "Selladores",
     marca: 'Sinteplast',
     capacidad: "4",
     seccion: "Hogar y Obra",
-    variantes:[
+    variantes: [
       {
         id: '420',
         nombre: "Sellador Para Madera Nitrocelulosico Madeplast Sinteplast 1 Litro",

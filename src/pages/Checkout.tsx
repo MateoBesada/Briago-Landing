@@ -3,7 +3,8 @@ import { useCart } from '@/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft, ShieldCheck, Lock, CreditCard } from 'lucide-react';
+import CalculadoraEnvio from '@/components/CalculadoraEnvio';
 
 declare global {
   interface Window {
@@ -18,27 +19,25 @@ const formatearPrecio = (precio: number) =>
     maximumFractionDigits: 0,
   }).format(precio);
 
-// [SIN CAMBIOS] Tu componente de input se mantiene igual.
 const FloatingLabelInput = ({ id, name, type, value, onChange, placeholder, required = true, isTextArea = false }: any) => (
-  <div className="relative">
+  <div className="relative group">
     {isTextArea ? (
       <textarea
         id={id} name={name} value={value} onChange={onChange} required={required} placeholder=" "
-        className="block px-3 pb-2 pt-5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500 peer min-h-[80px]"
+        className="block px-4 pb-2.5 pt-6 w-full text-sm text-gray-900 bg-white rounded-xl border border-gray-200 appearance-none focus:outline-none focus:ring-0 focus:border-black peer min-h-[100px] transition-colors"
       />
     ) : (
       <input type={type} id={id} name={name} value={value} onChange={onChange} required={required} placeholder=" "
-        className="block px-3 pb-2 pt-5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-1 focus:ring-yellow-500 focus:border-yellow-500 peer"
+        className="block px-4 pb-2.5 pt-6 w-full text-sm text-gray-900 bg-white rounded-xl border border-gray-200 appearance-none focus:outline-none focus:ring-0 focus:border-black peer transition-colors"
       />
     )}
     <label htmlFor={id}
-      className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-3 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4"
+      className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-4 z-10 origin-[0] start-4 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-black font-medium"
     >
       {placeholder}
     </label>
   </div>
 );
-
 
 const CheckoutPage = () => {
   const { cart, vaciarCarrito } = useCart();
@@ -48,11 +47,10 @@ const CheckoutPage = () => {
   const [isBrickVisible, setIsBrickVisible] = useState(false);
   const [isPreferenceLoading, setIsPreferenceLoading] = useState(false);
 
-  // [CAMBIO 1 de 3] Agregamos los nuevos campos al estado inicial.
   const [formData, setFormData] = useState({
     fullname: "", email: "", address: "", city: "", postalcode: "", phone: "",
-    entreCalles: "", // <-- NUEVO CAMPO
-    descripcion: "", // <-- NUEVO CAMPO
+    entreCalles: "",
+    descripcion: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,7 +60,6 @@ const CheckoutPage = () => {
 
   const total = cart.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
 
-  // [SIN CAMBIOS] Toda la lógica de useEffect se mantiene intacta.
   useEffect(() => {
     if (cart.length === 0 && !isBrickVisible) {
       toast.error("Tu carrito está vacío.");
@@ -98,13 +95,13 @@ const CheckoutPage = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             items: mpItems,
-            payer: formData,
+            payer: mpPayer,
             external_reference: `BRIAGO-${Date.now()}`
           }),
         });
         if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.error || 'Error del servidor al crear la preferencia.');
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Error del servidor al crear la preferencia.');
         }
         const { preferenceId } = await res.json();
         if (!preferenceId) throw new Error("No se pudo crear la preferencia de pago.");
@@ -146,7 +143,6 @@ const CheckoutPage = () => {
     }
   }, [isBrickVisible, total, formData, cart, navigate, vaciarCarrito]);
 
-  // [CAMBIO 2 de 3] Actualizamos la validación para ignorar los campos opcionales.
   const handleProceedToPayment = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const requiredFields: (keyof typeof formData)[] = ['fullname', 'email', 'address', 'city', 'postalcode', 'phone'];
@@ -160,30 +156,42 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="bg-gray-100 font-gotham min-h-screen pt-10">
-      <section className="container mx-auto px-4 sm:px-6 py-12">
-        <h2 className="text-3xl font-bold text-center mb-8">Finalizar Compra</h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          
-          <div className="lg:col-span-2">
-            <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md relative">
+    <div className="bg-gray-50 font-gotham min-h-screen py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center gap-4 mb-8">
+          <Link to="/carrito" className="p-2 hover:bg-white rounded-full transition-colors shadow-sm">
+            <ArrowLeft className="w-6 h-6 text-black" />
+          </Link>
+          <h1 className="text-3xl md:text-4xl font-black text-black uppercase tracking-tight">
+            Finalizar Compra
+          </h1>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
               <AnimatePresence>
                 {isPreferenceLoading && (
                   <motion.div
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center rounded-lg"
+                    className="absolute inset-0 bg-white/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center"
                   >
-                    <Loader2 className="animate-spin text-yellow-500" size={48} />
-                    <p className="mt-4 font-semibold text-gray-700">Aguarde un momento...</p>
+                    <Loader2 className="animate-spin text-[#fff03b]" size={48} />
+                    <p className="mt-4 font-bold text-black uppercase tracking-wider">Procesando pago...</p>
                   </motion.div>
                 )}
               </AnimatePresence>
-              
+
               <div className={isPreferenceLoading ? 'filter blur-sm pointer-events-none' : ''}>
                 <AnimatePresence mode="wait">
                   {!isBrickVisible ? (
-                    <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                      <h3 className="text-xl font-bold mb-6">Tus Datos de Contacto y Envío</h3>
+                    <motion.div key="form" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                      <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+                        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-[#fff03b] font-bold text-xl">1</div>
+                        <h3 className="text-xl font-bold text-black uppercase tracking-tight">Datos de Envío</h3>
+                      </div>
+
                       <form id="checkout-form" onSubmit={handleProceedToPayment} className="space-y-6">
                         <FloatingLabelInput id="fullname" name="fullname" type="text" value={formData.fullname} onChange={handleInputChange} placeholder="Nombre Completo" />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -191,83 +199,116 @@ const CheckoutPage = () => {
                           <FloatingLabelInput id="phone" name="phone" type="tel" value={formData.phone} onChange={handleInputChange} placeholder="Teléfono" />
                         </div>
                         <FloatingLabelInput id="address" name="address" type="text" value={formData.address} onChange={handleInputChange} placeholder="Dirección de Envío" />
-                        
-                        {/* --- [CAMBIO 3 de 3] AÑADIMOS LOS NUEVOS CAMPOS AL FORMULARIO --- */}
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FloatingLabelInput id="city" name="city" type="text" value={formData.city} onChange={handleInputChange} placeholder="Ciudad" />
-                            <FloatingLabelInput id="postalcode" name="postalcode" type="text" value={formData.postalcode} onChange={handleInputChange} placeholder="Código Postal" />
+                          <FloatingLabelInput id="city" name="city" type="text" value={formData.city} onChange={handleInputChange} placeholder="Ciudad" />
+                          <FloatingLabelInput id="postalcode" name="postalcode" type="text" value={formData.postalcode} onChange={handleInputChange} placeholder="Código Postal" />
                         </div>
-                        <FloatingLabelInput 
-                            id="entreCalles" 
-                            name="entreCalles" 
-                            type="text" 
-                            value={formData.entreCalles} 
-                            onChange={handleInputChange} 
-                            placeholder="Entre qué calles (Opcional)" 
-                            required={false} // <-- Marcado como opcional
+                        <FloatingLabelInput
+                          id="entreCalles"
+                          name="entreCalles"
+                          type="text"
+                          value={formData.entreCalles}
+                          onChange={handleInputChange}
+                          placeholder="Entre qué calles (Opcional)"
+                          required={false}
                         />
-                        <FloatingLabelInput 
-                            id="descripcion" 
-                            name="descripcion" 
-                            value={formData.descripcion} 
-                            onChange={handleInputChange} 
-                            placeholder="Descripción adicional (Opcional)"
-                            required={false} // <-- Marcado como opcional
-                            isTextArea={true} // Usamos un textarea para más espacio
+                        <FloatingLabelInput
+                          id="descripcion"
+                          name="descripcion"
+                          value={formData.descripcion}
+                          onChange={handleInputChange}
+                          placeholder="Notas adicionales (Opcional)"
+                          required={false}
+                          isTextArea={true}
                         />
-                         {/* --- FIN DE LOS CAMPOS AÑADIDOS --- */}
-                         
                       </form>
                     </motion.div>
                   ) : (
-                    <motion.div key="brick" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <h3 className="text-xl font-bold mb-6">Realizá tu Pago</h3>
-                        <div id="paymentBrick_container" ref={brickRef}></div>
+                    <motion.div key="brick" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                      <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+                        <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-[#fff03b] font-bold text-xl">2</div>
+                        <h3 className="text-xl font-bold text-black uppercase tracking-tight">Pago Seguro</h3>
+                      </div>
+                      <div id="paymentBrick_container" ref={brickRef}></div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             </div>
+
+            <CalculadoraEnvio />
+
+            <div className="flex items-center justify-center gap-6 text-gray-400 grayscale opacity-70">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5" />
+                <span className="text-xs font-bold uppercase">Pago Seguro</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="w-5 h-5" />
+                <span className="text-xs font-bold uppercase">Datos Encriptados</span>
+              </div>
+            </div>
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white p-6 rounded-lg shadow-md sticky top-28">
-              <h3 className="text-xl font-bold mb-4 border-b pb-4">Tu Pedido</h3>
-              <div className="space-y-4 mb-6 max-h-64 overflow-y-auto custom-scrollbar pr-2">
+            <div className="bg-black text-white p-8 rounded-3xl shadow-xl sticky top-28">
+              <h3 className="text-xl font-black uppercase tracking-tight mb-8 pb-4 border-b border-gray-800">
+                Resumen del Pedido
+              </h3>
+
+              <div className="space-y-4 mb-8 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                 {cart.map(item => (
-                  <div key={`${item.id}-${item.modoVenta}`} className="flex justify-between items-start text-sm">
-                    <div className="flex gap-3">
-                      <img src={item.imagen} className="w-16 h-16 object-contain rounded border p-1" alt={item.nombre} />
-                      <div>
-                        <p className="font-semibold line-clamp-2">{item.nombre}</p>
-                        <p className="text-gray-600">{formatearPrecio(item.precio)} <span className="text-gray-500">x {item.cantidad}</span></p>
+                  <div key={`${item.id}-${item.modoVenta}`} className="flex gap-4 items-start group">
+                    <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center p-1 flex-shrink-0">
+                      <img src={item.imagen} className="w-full h-full object-contain mix-blend-multiply" alt={item.nombre} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm text-white line-clamp-2 leading-tight mb-1">{item.nombre}</p>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-400 text-xs">{item.cantidad} x {formatearPrecio(item.precio)}</p>
+                        <p className="font-bold text-[#fff03b] text-sm">{formatearPrecio(item.precio * item.cantidad)}</p>
                       </div>
                     </div>
-                    <p className="font-semibold">{formatearPrecio(item.precio * item.cantidad)}</p>
                   </div>
                 ))}
               </div>
-              <div className="flex justify-between items-center border-t pt-4">
-                <span className="text-lg font-bold">Total</span>
-                <span className="text-lg font-bold text-gray-900">{formatearPrecio(total)}</span>
+
+              <div className="border-t border-gray-800 pt-6 space-y-4">
+                <div className="flex justify-between text-gray-400">
+                  <span>Subtotal</span>
+                  <span>{formatearPrecio(total)}</span>
+                </div>
+                <div className="flex justify-between text-gray-400">
+                  <span>Envío</span>
+                  <span className="text-[#fff03b] text-xs font-bold uppercase">Gratis</span>
+                </div>
+                <div className="flex justify-between items-end pt-4 border-t border-gray-800">
+                  <span className="text-lg font-bold">Total</span>
+                  <span className="text-3xl font-black text-[#fff03b]">{formatearPrecio(total)}</span>
+                </div>
               </div>
-              
+
               {!isBrickVisible && (
                 <button
                   type="submit" form="checkout-form"
-                  className="mt-6 w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded-md transition duration-300 flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="mt-8 w-full bg-[#fff03b] text-black font-black uppercase tracking-wider py-4 rounded-xl hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl transform active:scale-[0.98] flex items-center justify-center gap-2"
                   disabled={isPreferenceLoading}
                 >
-                  Momentáneamente deshabilitado
+                  <CreditCard className="w-5 h-5" />
+                  Continuar al Pago
                 </button>
               )}
-              <Link to="/productos" className="block mt-2 w-full text-center text-sm text-gray-600 hover:underline">
-                &larr; Volver y seguir comprando
-              </Link>
+
+              <div className="mt-6 text-center">
+                <p className="text-xs text-gray-500">
+                  Al confirmar el pedido, aceptas nuestros términos y condiciones.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

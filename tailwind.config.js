@@ -36,6 +36,9 @@ module.exports = {
         "sidebar-accent-foreground": "hsl(var(--color-sidebar-accent-foreground))",
         "sidebar-border": "hsl(var(--color-sidebar-border))",
         "sidebar-ring": "hsl(var(--color-sidebar-ring))",
+        briago: {
+          yellow: "#fff03b", // Primary Brand Yellow
+        },
       },
       borderRadius: {
         sm: "var(--radius-sm)",
@@ -45,9 +48,9 @@ module.exports = {
       },
       fontFamily: {
         gotham: ["gotham", "sans-serif"],
+        outfit: ["Outfit", "sans-serif"],
       },
       keyframes: {
-        // --- SE AÑADE EL KEYFRAME PARA EL CARRUSEL ---
         marquee: {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },
@@ -74,7 +77,6 @@ module.exports = {
         },
       },
       animation: {
-        // --- SE AÑADE LA ANIMACIÓN PARA EL CARRUSEL ---
         marquee: 'marquee 40s linear infinite',
         "cartel-in": "cartelIn 0.6s ease-out forwards",
         "bounce-slow": "bounceSlow 1.5s infinite",

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import React, { useState } from "react"; // 1. Importamos useState
+import React from "react";
 
 // --- ARRAY DE CATEGORÍAS (sin cambios) ---
 const categorias = [
@@ -32,15 +32,15 @@ interface WrapperProps {
 }
 
 export default function Secciones() {
-  const HEADER_HEIGHT = 84;
-  
+  const HEADER_HEIGHT = 80; // Ajustado un poco para el nuevo header
+
   return (
     <section
       id="productos"
-      className="bg-white/90 backdrop-blur-lg shadow-sm border-b border-gray-200 transition-all duration-300 sticky z-40"
+      className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 transition-all duration-300 sticky z-40"
       style={{ top: `${HEADER_HEIGHT}px` }}
     >
-      <div className="w-full max-w-7xl mx-auto px-4 py-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="w-full max-w-7xl mx-auto px-4 py-4 md:mt-8 grid mt-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
         {categorias.map((cat) => (
           <CategoriaCard key={cat.id} cat={cat} />
         ))}
@@ -49,42 +49,32 @@ export default function Secciones() {
   );
 }
 
-// --- COMPONENTE MODIFICADO CON LÓGICA DE ESTADO ---
+// --- COMPONENTE MODIFICADO PARA HOVER CSS ---
 const CategoriaCard = ({ cat }: CategoriaCardProps) => {
-  // 3. Estado para controlar si el botón está activo (por hover o toque)
-  const [isActive, setIsActive] = useState(false);
-
-  // Funciones para manejar los eventos
-  const handleInteractionStart = () => setIsActive(true);
-  const handleInteractionEnd = () => setIsActive(false);
-
   return (
     <Wrapper
       to={cat.link.startsWith("/") ? cat.link : undefined}
       href={!cat.link.startsWith("/") ? cat.link : undefined}
-      className="relative w-full h-16 rounded-md overflow-hidden
-                 bg-gray-100 font-bold
+      // 🛑 NUEVAS CLASES BASE: Diseño más limpio, sin bordes pesados
+      className="relative w-full h-16 md:h-16 rounded-xl overflow-hidden
+                 bg-white border border-gray-200 font-black group shadow-sm hover:shadow-xl
                  flex items-center justify-center text-center uppercase px-2
-                 transition-all duration-300 ease-in-out"
-      // 4. Eventos para mouse (desktop) y touch (celular)
-      onMouseEnter={handleInteractionStart}
-      onMouseLeave={handleInteractionEnd}
-      onTouchStart={handleInteractionStart}
-      onTouchEnd={handleInteractionEnd}
+                 transition-all duration-300 ease-out 
+                 hover:border-[#fff03b] hover:-translate-y-1 transform"
     >
-      {/* Capa de color que se desliza */}
-      <div 
-        className={`absolute top-0 left-0 h-full w-full bg-[#fff03b] 
+      {/* 🛑 MODIFICADO: Capa de color que se desliza de abajo hacia arriba */}
+      <div
+        className={`absolute left-0 bottom-0 h-full w-full bg-[#fff03b] 
                     transform transition-transform duration-300 ease-in-out
-                    ${isActive ? 'translate-x-0' : '-translate-x-full'}`} // 5. Estilo condicional
+                    group-hover:translate-y-0 translate-y-full opacity-90`}
       >
       </div>
 
       {/* El texto, que debe estar por encima de la capa */}
-      <span 
-        className={`relative z-10 text-gray-700 text-sm sm:text-base leading-tight
+      <span
+        className={`relative z-10 text-gray-800 text-sm md:text-sm font-black tracking-wider
                     transition-colors duration-200 delay-50
-                    ${isActive ? 'text-black' : 'text-gray-700'}`} // 5. Estilo condicional
+                    group-hover:text-black`}
       >
         {cat.nombre}
       </span>

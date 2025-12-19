@@ -1,233 +1,177 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ZoomIn, ZoomOut, Expand, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
 
 interface ImageZoomProps {
   src: string;
   alt: string;
   className?: string;
-  galleryImages?: string[]; // <-- Nueva prop para el array de imágenes
+  galleryImages?: string[];
 }
 
-const ImageZoom = ({ src, alt, className, galleryImages = [] }: ImageZoomProps) => {
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [scale, setScale] = useState(1);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0); // <-- Nuevo estado para el índice
-  const imageWrapperRef = useRef<HTMLDivElement>(null); // Referencia al contenedor que delimita el arrastre
-  const imageRef = useRef<HTMLImageElement>(null); // Referencia a la imagen misma
+export default function ImageZoom({ src, alt, className, galleryImages = [] }: ImageZoomProps) {
+  const [isHovering, setIsHovering] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentLightBoxIndex, setCurrentLightBoxIndex] = useState(0);
+  const [lightboxScale, setLightboxScale] = useState(1);
 
-  // Sincroniza el currentImageIndex con la prop `src` inicial cuando el componente se monta
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync index when src changes (so clicking a thumbnail updates the lightbox starting point)
   useEffect(() => {
-    const initialIndex = galleryImages.indexOf(src);
-    if (initialIndex !== -1) {
-      setCurrentImageIndex(initialIndex);
-    }
+    const idx = galleryImages.indexOf(src);
+    if (idx !== -1) setCurrentLightBoxIndex(idx);
   }, [src, galleryImages]);
 
-
-  // Calcula los límites de arrastre basados en el scale y el tamaño del contenedor
-  const calculateDragConstraints = useCallback(() => {
-    if (!imageWrapperRef.current || !imageRef.current || scale <= 1) {
-      return { top: 0, bottom: 0, left: 0, right: 0 };
-    }
-
-    const container = imageWrapperRef.current;
-    const containerRect = container.getBoundingClientRect();
-
-    // Las dimensiones del contenido real con el zoom aplicado
-    const contentWidth = imageRef.current.offsetWidth * scale;
-    const contentHeight = imageRef.current.offsetHeight * scale;
-
-    // Cuánto del contenido se desborda del contenedor
-    const overflowX = Math.max(0, contentWidth - containerRect.width);
-    const overflowY = Math.max(0, contentHeight - containerRect.height);
-
-    // Los límites son la mitad del desbordamiento en cada dirección
-    return {
-      top: -overflowY / 2,
-      bottom: overflowY / 2,
-      left: -overflowX / 2,
-      right: overflowX / 2,
-    };
-  }, [scale, isZoomed]); // Depende del scale y si está haciendo zoom
-
-
-  const resetZoomAndPosition = useCallback(() => {
-    setScale(1);
-    // Para que la imagen vuelva al centro al cambiar de imagen
-    if (imageRef.current) {
-        imageRef.current.style.transform = 'scale(1)'; // Resetea directamente el scale CSS
-        imageRef.current.style.transformOrigin = 'center center'; // Resetea el origen del transform
-    }
-  }, []);
-
-
-  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (!imageRef.current) return;
-
-    const rect = imageRef.current.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    const zoomIntensity = 0.15;
-    let newScale = event.deltaY < 0 ? scale * (1 + zoomIntensity) : scale / (1 + zoomIntensity);
-    newScale = Math.max(1, Math.min(4, newScale)); // Limitar el zoom entre 1x y 4x
-
-    setScale(newScale);
-
-    if (newScale === 1) {
-      resetZoomAndPosition();
-    } else {
-      // Ajustar el origen de la transformación para hacer zoom en la posición del ratón
-      // Esto es crucial para un zoom "libre" o "hacia el punto del cursor"
-      const transformOriginX = (mouseX / rect.width) * 100;
-      const transformOriginY = (mouseY / rect.height) * 100;
-      imageRef.current.style.transformOrigin = `${transformOriginX}% ${transformOriginY}%`;
-    }
+  // -- HOVER ZOOM LOGIC --
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setMousePosition({ x, y });
   };
 
-
-  const closeZoomModal = () => {
-    setIsZoomed(false);
-    setTimeout(() => {
-      resetZoomAndPosition();
-    }, 300);
+  // -- LIGHTBOX LOGIC --
+  const openLightbox = () => {
+    setLightboxOpen(true);
+    setLightboxScale(1);
+    // Ensure we start at the current image
+    const idx = galleryImages.indexOf(src);
+    if (idx !== -1) setCurrentLightBoxIndex(idx);
+    else setCurrentLightBoxIndex(0);
   };
 
-
-  // --- NUEVOS HANDLERS PARA NAVEGACIÓN ---
-  const goToNextImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que el modal se cierre
-    resetZoomAndPosition(); // Resetea el zoom y posición de la imagen actual
-    setCurrentImageIndex((prev) => (prev + 1) % galleryImages.length);
-  };
-  
-  const goToPrevImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Evita que el modal se cierre
-    resetZoomAndPosition(); // Resetea el zoom y posición de la imagen actual
-    setCurrentImageIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+    setLightboxScale(1);
   };
 
-  const currentDisplayedImageSrc = galleryImages[currentImageIndex] || src;
+  const nextImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentLightBoxIndex((prev) => (prev + 1) % galleryImages.length);
+    setLightboxScale(1);
+  };
 
+  const prevImage = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentLightBoxIndex((prev) => (prev - 1 + galleryImages.length) % galleryImages.length);
+    setLightboxScale(1);
+  };
+
+  const currentLightboxImage = galleryImages[currentLightBoxIndex] || src;
 
   return (
     <>
-      <div className={`relative ${className} overflow-hidden rounded-xl group`}>
-        <img
+      {/* --- INLINE ZOOM CONTAINER --- */}
+      <div
+        className={`relative overflow-hidden cursor-zoom-in ${className}`}
+        ref={containerRef}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        onMouseMove={handleMouseMove}
+        onClick={openLightbox}
+      >
+        <motion.img
           src={src}
           alt={alt}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain pointer-events-none"
+          // We use Framer Motion for the smooth scale transition
+          animate={{
+            scale: isHovering ? 2 : 1,
+          }}
+          style={{
+            transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
+          }}
+          transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }}
         />
-        <button
-          onClick={(e) => { e.stopPropagation(); setIsZoomed(true); }}
-          className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors z-20"
-          aria-label="Ampliar imagen"
-        >
-          <Expand className="w-5 h-5" />
-        </button>
+
+        {/* Mobile/Touch Hint or Icon */}
+        <div className="absolute bottom-3 right-3 lg:opacity-0 transition-opacity bg-white/80 p-1.5 rounded-full text-black pointer-events-none">
+          <Maximize2 size={16} />
+        </div>
       </div>
 
+      {/* --- LIGHTBOX MODAL --- */}
       <AnimatePresence>
-        {isZoomed && (
+        {lightboxOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 z-[100] flex items-center justify-center"
-            onClick={closeZoomModal}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center backdrop-blur-sm"
+            onClick={closeLightbox}
           >
-            {/* Botón para cerrar */}
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1, transition: { delay: 0.1 } }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/75 z-50"
-              onClick={closeZoomModal}
-              aria-label="Cerrar zoom"
+            {/* Close Button */}
+            <button
+              className="absolute top-4 right-4 text-white p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50"
+              onClick={closeLightbox}
             >
-              <X className="w-6 h-6" />
-            </motion.button>
-            
-            {/* Controles de Zoom */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.2 } }}
-              exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-50 bg-black/50 backdrop-blur-sm p-2 rounded-full"
-            >
-              <button onClick={(e) => { e.stopPropagation(); setScale(prev => Math.min(4, prev + 0.2)); }} className="p-2 text-white rounded-full hover:bg-white/20" aria-label="Acercar">
-                <ZoomIn className="w-6 h-6" />
-              </button>
-              <button onClick={(e) => { e.stopPropagation(); setScale(prev => Math.max(1, prev - 0.2)); }} className="p-2 text-white rounded-full hover:bg-white/20" aria-label="Alejar">
-                <ZoomOut className="w-6 h-6" />
-              </button>
-              <button onClick={(e) => { e.stopPropagation(); resetZoomAndPosition(); }} className="p-2 text-white rounded-full hover:bg-white/20" aria-label="Restablecer zoom">
-                <RotateCcw className="w-6 h-6" />
-              </button>
-            </motion.div>
+              <X size={24} />
+            </button>
 
-            {/* --- FLECHAS DE NAVEGACIÓN (NUEVAS) --- */}
+            {/* Navigation Arrows */}
             {galleryImages.length > 1 && (
               <>
-                <motion.button
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
-                  exit={{ opacity: 0, x: -20 }}
-                  onClick={goToPrevImage} 
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-50 p-2 bg-black/50 text-white rounded-full hover:bg-black/75"
-                  aria-label="Imagen anterior"
+                <button
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50"
+                  onClick={prevImage}
                 >
                   <ChevronLeft size={32} />
-                </motion.button>
-                <motion.button
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0, transition: { delay: 0.3 } }}
-                  exit={{ opacity: 0, x: 20 }}
-                  onClick={goToNextImage} 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-50 p-2 bg-black/50 text-white rounded-full hover:bg-black/75"
-                  aria-label="Imagen siguiente"
+                </button>
+                <button
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50"
+                  onClick={nextImage}
                 >
                   <ChevronRight size={32} />
-                </motion.button>
+                </button>
               </>
             )}
 
-            {/* Contenedor principal de la imagen en zoom */}
+            {/* Image Container */}
             <div
-              ref={imageWrapperRef}
-              className="relative w-full h-full max-w-[90vw] max-h-[90vh] flex items-center justify-center overflow-hidden"
-              onClick={(e) => e.stopPropagation()} // Evita que se cierre el modal al hacer clic en la imagen
-              onWheel={handleWheel} // El zoom con rueda del mouse
+              className="relative w-full h-full p-4 flex items-center justify-center overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={currentDisplayedImageSrc} // <-- CLAVE: Esto fuerza a Framer Motion a tratar cada imagen como nueva
-                  ref={imageRef}
-                  initial={{ opacity: 0, scale: 1 }} // La animación inicial es desde una escala 1
-                  animate={{ opacity: 1, scale: scale }} // Anima a la escala actual (si hay zoom)
-                  exit={{ opacity: 0, scale: 1 }} // Animación de salida antes de que entre la nueva imagen
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                  src={currentDisplayedImageSrc}
-                  alt={alt}
-                  className="w-full h-full object-contain" // Utiliza object-contain para mostrar la imagen completa dentro del espacio
-                  style={{ cursor: scale > 1 ? 'grab' : 'auto' }}
-                  drag={scale > 1} // Solo se puede arrastrar si hay zoom
-                  dragConstraints={calculateDragConstraints()} // Los límites de arrastre se calculan dinámicamente
-                  dragElastic={0.1}
-                  onDragStart={(e) => e.preventDefault()} // Previene el arrastre nativo del navegador
-                  whileTap={{ cursor: 'grabbing' }}
-                />
-              </AnimatePresence>
+              <motion.img
+                key={currentLightboxImage} // Re-mount on image change for animation
+                src={currentLightboxImage}
+                alt={alt}
+                className="max-w-full max-h-full object-contain select-none"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: lightboxScale }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                drag
+                dragConstraints={{ left: -500, right: 500, top: -500, bottom: 500 }}
+                onDragStart={(e) => e.preventDefault()}
+                style={{ cursor: lightboxScale > 1 ? 'grab' : 'zoom-in' }}
+                onClick={() => setLightboxScale(s => s === 1 ? 2 : 1)} // Double tap/click to zoom
+              />
             </div>
+
+            {/* Zoom Controls (Bottom) */}
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 bg-white/10 px-6 py-3 rounded-full backdrop-blur-md z-50" onClick={e => e.stopPropagation()}>
+              <button onClick={() => setLightboxScale(Math.max(1, lightboxScale - 0.5))} className="text-white hover:text-yellow-400 transition">
+                <ZoomOut size={20} />
+              </button>
+              <span className="text-white font-mono text-sm w-12 text-center my-auto">{Math.round(lightboxScale * 100)}%</span>
+              <button onClick={() => setLightboxScale(Math.min(4, lightboxScale + 0.5))} className="text-white hover:text-yellow-400 transition">
+                <ZoomIn size={20} />
+              </button>
+            </div>
+
+            {/* Counter */}
+            {galleryImages.length > 1 && (
+              <div className="absolute top-6 left-6 text-white/50 font-mono text-sm">
+                {currentLightBoxIndex + 1} / {galleryImages.length}
+              </div>
+            )}
+
           </motion.div>
         )}
       </AnimatePresence>
     </>
   );
-};
-
-export default ImageZoom;
+}

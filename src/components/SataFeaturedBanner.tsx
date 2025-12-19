@@ -14,7 +14,7 @@ const SataFeaturedBanner = () => {
   ];
 
   const [index, setIndex] = useState(0);
-  
+
   // Efecto para el autoplay
   useEffect(() => {
     const interval = setInterval(() => {
@@ -32,11 +32,11 @@ const SataFeaturedBanner = () => {
   return (
     <div className="max-w-7xl mx-auto mb-5">
       {/* El contenedor principal ahora solo gestiona el layout y la sombra */}
-      <div className="rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-gray-300">
-        
+      <div className="rounded-lg overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-slate-200 shadow-sm">
+
         {/* --- Columna de Texto con su propio fondo --- */}
         <div className="bg-white p-8 md:p-10 flex flex-col justify-center text-center md:text-left items-center md:items-start order-2 md:order-1 z-10">
-          <h2 className="text-3xl lg:text-4xl font-extrabold text-black leading-tight mb-3">
+          <h2 className="text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-3">
             Acabados Perfectos. Nivel Profesional.
           </h2>
           <p className="text-lg text-slate-600 mb-6 max-w-md">
@@ -44,14 +44,14 @@ const SataFeaturedBanner = () => {
           </p>
           <Link
             to="/productos-automotor?marca=SATA&seccion=Herramientas"
-            className="inline-block px-8 py-3 border border-gray-300 bg-white text-slate-900 font-bold rounded-full text-base shadow-lg transition duration-300 hover:scale-105 hover:bg-yellow-300 hover:border-yellow-300"
+            className="inline-block px-8 py-3 border border-slate-200 bg-white text-slate-900 font-bold rounded-full text-base shadow-lg transition duration-300 hover:scale-105 hover:bg-briago-yellow hover:border-briago-yellow"
           >
             Ver Herramientas SATA
           </Link>
         </div>
 
         {/* --- Columna de Imagen (Carrusel Automático) --- */}
-        <div className="relative w-full h-72 md:h-85 flex items-center justify-center overflow-hidden p-1 order-1 md:order-2 border-l border-gray-300">
+        <div className="relative w-full h-72 md:h-85 flex items-center justify-center overflow-hidden p-1 order-1 md:order-2 border-l border-slate-100">
 
           {/* 2. Contenedor del carrusel por encima del círculo */}
           <div className="relative w-full h-full flex items-center justify-center z-20">

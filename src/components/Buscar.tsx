@@ -1,11 +1,20 @@
 import { useSearch } from '../context/SearchContext';
 import { productosPinturas as pinturas } from '../data/Pinturas';
 import { productosAutomotor as automotor } from '../data/Automotor';
+import { productosAccesorios as accesorios } from '../data/Accesorios';
+import { productosIndustria as industria } from '../data/Industria';
+import { productosAbrasivos as abrasivos } from '../data/Abrasivos';
+import { productosPulidos as pulidos } from '../data/Pulidos';
 import type { Producto } from '@/types/Producto';
+import ProductoCard from './ProductoCard';
 
 const todasLasCategorias: { nombre: string; productos: Producto[] }[] = [
   { nombre: 'Pinturas', productos: pinturas },
   { nombre: 'Automotor', productos: automotor },
+  { nombre: 'Accesorios', productos: accesorios },
+  { nombre: 'Industria', productos: industria },
+  { nombre: 'Abrasivos', productos: abrasivos },
+  { nombre: 'Pulidos', productos: pulidos },
 ];
 
 // 🔠 Normaliza texto: quita acentos, pasa a minúsculas
@@ -14,7 +23,6 @@ function normalizarTexto(texto: string): string {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9\s]/gi, '')
     .trim();
 }
 
@@ -30,6 +38,14 @@ function normalizarDescripcionEnVariantes(productos: Producto[]): Producto[] {
     }
     return prod;
   });
+}
+
+// 🏷️ Agrega marca si no tiene
+function agregarMarcaSiFalta(productos: Producto[]): Producto[] {
+  return productos.map((producto) => ({
+    ...producto,
+    marca: producto.marca ?? 'Sin marca',
+  }));
 }
 
 // 💸 Aplica descuento si existe, y asegura que precio y precioOriginal siempre tengan un valor
@@ -49,17 +65,11 @@ function aplicarDescuento(producto: Producto): Producto {
   };
 }
 
-// 🏷️ Agrega marca si no tiene
-function agregarMarcaSiFalta(productos: Producto[]): Producto[] {
-  return productos.map((producto) => ({
-    ...producto,
-    marca: producto.marca ?? 'Sin marca',
-  }));
-}
-
 function Buscar() {
   const { query } = useSearch();
-  const queryNormalizado = normalizarTexto(query);
+
+  // Dividimos la query en palabras para búsqueda flexible (todas las palabras deben estar presentes)
+  const palabrasQuery = normalizarTexto(query).split(/\s+/).filter(Boolean);
 
   const categoriasConVariantesYMarca = todasLasCategorias.map((cat) => ({
     ...cat,
@@ -73,13 +83,15 @@ function Buscar() {
       cat.productos
         .map(aplicarDescuento)
         .filter((producto) => {
-          const nombre = normalizarTexto(producto.nombre);
-          const descripcion = normalizarTexto(producto.descripcion ?? '');
-          const marca = normalizarTexto(producto.marca ?? '');
-          return (
-            nombre.includes(queryNormalizado) ||
-            descripcion.includes(queryNormalizado) ||
-            marca.includes(queryNormalizado)
+          if (palabrasQuery.length === 0) return false;
+
+          const nombreNormalizado = normalizarTexto(producto.nombre);
+          const marcaNormalizada = normalizarTexto(producto.marca ?? '');
+
+          // Lógica "Flexible": TODAS las palabras de la búsqueda deben estar en el nombre O en la marca
+          // Ejemplo: "Alba Latex" matchea si "Alba" está en marca y "Latex" en nombre
+          return palabrasQuery.every(palabra =>
+            nombreNormalizado.includes(palabra) || marcaNormalizada.includes(palabra)
           );
         })
     );
@@ -89,69 +101,22 @@ function Buscar() {
       <h1 className="text-3xl font-bold mb-6">Resultados para "{query}"</h1>
 
       {resultados.length === 0 ? (
-        <p className="text-gray-500">
-          No se encontraron productos que coincidan con tu búsqueda.
-        </p>
+        <div className="text-center py-20">
+          <p className="text-xl text-gray-500 font-medium">
+            No encontramos productos que coincidan con tu búsqueda.
+          </p>
+          <p className="text-gray-400 mt-2">
+            Probá buscando por nombre del producto (ej: "Látex", "Barniz").
+          </p>
+        </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6 justify-items-center">
           {resultados.map((producto) => (
-            <div
+            <ProductoCard
               key={producto.id}
-              className="bg-gray-100 rounded-xl shadow hover:shadow-lg transition flex flex-col h-[420px] relative"
-            >
-              {producto.off != null &&
-                producto.precioOriginal != null &&
-                producto.precio != null &&
-                producto.precioOriginal > producto.precio && (
-                  <span className="absolute -top-2 -left-2 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded shadow-md z-10">
-                    {producto.off}% OFF
-                  </span>
-                )}
-
-              <div className="h-40 flex items-center justify-center bg-white rounded-t-xl overflow-hidden">
-                <img
-                  src={producto.imagen}
-                  alt={producto.nombre}
-                  className="max-h-[160px] object-contain transition-transform duration-300 hover:scale-110"
-                />
-              </div>
-
-              <div className="p-4 flex flex-col justify-between flex-grow">
-                <div>
-                  <h2 className="text-sm font-bold text-gray-900 mb-1">
-                    {producto.nombre}
-                  </h2>
-                  <p className="text-xs text-gray-600 line-clamp-2 mb-2">
-                    {producto.descripcion}
-                  </p>
-                </div>
-
-                <div>
-                  {producto.off != null &&
-                  producto.precioOriginal != null &&
-                  producto.precio != null &&
-                  producto.precioOriginal > producto.precio ? (
-                    <>
-                      <span className="line-through text-gray-500 block text-sm">
-                        ${producto.precioOriginal.toLocaleString('es-AR')}
-                      </span>
-                      <span className="text-lg font-bold text-yellow-600">
-                        ${producto.precio.toLocaleString('es-AR')}
-                      </span>
-                    </>
-                  ) : (
-                    <span className="text-lg font-bold text-gray-900">
-                      ${producto.precio?.toLocaleString('es-AR') ??
-                        producto.precioOriginal?.toLocaleString('es-AR') ??
-                        '0'}
-                    </span>
-                  )}
-                  <button className="mt-2 w-full bg-yellow-500 text-black text-sm py-1.5 rounded-md font-semibold hover:bg-yellow-600 transition">
-                    Agregar
-                  </button>
-                </div>
-              </div>
-            </div>
+              variantes={[producto]}
+              baseNombre={producto.nombre}
+            />
           ))}
         </div>
       )}

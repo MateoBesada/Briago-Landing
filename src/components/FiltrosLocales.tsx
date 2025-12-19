@@ -6,17 +6,17 @@ type FiltrosProps = {
   filtros: {
     categoria: string[];
     marca: string[];
-    seccion: string[];
+    seccion?: string[];
   };
   filtroActivo: {
     categoria: string | null;
     marca: string | null;
-    seccion: string | null;
+    seccion?: string | null;
   };
   onFiltroChange: (filtros: {
     categoria: string | null;
     marca: string | null;
-    seccion: string | null;
+    seccion?: string | null;
   }) => void;
   titulo: string;
 };
@@ -87,11 +87,10 @@ function Filtros({
             return (
               <label
                 key={item}
-                className={`flex items-center justify-between text-sm px-2 py-1 rounded-md cursor-pointer transition border ${
-                  activo
-                    ? 'bg-yellow-100 text-yellow-900 border-yellow-300'
-                    : 'hover:bg-gray-100 border-transparent text-gray-800'
-                }`}
+                className={`flex items-center justify-between text-sm px-2 py-1 rounded-md cursor-pointer transition border ${activo
+                  ? 'bg-yellow-100 text-yellow-900 border-yellow-300'
+                  : 'hover:bg-gray-100 border-transparent text-gray-800'
+                  }`}
               >
                 <div className="flex items-center gap-1.5">
                   <input
@@ -115,7 +114,7 @@ function Filtros({
     <aside
       className={`w-full md:w-64 lg:min-w-80 px-2 py-2 transition-all sticky top-24 self-start z-10`}
     >
-      {renderSeccion('seccion', 'Categoría:', filtros.seccion, cantidades.secciones)}
+      {filtros.seccion && renderSeccion('seccion', 'Categoría:', filtros.seccion, cantidades.secciones)}
       {renderSeccion('marca', 'Marca', filtros.marca, cantidades.marcas)}
       {renderSeccion('categoria', 'Tipo de producto', filtros.categoria, cantidades.categorias)}
     </aside>

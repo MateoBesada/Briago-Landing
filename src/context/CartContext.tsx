@@ -83,7 +83,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // ✅ Guardar carrito en localStorage al cambiar
   useEffect(() => {
     localStorage.setItem("carrito", JSON.stringify(cart));
   }, [cart]);
