@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'; // Quitamos useRef que era para el Brick
+import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, ArrowLeft, ShieldCheck, Lock, CreditCard, Store, Truck } from 'lucide-react';
+import { Loader2, ArrowLeft, ShieldCheck, Lock, CreditCard, Store, Truck, KeyRound } from 'lucide-react';
 import CalculadoraEnvio from '@/components/CalculadoraEnvio';
 
 // Helper para formatear dinero
@@ -14,7 +14,6 @@ const formatearPrecio = (precio: number) =>
     maximumFractionDigits: 0,
   }).format(precio);
 
-// Tu componente de Input (Lo dejé igual)
 const FloatingLabelInput = ({ id, name, type, value, onChange, placeholder, required = true, isTextArea = false }: any) => (
   <div className="relative group">
     {isTextArea ? (
@@ -36,12 +35,30 @@ const FloatingLabelInput = ({ id, name, type, value, onChange, placeholder, requ
 );
 
 const CheckoutPage = () => {
-  const { cart } = useCart(); // Ya no necesitamos vaciarCarrito aquí, se vacía al volver de MP
+  const { cart } = useCart();
   const navigate = useNavigate();
 
-  const [isLoading, setIsLoading] = useState(false); // Estado de carga general
+  // ---------------------------------------------------------
+  // 🔒 SISTEMA DE CANDADO (NUEVO)
+  // ---------------------------------------------------------
+  const [isAuthorized, setIsAuthorized] = useState(false); // Empieza bloqueado
+  const [accessCode, setAccessCode] = useState('');
 
-  // Estados para envío
+  // ¡CAMBIA ESTA CLAVE POR LA QUE LE DIRÁS A TU AMIGO!
+  const CLAVE_SECRETA = "Sikaflex221";
+
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (accessCode.trim() === CLAVE_SECRETA) {
+      setIsAuthorized(true);
+      toast.success("Acceso autorizado para pruebas");
+    } else {
+      toast.error("Clave incorrecta");
+    }
+  };
+  // ---------------------------------------------------------
+
+  const [isLoading, setIsLoading] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup');
   const [shippingCost, setShippingCost] = useState(0);
   const [shippingDetail, setShippingDetail] = useState('');
@@ -62,16 +79,14 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     if (cart.length === 0) {
-      toast.error("Tu carrito está vacío.");
-      navigate('/productos');
+      //   toast.error("Tu carrito está vacío.");
+      //   navigate('/productos');
     }
   }, [cart, navigate]);
 
-  // --- FUNCIÓN PRINCIPAL DE PAGO (REEMPLAZA AL BRICK) ---
   const handlePay = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // 1. Validaciones
     const requiredFields: (keyof typeof formData)[] = ['fullname', 'email', 'phone', 'dni'];
     const isInvalid = requiredFields.some(field => formData[field].trim() === "");
 
@@ -95,16 +110,14 @@ const CheckoutPage = () => {
     setIsLoading(true);
 
     try {
-      // 2. Preparamos los items igual que antes
       const mpItems = cart.map(item => ({
-        id: item.id, // Importante mandar ID para tu lógica de backend
+        id: item.id,
         title: item.nombre,
         unit_price: Number(item.precio),
         quantity: Number(item.cantidad),
         currency_id: 'ARS'
       }));
 
-      // Agregamos envío si corresponde
       if (deliveryMethod === 'delivery' && shippingCost > 0) {
         mpItems.push({
           id: 'envio',
@@ -115,7 +128,6 @@ const CheckoutPage = () => {
         });
       }
 
-      // Preparamos datos del pagador
       const [firstName, ...lastNameParts] = formData.fullname.trim().split(' ');
       const mpPayer = {
         name: firstName || 'Cliente',
@@ -126,14 +138,13 @@ const CheckoutPage = () => {
         address: { zip_code: formData.postalcode, street_name: formData.address }
       };
 
-      // 3. Llamamos a TU Backend
       const res = await fetch("https://checkout-server-gehy.onrender.com/create_preference", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           items: mpItems,
           payer: mpPayer,
-          external_reference: `BRIAGO-${Date.now()}` // Referencia para identificar el pedido
+          external_reference: `BRIAGO-${Date.now()}`
         }),
       });
 
@@ -141,13 +152,9 @@ const CheckoutPage = () => {
 
       if (!res.ok) throw new Error(data.error || "Error al crear preferencia");
 
-      // --- CAMBIO CLAVE: RECIBIMOS EL INIT_POINT Y REDIRIGIMOS ---
-      // Asegúrate que tu backend devuelva { init_point: "https://..." }
       if (data.init_point) {
         window.location.href = data.init_point;
       } else {
-        // Si tu backend actual devuelve 'preferenceId', construimos la URL manualmente:
-        // (Pero es mejor que el backend devuelva init_point)
         throw new Error("El servidor no devolvió la URL de pago.");
       }
 
@@ -158,11 +165,43 @@ const CheckoutPage = () => {
     }
   };
 
+  // ---------------------------------------------------------
+  // 🔒 PANTALLA DE BLOQUEO (SI NO TIENE LA CLAVE)
+  // ---------------------------------------------------------
+  if (!isAuthorized) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full text-center space-y-6">
+          <div className="w-16 h-16 bg-[#fff03b] rounded-full flex items-center justify-center mx-auto mb-4">
+            <KeyRound className="w-8 h-8 text-black" />
+          </div>
+          <h2 className="text-2xl font-black uppercase tracking-tight">Modo Pruebas</h2>
+          <p className="text-gray-500">El checkout está restringido temporalmente. Ingresa la clave de acceso.</p>
+
+          <form onSubmit={handleUnlock} className="space-y-4">
+            <input
+              type="password"
+              value={accessCode}
+              onChange={(e) => setAccessCode(e.target.value)}
+              className="w-full text-center text-2xl font-bold tracking-widest p-4 border-2 border-gray-200 rounded-xl focus:border-black focus:outline-none uppercase"
+              placeholder="CLAVE"
+            />
+            <button type="submit" className="w-full bg-black text-[#fff03b] font-bold uppercase py-4 rounded-xl hover:scale-[1.02] transition-transform">
+              Desbloquear
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // ---------------------------------------------------------
+  // PANTALLA NORMAL (SOLO SE VE SI isAuthorized es TRUE)
+  // ---------------------------------------------------------
   return (
     <div className="bg-gray-50 font-gotham min-h-screen py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-        {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link to="/carrito" className="p-2 hover:bg-white rounded-full transition-colors shadow-sm">
             <ArrowLeft className="w-6 h-6 text-black" />
@@ -174,11 +213,9 @@ const CheckoutPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Columna Izquierda: Formulario */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
 
-              {/* Loader Overlay */}
               <AnimatePresence>
                 {isLoading && (
                   <motion.div
@@ -197,7 +234,6 @@ const CheckoutPage = () => {
                   <h3 className="text-xl font-bold text-black uppercase tracking-tight">Tus Datos</h3>
                 </div>
 
-                {/* Selectores de Envío (Igual que antes) */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   <button type="button" onClick={() => { setDeliveryMethod('pickup'); setShippingCost(0); }}
                     className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${deliveryMethod === 'pickup' ? 'bg-black text-[#fff03b] border-black' : 'bg-white text-gray-600 border-gray-200'}`}>
@@ -220,7 +256,6 @@ const CheckoutPage = () => {
                   </div>
                 )}
 
-                {/* Inputs del Formulario */}
                 <div className="space-y-6">
                   <FloatingLabelInput id="fullname" name="fullname" type="text" value={formData.fullname} onChange={handleInputChange} placeholder="Nombre Completo" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -246,19 +281,16 @@ const CheckoutPage = () => {
               </form>
             </div>
 
-            {/* Badges de Seguridad */}
             <div className="flex items-center justify-center gap-6 text-gray-400 grayscale opacity-70 mt-4">
               <div className="flex items-center gap-2"><ShieldCheck className="w-5 h-5" /><span className="text-xs font-bold uppercase">Pago Seguro</span></div>
               <div className="flex items-center gap-2"><Lock className="w-5 h-5" /><span className="text-xs font-bold uppercase">Datos Encriptados</span></div>
             </div>
           </div>
 
-          {/* Columna Derecha: Resumen (Igual que antes) */}
           <div className="lg:col-span-1">
             <div className="bg-black text-white p-8 rounded-3xl shadow-xl sticky top-28">
               <h3 className="text-xl font-black uppercase tracking-tight mb-8 pb-4 border-b border-gray-800">Resumen del Pedido</h3>
 
-              {/* Lista de productos (Simplificada visualmente) */}
               <div className="space-y-4 mb-8 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
                 {cart.map(item => (
                   <div key={item.id} className="flex justify-between text-sm">
@@ -277,7 +309,6 @@ const CheckoutPage = () => {
                 </div>
               </div>
 
-              {/* Botón de Pagar */}
               <button
                 type="submit"
                 form="checkout-form"
