@@ -20,14 +20,16 @@ mercadopago.configure({
     access_token: process.env.MP_ACCESS_TOKEN,
 });
 
+// URL de tu logo para los emails (Cámbiala por la real si la tienes)
+const LOGO_URL = "https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png";
+
 // ALMACÉN TEMPORAL DE ÓRDENES
 const pendingOrders = new Map();
 
 // ---------------------------------------------------------
 // 1. TU BASE DE DATOS DE PRECIOS
 // ---------------------------------------------------------
-// Pon aquí el PRECIO FINAL que quieres cobrar en la tarjeta.
-// El servidor cobrará exactamente este número.
+// IMPORTANTE: Estos son los precios FINALES que se cobrarán en la tarjeta.
 const PRODUCTOS_DB = [
     { id: '10', nombre: "Latex Interior Z10 20L", precioFinal: 253468, maxCuotas: 3 },
     { id: '20', nombre: "Latex Interior Z10 10L", precioFinal: 138112, maxCuotas: 3 },
@@ -84,12 +86,12 @@ app.post('/api/cotizar', async (req, res) => {
 
 
 // ---------------------------------------------------------
-// ENDPOINT 2: CREAR PREFERENCIA (CHECKOUT PRO)
+// ENDPOINT 2: CREAR PREFERENCIA
 // ---------------------------------------------------------
 app.post('/create_preference', async (req, res) => {
     try {
         const { items, payer, external_reference } = req.body;
-        console.log(`🛒 Nueva solicitud de pago: ${external_reference}`);
+        console.log(`🛒 Nueva solicitud: ${external_reference}`);
 
         if (!items || !items.length) return res.status(400).json({ error: 'Carrito vacío' });
 
@@ -105,14 +107,10 @@ app.post('/create_preference', async (req, res) => {
                 };
             }
 
-            // Buscamos el precio en la DB del servidor
             const productoDB = PRODUCTOS_DB.find(p => p.id === String(itemFrontend.id));
-
-            // Usamos el precio de la DB (seguro) o el del front (fallback)
             let precioFinal = productoDB ? productoDB.precioFinal : Number(itemFrontend.unit_price);
             let maxCuotasProd = productoDB ? productoDB.maxCuotas : 3;
 
-            // Limitamos las cuotas si el producto lo requiere
             if (maxCuotasProd < maxCuotasPermitidasCarrito) {
                 maxCuotasPermitidasCarrito = maxCuotasProd;
             }
@@ -126,7 +124,7 @@ app.post('/create_preference', async (req, res) => {
             };
         });
 
-        // Guardamos en memoria para el webhook
+        // Guardamos TODA la info del pagador (DNI, Teléfono, etc)
         pendingOrders.set(external_reference, { items: itemsProcesados, payer });
 
         const preference = {
@@ -166,17 +164,15 @@ app.post('/create_preference', async (req, res) => {
 
 
 // ---------------------------------------------------------
-// ENDPOINT 3: WEBHOOK (CORREOS OFICIALES)
+// ENDPOINT 3: WEBHOOK (EL CEREBRO DE LOS EMAILS)
 // ---------------------------------------------------------
 app.post('/webhook-mercadopago', async (req, res) => {
-    res.status(200).send('OK'); // Respondemos OK rápido a MP
+    res.status(200).send('OK');
 
     const type = req.body.type || req.query.type;
     const dataId = req.body.data?.id || req.body.id || req.query['data.id'];
 
     if (type === 'payment' && dataId) {
-        console.log(`🔔 Webhook recibido. ID Pago: ${dataId}`);
-
         try {
             const payment = await mercadopago.payment.get(dataId);
             const status = payment.body.status;
@@ -185,55 +181,128 @@ app.post('/webhook-mercadopago', async (req, res) => {
             if (status === 'approved') {
                 const orderData = pendingOrders.get(extRef);
 
-                if (!orderData) {
-                    console.error(`⚠️ No encontré datos en memoria para la orden ${extRef}. (Servidor reiniciado?)`);
-                    return;
-                }
+                if (!orderData) return;
 
-                console.log(`✅ Pago Aprobado. Enviando emails a ${orderData.payer.email}...`);
+                const { items, payer } = orderData;
+                const totalFormatted = payment.body.transaction_amount.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
 
-                // HTML del correo
-                const itemsHtml = orderData.items.map(item =>
-                    `<li style="margin-bottom: 5px;">
-                        <strong>${item.title}</strong> x${item.quantity} 
-                        - $${Number(item.unit_price).toLocaleString('es-AR')}
-                    </li>`
-                ).join('');
+                // -----------------------------------------------------
+                // 1. DISEÑO EMAIL CLIENTE (GRACIAS POR COMPRAR)
+                // -----------------------------------------------------
+                const clienteItemsHtml = items.map(item => `
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; color: #333;">${item.title}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center; color: #333;">${item.quantity}</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold; color: #333;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
+                    </tr>
+                `).join('');
 
-                const emailHtml = `
-                    <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-                        <div style="background: #000; color: #fff03b; padding: 20px; text-align: center;">
-                            <h1>¡Compra Exitosa!</h1>
+                const htmlCliente = `
+                <!DOCTYPE html>
+                <html>
+                <body style="margin:0; padding:0; background-color:#f4f4f4; font-family: Arial, sans-serif;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+                        <div style="background-color: #000000; padding: 20px; text-align: center;">
+                            <h1 style="color: #fff03b; margin: 0; font-size: 24px;">BRIAGO PINTURAS</h1>
                         </div>
-                        <div style="padding: 20px;">
-                            <p>Hola <strong>${orderData.payer.name}</strong>,</p>
-                            <p>Hemos recibido tu pago correctamente. Aquí está el resumen de tu pedido:</p>
-                            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                            <ul style="list-style: none; padding: 0;">${itemsHtml}</ul>
-                            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                            <h2 style="text-align: right;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</h2>
-                            <p style="font-size: 12px; color: #666; margin-top: 30px;">
-                                Referencia: #${extRef} <br>
-                                Briago Pinturas
+                        
+                        <div style="padding: 30px;">
+                            <h2 style="color: #000; margin-top: 0;">¡Hola ${payer.name}!</h2>
+                            <p style="color: #666; line-height: 1.5;">Tu pago ha sido aprobado correctamente. Estamos preparando tu pedido.</p>
+                            
+                            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                                <p style="margin: 0; font-size: 14px; color: #555;"><strong>N° de Orden:</strong> #${extRef}</p>
+                            </div>
+
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; color: #999; font-size: 12px; border-bottom: 2px solid #eee; padding-bottom: 10px;">PRODUCTO</th>
+                                        <th style="text-align: center; color: #999; font-size: 12px; border-bottom: 2px solid #eee; padding-bottom: 10px;">CANT.</th>
+                                        <th style="text-align: right; color: #999; font-size: 12px; border-bottom: 2px solid #eee; padding-bottom: 10px;">PRECIO</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${clienteItemsHtml}
+                                </tbody>
+                            </table>
+
+                            <div style="margin-top: 20px; text-align: right;">
+                                <p style="font-size: 18px; margin: 0;">Total Pagado:</p>
+                                <p style="font-size: 28px; font-weight: bold; color: #000; margin: 5px 0;">${totalFormatted}</p>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+                            
+                            <p style="text-align: center; color: #999; font-size: 12px;">
+                                Gracias por confiar en nosotros.<br>
+                                Briago Pinturas - Especialistas en Automotor y Obra
                             </p>
                         </div>
                     </div>
+                </body>
+                </html>
                 `;
 
-                // --- ENVÍO DE EMAIL CON DOMINIO PROPIO ---
-                const emailResult = await resend.emails.send({
-                    from: 'Briago Pinturas <ventas@briagopinturas.com>', // <--- ¡AQUÍ ESTÁ EL CAMBIO!
-                    to: [orderData.payer.email, 'besadamateo@gmail.com'], // Le llega al cliente y a ti
+                // -----------------------------------------------------
+                // 2. DISEÑO EMAIL VENDEDOR (DATOS DUROS PARA TI)
+                // -----------------------------------------------------
+                const vendedorItemsHtml = items.map(item => `
+                    <li><strong>${item.quantity}x</strong> ${item.title}</li>
+                `).join('');
+
+                const htmlVendedor = `
+                <!DOCTYPE html>
+                <html>
+                <body style="font-family: Arial, sans-serif; background-color: #eee; padding: 20px;">
+                    <div style="max-width: 500px; margin: 0 auto; background-color: #fff; padding: 20px; border-left: 5px solid #fff03b;">
+                        <h2 style="margin-top: 0; color: #000;">🔔 NUEVA VENTA CONFIRMADA</h2>
+                        <p style="font-size: 14px; color: #666;">Referencia: <strong>#${extRef}</strong></p>
+                        
+                        <div style="background-color: #f0f0f0; padding: 15px; margin: 15px 0;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 16px;">👤 Datos del Cliente</h3>
+                            <p style="margin: 2px 0;"><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
+                            <p style="margin: 2px 0;"><strong>DNI:</strong> ${payer.identification?.number || '-'}</p>
+                            <p style="margin: 2px 0;"><strong>Teléfono:</strong> ${payer.phone?.number || '-'}</p>
+                            <p style="margin: 2px 0;"><strong>Email:</strong> ${payer.email}</p>
+                        </div>
+
+                        <div style="background-color: #f0f0f0; padding: 15px; margin: 15px 0;">
+                            <h3 style="margin: 0 0 10px 0; font-size: 16px;">🚚 Envío / Entrega</h3>
+                            <p style="margin: 2px 0;"><strong>Dirección:</strong> ${payer.address?.street_name || '-'}</p>
+                            <p style="margin: 2px 0;"><strong>CP / Ciudad:</strong> ${payer.address?.zip_code}</p>
+                        </div>
+
+                        <h3>📦 Productos:</h3>
+                        <ul>${vendedorItemsHtml}</ul>
+                        
+                        <h2 style="text-align: right;">Total: ${totalFormatted}</h2>
+                    </div>
+                </body>
+                </html>
+                `;
+
+                // -----------------------------------------------------
+                // 3. ENVIAR LOS CORREOS (POR SEPARADO)
+                // -----------------------------------------------------
+
+                // Email al Cliente
+                await resend.emails.send({
+                    from: 'Briago Pinturas <ventas@briagopinturas.com>',
+                    to: [payer.email],
                     subject: `Confirmación de Compra #${extRef}`,
-                    html: emailHtml
+                    html: htmlCliente
                 });
 
-                if (emailResult.error) {
-                    console.error("❌ Error enviando email:", emailResult.error);
-                } else {
-                    console.log("📧 Emails enviados con éxito. ID:", emailResult.data?.id);
-                }
+                // Email al Vendedor (A ti)
+                await resend.emails.send({
+                    from: 'Sistema Briago <ventas@briagopinturas.com>',
+                    to: ['besadamateo@gmail.com'],
+                    subject: `💰 Nueva Venta: $${payment.body.transaction_amount}`,
+                    html: htmlVendedor
+                });
 
+                console.log(`✅ Emails enviados para orden ${extRef}`);
                 pendingOrders.delete(extRef);
             }
         } catch (error) {
