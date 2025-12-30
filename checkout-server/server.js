@@ -13,6 +13,8 @@ app.use(bodyParser.json());
 
 const pendingOrders = new Map();
 
+const LOGO_URL = 'https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png';
+
 // ---------------------------------------------------------
 // CONFIGURACIÓN
 // ---------------------------------------------------------
