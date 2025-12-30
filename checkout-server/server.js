@@ -20,69 +20,72 @@ mercadopago.configure({
     access_token: process.env.MP_ACCESS_TOKEN,
 });
 
-const LOGO_URL = "https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png";
-const pendingOrders = new Map();
-
-// ---------------------------------------------------------
-// ENDPOINT 1: COTIZADOR DE ENVÍOPACK (CORREGIDO)
-// ---------------------------------------------------------
+// [PUNTO DE MONTAJE PARA EL NUEVO COTIZADOR]
 app.post('/api/cotizar', async (req, res) => {
     try {
-        // Recibimos CP y Provincia del Frontend
+        console.log("--- SOLICITUD DE COTIZACIÓN RECIBIDA ---");
         const { codigo_postal, provincia } = req.body;
-        console.log(`📡 Cotizando EnvíoPack -> CP: ${codigo_postal} | Prov: ${provincia}`);
+        console.log("Datos:", { codigo_postal, provincia });
 
         const apiKey = process.env.ENVIOPACK_API_KEY;
         const secretKey = process.env.ENVIOPACK_SECRET_KEY;
 
         if (!apiKey || !secretKey) {
-            console.error("❌ ERROR: Faltan las claves ENVIOPACK_API_KEY o ENVIOPACK_SECRET_KEY en Render.");
-            return res.status(500).json({ error: "Error de configuración del servidor." });
+            console.error("❌ Faltan credenciales de EnvioPack");
+            return res.status(500).json({ error: "Configuración de servidor incompleta" });
         }
 
-        // 1. AUTENTICACIÓN
-        const authResponse = await fetch('https://api.enviopack.com/auth', {
+        // 1. AUTH
+        console.log("1. Autenticando con EnvioPack...");
+        const authRes = await fetch('https://api.enviopack.com/auth', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({ 'api-key': apiKey, 'secret-key': secretKey })
         });
 
-        if (!authResponse.ok) {
-            const errorText = await authResponse.text();
-            console.error(`❌ Falló Auth EnvíoPack: ${errorText}`);
-            throw new Error("Error de autenticación con el correo");
+        if (!authRes.ok) {
+            const err = await authRes.text();
+            console.error("❌ Error Auth:", err);
+            return res.status(401).json({ error: "Error de autenticación con proveedor de envíos" });
         }
 
-        const authData = await authResponse.json();
+        const authData = await authRes.json();
         const token = authData.token;
+        console.log("✅ Auth exitosa. Token obtenido.");
 
-        // 2. COTIZACIÓN (Volvemos a usar strings fijos para evitar errores de tipo)
+        // 2. COTIZAR
+        // Hardcodeamos peso y medidas para simplificar, como se pidió
+        const peso = 22.0;
+        const medidas = '30x30x40';
+
         const params = new URLSearchParams({
             access_token: token,
-            provincia: provincia || 'Buenos Aires', // Fallback por si llega vacío
+            provincia: provincia || 'Buenos Aires',
             codigo_postal: codigo_postal,
-            peso: '22.0',        // <--- Enviamos como TEXTO para asegurar compatibilidad
-            paquetes: '30x30x40' // <--- Medidas estándar
+            peso: peso,
+            paquetes: medidas
         });
 
-        const cotizacionResponse = await fetch(`https://api.enviopack.com/cotizar/costo?${params}`);
+        console.log("2. Consultando API de cotización...");
+        const cotizarRes = await fetch(`https://api.enviopack.com/cotizar/costo?${params}`);
 
-        if (!cotizacionResponse.ok) {
-            const errorText = await cotizacionResponse.text();
-            console.error(`❌ Error API Cotización: ${errorText}`);
-            // Devolvemos array vacío para que el frontend no se rompa, solo diga "No hay envíos"
+        if (!cotizarRes.ok) {
+            const err = await cotizarRes.text();
+            console.error("❌ Error Cotización:", err);
+            // Devolvemos array vacío pero sin error 500 para que el front diga "No hay opciones"
             return res.json([]);
         }
 
-        const resultados = await cotizacionResponse.json();
-        console.log(`✅ Cotización exitosa: ${resultados.length} opciones encontradas.`);
-        res.json(resultados);
+        const data = await cotizarRes.json();
+        console.log(`✅ Cotización exitosa. Opciones: ${Array.isArray(data) ? data.length : 0}`);
 
-    } catch (error) {
-        console.error("❌ Error General en Cotizador:", error.message);
-        res.status(500).json({ error: "Error interno al cotizar envío" });
+        res.json(data);
+
+    } catch (e) {
+        console.error("❌ EXCEPCIÓN EN SERVER:", e);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 });
+
 
 
 // ---------------------------------------------------------

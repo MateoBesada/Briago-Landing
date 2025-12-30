@@ -213,7 +213,10 @@ const CheckoutPage = () => {
                 {deliveryMethod === 'delivery' && (
                   <div className="mb-8">
                     <CalculadoraEnvio onSelect={(costo, detalle, cp) => {
-                      setShippingCost(costo); setShippingDetail(detalle); setCalculatorZip(cp);
+                      setShippingCost(costo);
+                      setShippingDetail(detalle);
+                      setCalculatorZip(cp);
+                      // Auto-fill del CP en el formulario para conveniencia
                       setFormData(prev => ({ ...prev, postalcode: cp }));
                     }} />
                   </div>
