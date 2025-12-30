@@ -20,16 +20,15 @@ mercadopago.configure({
     access_token: process.env.MP_ACCESS_TOKEN,
 });
 
-// URL de tu logo para los emails (Cámbiala por la real si la tienes)
+// LOGO DE LA EMPRESA
 const LOGO_URL = "https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png";
 
 // ALMACÉN TEMPORAL DE ÓRDENES
 const pendingOrders = new Map();
 
 // ---------------------------------------------------------
-// 1. TU BASE DE DATOS DE PRECIOS
+// 1. BASE DE DATOS DE PRECIOS (Recuerda mantener estos precios actualizados)
 // ---------------------------------------------------------
-// IMPORTANTE: Estos son los precios FINALES que se cobrarán en la tarjeta.
 const PRODUCTOS_DB = [
     { id: '10', nombre: "Latex Interior Z10 20L", precioFinal: 253468, maxCuotas: 3 },
     { id: '20', nombre: "Latex Interior Z10 10L", precioFinal: 138112, maxCuotas: 3 },
@@ -79,7 +78,7 @@ app.post('/api/cotizar', async (req, res) => {
         const resultados = await cotizacionResponse.json();
         res.json(resultados);
     } catch (error) {
-        console.error("❌ Error al cotizar:", error.message);
+        console.error("Error al cotizar:", error.message);
         res.status(500).json({ error: "Error al cotizar envío" });
     }
 });
@@ -91,7 +90,7 @@ app.post('/api/cotizar', async (req, res) => {
 app.post('/create_preference', async (req, res) => {
     try {
         const { items, payer, external_reference } = req.body;
-        console.log(`🛒 Nueva solicitud: ${external_reference}`);
+        console.log(`Nueva solicitud: ${external_reference}`);
 
         if (!items || !items.length) return res.status(400).json({ error: 'Carrito vacío' });
 
@@ -124,7 +123,7 @@ app.post('/create_preference', async (req, res) => {
             };
         });
 
-        // Guardamos TODA la info del pagador (DNI, Teléfono, etc)
+        // Guardamos datos
         pendingOrders.set(external_reference, { items: itemsProcesados, payer });
 
         const preference = {
@@ -157,14 +156,14 @@ app.post('/create_preference', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Error create_preference:', error);
+        console.error('Error create_preference:', error);
         res.status(500).json({ error: 'Error al generar link de pago' });
     }
 });
 
 
 // ---------------------------------------------------------
-// ENDPOINT 3: WEBHOOK (EL CEREBRO DE LOS EMAILS)
+// ENDPOINT 3: WEBHOOK (EMAILS PROFESIONALES)
 // ---------------------------------------------------------
 app.post('/webhook-mercadopago', async (req, res) => {
     res.status(200).send('OK');
@@ -186,40 +185,61 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 const { items, payer } = orderData;
                 const totalFormatted = payment.body.transaction_amount.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
 
+                // --- 1. LÓGICA DE DIRECCIÓN / RETIRO ---
+                // Si el campo de calle está vacío o undefined, asumimos que es Retiro en Tienda
+                let infoEnvioHtml = '';
+                const tieneDireccion = payer.address?.street_name && payer.address.street_name.trim() !== '' && payer.address.street_name !== 'null';
+
+                if (tieneDireccion) {
+                    infoEnvioHtml = `
+                        <p style="margin: 2px 0; font-size: 14px; color: #333;"><strong>Tipo:</strong> Envío a Domicilio</p>
+                        <p style="margin: 2px 0; font-size: 14px; color: #333;"><strong>Dirección:</strong> ${payer.address.street_name}</p>
+                        <p style="margin: 2px 0; font-size: 14px; color: #333;"><strong>CP / Localidad:</strong> ${payer.address.zip_code}</p>
+                    `;
+                } else {
+                    // Diseño destacado para Retiro
+                    infoEnvioHtml = `
+                        <div style="background-color: #fff03b; color: #000; padding: 10px; text-align: center; border-radius: 4px; margin-top: 5px;">
+                            <strong style="font-size: 16px; text-transform: uppercase;">RETIRO EN SUCURSAL</strong>
+                            <p style="margin: 5px 0 0 0; font-size: 12px;">El cliente retirará el pedido en el local.</p>
+                        </div>
+                    `;
+                }
+
                 // -----------------------------------------------------
-                // 1. DISEÑO EMAIL CLIENTE (GRACIAS POR COMPRAR)
+                // 2. DISEÑO EMAIL CLIENTE
                 // -----------------------------------------------------
                 const clienteItemsHtml = items.map(item => `
                     <tr>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee; color: #333;">${item.title}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center; color: #333;">${item.quantity}</td>
-                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold; color: #333;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #eee; color: #333; font-size: 14px;">${item.title}</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: center; color: #333; font-size: 14px;">${item.quantity}</td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #eee; text-align: right; font-weight: bold; color: #333; font-size: 14px;">$${Number(item.unit_price).toLocaleString('es-AR')}</td>
                     </tr>
                 `).join('');
 
                 const htmlCliente = `
                 <!DOCTYPE html>
                 <html>
-                <body style="margin:0; padding:0; background-color:#f4f4f4; font-family: Arial, sans-serif;">
+                <body style="margin:0; padding:0; background-color:#f4f4f4; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-                        <div style="background-color: #000000; padding: 20px; text-align: center;">
-                            <h1 style="color: #fff03b; margin: 0; font-size: 24px;">BRIAGO PINTURAS</h1>
+                        <div style="background-color: #000000; padding: 30px; text-align: center;">
+                            <img src="${LOGO_URL}" alt="Briago Pinturas" width="180" style="display: block; margin: 0 auto; max-width: 100%;">
                         </div>
                         
-                        <div style="padding: 30px;">
-                            <h2 style="color: #000; margin-top: 0;">¡Hola ${payer.name}!</h2>
-                            <p style="color: #666; line-height: 1.5;">Tu pago ha sido aprobado correctamente. Estamos preparando tu pedido.</p>
+                        <div style="padding: 40px 30px;">
+                            <h2 style="color: #000; margin-top: 0; font-size: 20px;">Confirmación de Pedido</h2>
+                            <p style="color: #555; line-height: 1.6; font-size: 15px;">Hola ${payer.name}, gracias por tu compra. Hemos recibido tu pago y estamos procesando tu pedido.</p>
                             
-                            <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                                <p style="margin: 0; font-size: 14px; color: #555;"><strong>N° de Orden:</strong> #${extRef}</p>
+                            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; margin: 25px 0; border: 1px solid #eee;">
+                                <p style="margin: 0; font-size: 14px; color: #555;"><strong>Referencia:</strong> #${extRef}</p>
                             </div>
 
-                            <table style="width: 100%; border-collapse: collapse;">
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                                 <thead>
                                     <tr>
-                                        <th style="text-align: left; color: #999; font-size: 12px; border-bottom: 2px solid #eee; padding-bottom: 10px;">PRODUCTO</th>
-                                        <th style="text-align: center; color: #999; font-size: 12px; border-bottom: 2px solid #eee; padding-bottom: 10px;">CANT.</th>
-                                        <th style="text-align: right; color: #999; font-size: 12px; border-bottom: 2px solid #eee; padding-bottom: 10px;">PRECIO</th>
+                                        <th style="text-align: left; color: #999; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 10px;">Producto</th>
+                                        <th style="text-align: center; color: #999; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 10px;">Cant.</th>
+                                        <th style="text-align: right; color: #999; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid #eee; padding-bottom: 10px;">Precio</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -227,17 +247,15 @@ app.post('/webhook-mercadopago', async (req, res) => {
                                 </tbody>
                             </table>
 
-                            <div style="margin-top: 20px; text-align: right;">
-                                <p style="font-size: 18px; margin: 0;">Total Pagado:</p>
-                                <p style="font-size: 28px; font-weight: bold; color: #000; margin: 5px 0;">${totalFormatted}</p>
+                            <div style="margin-top: 20px; text-align: right; border-top: 2px solid #000; padding-top: 15px;">
+                                <span style="font-size: 14px; color: #666; margin-right: 15px;">Total Pagado:</span>
+                                <span style="font-size: 24px; font-weight: bold; color: #000;">${totalFormatted}</span>
                             </div>
 
-                            <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-                            
-                            <p style="text-align: center; color: #999; font-size: 12px;">
-                                Gracias por confiar en nosotros.<br>
-                                Briago Pinturas - Especialistas en Automotor y Obra
-                            </p>
+                            <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
+                                <p style="color: #999; font-size: 12px; margin: 0;">Briago Pinturas</p>
+                                <p style="color: #ccc; font-size: 11px; margin-top: 5px;">Este es un correo automático, por favor no respondas a esta dirección.</p>
+                            </div>
                         </div>
                     </div>
                 </body>
@@ -245,73 +263,86 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 `;
 
                 // -----------------------------------------------------
-                // 2. DISEÑO EMAIL VENDEDOR (DATOS DUROS PARA TI)
+                // 3. DISEÑO EMAIL VENDEDOR (OPERATIVO)
                 // -----------------------------------------------------
                 const vendedorItemsHtml = items.map(item => `
-                    <li><strong>${item.quantity}x</strong> ${item.title}</li>
+                    <li style="margin-bottom: 8px; font-size: 14px; color: #333;">
+                        <strong>${item.quantity}x</strong> ${item.title}
+                    </li>
                 `).join('');
 
                 const htmlVendedor = `
                 <!DOCTYPE html>
                 <html>
-                <body style="font-family: Arial, sans-serif; background-color: #eee; padding: 20px;">
-                    <div style="max-width: 500px; margin: 0 auto; background-color: #fff; padding: 20px; border-left: 5px solid #fff03b;">
-                        <h2 style="margin-top: 0; color: #000;">🔔 NUEVA VENTA CONFIRMADA</h2>
-                        <p style="font-size: 14px; color: #666;">Referencia: <strong>#${extRef}</strong></p>
+                <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; padding: 20px;">
+                    <div style="max-width: 550px; margin: 0 auto; background-color: #fff; padding: 0; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
                         
-                        <div style="background-color: #f0f0f0; padding: 15px; margin: 15px 0;">
-                            <h3 style="margin: 0 0 10px 0; font-size: 16px;">👤 Datos del Cliente</h3>
-                            <p style="margin: 2px 0;"><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
-                            <p style="margin: 2px 0;"><strong>DNI:</strong> ${payer.identification?.number || '-'}</p>
-                            <p style="margin: 2px 0;"><strong>Teléfono:</strong> ${payer.phone?.number || '-'}</p>
-                            <p style="margin: 2px 0;"><strong>Email:</strong> ${payer.email}</p>
+                        <div style="background-color: #000; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                            <h2 style="margin: 0; font-size: 18px; color: #fff03b;">NUEVA VENTA WEB</h2>
+                            <span style="font-size: 14px; opacity: 0.8;">#${extRef}</span>
                         </div>
 
-                        <div style="background-color: #f0f0f0; padding: 15px; margin: 15px 0;">
-                            <h3 style="margin: 0 0 10px 0; font-size: 16px;">🚚 Envío / Entrega</h3>
-                            <p style="margin: 2px 0;"><strong>Dirección:</strong> ${payer.address?.street_name || '-'}</p>
-                            <p style="margin: 2px 0;"><strong>CP / Ciudad:</strong> ${payer.address?.zip_code}</p>
-                        </div>
+                        <div style="padding: 25px;">
+                            
+                            <h3 style="margin: 0 0 10px 0; font-size: 15px; text-transform: uppercase; color: #999; border-bottom: 1px solid #eee; padding-bottom: 5px;">Datos del Cliente</h3>
+                            <div style="margin-bottom: 25px;">
+                                <p style="margin: 3px 0; font-size: 14px;"><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
+                                <p style="margin: 3px 0; font-size: 14px;"><strong>DNI:</strong> ${payer.identification?.number || '-'}</p>
+                                <p style="margin: 3px 0; font-size: 14px;"><strong>Teléfono:</strong> <a href="tel:${payer.phone?.number}" style="color: #000; text-decoration: none;">${payer.phone?.number || '-'}</a></p>
+                                <p style="margin: 3px 0; font-size: 14px;"><strong>Email:</strong> ${payer.email}</p>
+                            </div>
 
-                        <h3>📦 Productos:</h3>
-                        <ul>${vendedorItemsHtml}</ul>
-                        
-                        <h2 style="text-align: right;">Total: ${totalFormatted}</h2>
+                            <h3 style="margin: 0 0 10px 0; font-size: 15px; text-transform: uppercase; color: #999; border-bottom: 1px solid #eee; padding-bottom: 5px;">Método de Entrega</h3>
+                            <div style="margin-bottom: 25px;">
+                                ${infoEnvioHtml}
+                            </div>
+
+                            <h3 style="margin: 0 0 10px 0; font-size: 15px; text-transform: uppercase; color: #999; border-bottom: 1px solid #eee; padding-bottom: 5px;">Detalle del Pedido</h3>
+                            <ul style="padding-left: 20px; margin-top: 10px;">
+                                ${vendedorItemsHtml}
+                            </ul>
+                            
+                            <div style="text-align: right; margin-top: 20px; padding-top: 15px; border-top: 2px solid #000;">
+                                <p style="font-size: 14px; color: #666; margin: 0;">Total Cobrado:</p>
+                                <p style="font-size: 22px; font-weight: bold; margin: 5px 0 0 0;">${totalFormatted}</p>
+                            </div>
+
+                        </div>
                     </div>
                 </body>
                 </html>
                 `;
 
                 // -----------------------------------------------------
-                // 3. ENVIAR LOS CORREOS (POR SEPARADO)
+                // 4. ENVIAR CORREOS
                 // -----------------------------------------------------
 
-                // Email al Cliente
+                // Al Cliente
                 await resend.emails.send({
                     from: 'Briago Pinturas <ventas@briagopinturas.com>',
                     to: [payer.email],
-                    subject: `Confirmación de Compra #${extRef}`,
+                    subject: `Confirmación de Pedido #${extRef}`,
                     html: htmlCliente
                 });
 
-                // Email al Vendedor (A ti)
+                // Al Vendedor (Tú)
                 await resend.emails.send({
-                    from: 'Sistema Briago <ventas@briagopinturas.com>',
+                    from: 'Sistema Web <ventas@briagopinturas.com>',
                     to: ['besadamateo@gmail.com'],
-                    subject: `💰 Nueva Venta: $${payment.body.transaction_amount}`,
+                    subject: `Nueva Venta Web #${extRef}`,
                     html: htmlVendedor
                 });
 
-                console.log(`✅ Emails enviados para orden ${extRef}`);
+                console.log(`Emails enviados para orden ${extRef}`);
                 pendingOrders.delete(extRef);
             }
         } catch (error) {
-            console.error('❌ Error procesando webhook:', error);
+            console.error('Error procesando webhook:', error);
         }
     }
 });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-    console.log(`✅ Servidor corriendo en puerto ${port}`);
+    console.log(`Servidor corriendo en puerto ${port}`);
 });
