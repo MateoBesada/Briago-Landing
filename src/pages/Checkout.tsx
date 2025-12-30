@@ -44,7 +44,7 @@ const CheckoutPage = () => {
   const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'delivery'>('pickup');
   const [shippingCost, setShippingCost] = useState(0);
   const [shippingDetail, setShippingDetail] = useState('');
-  const [, setCalculatorZip] = useState('');
+  const [calculatorZip, setCalculatorZip] = useState('');
 
   const [formData, setFormData] = useState({
     fullname: "", email: "", address: "", city: "", postalcode: "", phone: "",
@@ -85,6 +85,11 @@ const CheckoutPage = () => {
       }
       if (shippingCost === 0) {
         toast.error("Calculá el costo de envío antes de continuar.");
+        return;
+      }
+
+      if (formData.postalcode.trim() !== calculatorZip.trim()) {
+        toast.error(`El Código Postal del formulario (${formData.postalcode}) no coincide con el calculado (${calculatorZip}). Por favor, corregilo.`);
         return;
       }
     }
