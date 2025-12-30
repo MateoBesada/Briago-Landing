@@ -3,7 +3,7 @@ import { useCart } from '@/context/CartContext';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2, ArrowLeft, ShieldCheck, Lock, CreditCard, Store, Truck, KeyRound } from 'lucide-react';
+import { Loader2, ArrowLeft, ShieldCheck, Lock, CreditCard, Store, Truck } from 'lucide-react';
 import CalculadoraEnvio from '@/components/CalculadoraEnvio';
 
 // Helper para formatear dinero
@@ -38,24 +38,6 @@ const CheckoutPage = () => {
   const { cart } = useCart();
   const navigate = useNavigate();
 
-  // ---------------------------------------------------------
-  // 🔒 SISTEMA DE CANDADO (NUEVO)
-  // ---------------------------------------------------------
-  const [isAuthorized, setIsAuthorized] = useState(false); // Empieza bloqueado
-  const [accessCode, setAccessCode] = useState('');
-
-  // ¡CAMBIA ESTA CLAVE POR LA QUE LE DIRÁS A TU AMIGO!
-  const CLAVE_SECRETA = "Sikaflex221";
-
-  const handleUnlock = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (accessCode.trim() === CLAVE_SECRETA) {
-      setIsAuthorized(true);
-      toast.success("Acceso autorizado para pruebas");
-    } else {
-      toast.error("Clave incorrecta");
-    }
-  };
   // ---------------------------------------------------------
 
   const [isLoading, setIsLoading] = useState(false);
@@ -166,37 +148,13 @@ const CheckoutPage = () => {
   };
 
   // ---------------------------------------------------------
-  // 🔒 PANTALLA DE BLOQUEO (SI NO TIENE LA CLAVE)
+  // 🔒 PANTALLA DE BLOQUEO (ELIMINADA / DESACTIVADA)
   // ---------------------------------------------------------
-  if (!isAuthorized) {
-    return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full text-center space-y-6">
-          <div className="w-16 h-16 bg-[#fff03b] rounded-full flex items-center justify-center mx-auto mb-4">
-            <KeyRound className="w-8 h-8 text-black" />
-          </div>
-          <h2 className="text-2xl font-black uppercase tracking-tight">Modo Pruebas</h2>
-          <p className="text-gray-500">El checkout está restringido temporalmente. Ingresa la clave de acceso.</p>
-
-          <form onSubmit={handleUnlock} className="space-y-4">
-            <input
-              type="password"
-              value={accessCode}
-              onChange={(e) => setAccessCode(e.target.value)}
-              className="w-full text-center text-2xl font-bold tracking-widest p-4 border-2 border-gray-200 rounded-xl focus:border-black focus:outline-none uppercase"
-              placeholder="CLAVE"
-            />
-            <button type="submit" className="w-full bg-black text-[#fff03b] font-bold uppercase py-4 rounded-xl hover:scale-[1.02] transition-transform">
-              Desbloquear
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
+  // He quitado el bloque "if (!isAuthorized) return ..." para que 
+  // pase directo a la pantalla de abajo.
 
   // ---------------------------------------------------------
-  // PANTALLA NORMAL (SOLO SE VE SI isAuthorized es TRUE)
+  // PANTALLA NORMAL (AHORA SE VE SIEMPRE)
   // ---------------------------------------------------------
   return (
     <div className="bg-gray-50 font-gotham min-h-screen py-12">

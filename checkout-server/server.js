@@ -187,7 +187,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 <html>
                 <body style="margin:0; padding:0; background-color:#f4f4f4; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
                     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
-                        <div style="background-color: #000000; padding: 30px; text-align: center;">
+                        <div style="background-color: #fff03b; padding: 30px; text-align: center;">
                             <img src="${LOGO_URL}" alt="Briago Pinturas" width="180" style="display: block; margin: 0 auto; max-width: 100%;">
                         </div>
                         
