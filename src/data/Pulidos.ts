@@ -5,7 +5,7 @@ export const productosPulidos: Producto[] = [
     id: '5',
     nombre: "Menzerna 3 En 1 Pulidor Un Paso 1 Litro",
     descripcion: "",
-    off:5,
+    off: 5,
     precioOriginal: 103783,
     imagen: "/img/Pulidos/menzerna3en1.png",
     categoria: "",
@@ -13,12 +13,12 @@ export const productosPulidos: Producto[] = [
     capacidad: "1",
     color: '',
     seccion: "Pulidos",
-    variantes:[
+    variantes: [
       {
         id: '115',
         nombre: "Menzerna 3 En 1 Pulidor Un Paso 250 ml",
         descripcion: "",
-        off:5,
+        off: 5,
         precioOriginal: 34999,
         imagen: "/img/Pulidos/menzerna3en1.png",
         categoria: "",
@@ -26,7 +26,7 @@ export const productosPulidos: Producto[] = [
         capacidad: "0,25",
         color: '',
         seccion: "Pulidos",
-        stock:60,
+        stock: 60,
       }
     ]
   },
@@ -34,7 +34,7 @@ export const productosPulidos: Producto[] = [
     id: '15',
     nombre: "Menzerna Heavy Cut Hc1000 Power Gloss 1 Litro",
     descripcion: "",
-    off:5,
+    off: 5,
     precioOriginal: 69900,
     imagen: "/img/Pulidos/menzerna1000.png",
     categoria: "",
@@ -47,7 +47,7 @@ export const productosPulidos: Producto[] = [
     id: '25',
     nombre: "Menzerna 400 Heavy Cut Compound 1 Litro",
     descripcion: "",
-    off:5,
+    off: 5,
     precioOriginal: 123399,
     imagen: "/img/Pulidos/menzerna400.png",
     categoria: "",
@@ -62,9 +62,9 @@ export const productosPulidos: Producto[] = [
     descripcion: '',
     precioOriginal: 45450,
     imagen: '/img/Automotor/Captura de pantalla 2025-06-26 124419.png',
-    imgOpcionales: ['/img/Automotor/Ejemplo.png','/img/Automotor/Ejemplo2.png'],
+    imgOpcionales: ['/img/Automotor/Ejemplo.png', '/img/Automotor/Ejemplo2.png'],
     categoria: 'Pads',
-    marca:'Gekatex',
+    marca: 'Gekatex',
     seccion: "Pulidos",
   },
   {
@@ -74,7 +74,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 151692,
     imagen: '/img/Pulidos/3M06094.png',
     categoria: 'Abrillantadores',
-    marca:'3M',
+    marca: '3M',
     seccion: "Pulidos",
   },
   {
@@ -84,7 +84,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 151692,
     imagen: '/img/Pulidos/3M06068.png',
     categoria: 'Pastas para Pulir',
-    marca:'3M',
+    marca: '3M',
     seccion: "Pulidos",
   },
   {
@@ -94,7 +94,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 54633,
     imagen: '/img/Pulidos/3M05996.webp',
     categoria: 'Abrillantadores',
-    marca:'3M',
+    marca: '3M',
     seccion: "Pulidos",
   },
   {
@@ -104,7 +104,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 54633,
     imagen: '/img/Pulidos/3M05990.webp',
     categoria: 'Ceras',
-    marca:'3M',
+    marca: '3M',
     seccion: "Pulidos",
   },
   {
@@ -114,17 +114,17 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 19799,
     imagen: '/img/Pulidos/plato-adaptador-backing-pro-5-pulg-flexible-rosca-m14-gekatex.jpg',
     categoria: 'Platos Adaptadores',
-    marca:'3M',
+    marca: '3M',
     seccion: "Pulidos",
   },
   {
     id: '105',
     nombre: 'Pad Espuma 3" Corte Alto Blanco Gekatek',
     descripcion: '',
-    precioOriginal: 26291,
+    precioOriginal: 1000,
     imagen: '/img/Pulidos/Pulido1.png',
     categoria: 'Pads',
-    marca:'3M',
+    marca: '3M',
     seccion: "Pulidos",
   },
   {
@@ -134,7 +134,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 34743,
     imagen: '/img/Pulidos/pad-negro-de-abrillantado.jpg',
     categoria: 'Pads',
-    marca:'Gekatex',
+    marca: 'Gekatex',
     seccion: "Pulidos",
   },
   {
@@ -144,7 +144,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 31900,
     imagen: '/img/Pulidos/pad-naranja-de-lustrado.png',
     categoria: 'Pads',
-    marca:'Gekatex',
+    marca: 'Gekatex',
     seccion: "Pulidos",
   },
   {
@@ -154,7 +154,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 39900,
     imagen: '/img/Pulidos/pad-blanco-de-corte.jpg',
     categoria: 'Pads',
-    marca:'Gekatex',
+    marca: 'Gekatex',
     seccion: "Pulidos",
   },
   {
@@ -164,7 +164,7 @@ export const productosPulidos: Producto[] = [
     precioOriginal: 44199,
     imagen: '/img/Pulidos/pad-azul-de-lustrado.png',
     categoria: 'Pads',
-    marca:'Gekatex',
+    marca: 'Gekatex',
     seccion: "Pulidos",
   },
 ];

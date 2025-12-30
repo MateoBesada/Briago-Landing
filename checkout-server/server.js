@@ -26,23 +26,6 @@ const LOGO_URL = "https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png";
 // ALMACÉN TEMPORAL DE ÓRDENES
 const pendingOrders = new Map();
 
-// ---------------------------------------------------------
-// 1. BASE DE DATOS DE PRECIOS (Recuerda mantener estos precios actualizados)
-// ---------------------------------------------------------
-const PRODUCTOS_DB = [
-    { id: '10', nombre: "Latex Interior Z10 20L", precioFinal: 253468, maxCuotas: 3 },
-    { id: '20', nombre: "Latex Interior Z10 10L", precioFinal: 138112, maxCuotas: 3 },
-    { id: '30', nombre: "Latex Interior Z10 4L", precioFinal: 47297, maxCuotas: 3 },
-    { id: '40', nombre: "Latex Interior Quantum 20L", precioFinal: 183651, maxCuotas: 3 },
-    { id: '50', nombre: "Latex Interior Quantum 4L", precioFinal: 61976, maxCuotas: 3 },
-    { id: '60', nombre: "Latex Int/Ext Quantum 20L", precioFinal: 203607, maxCuotas: 3 },
-    { id: '70', nombre: "Latex Int/Ext Quantum 4L", precioFinal: 63798, maxCuotas: 3 },
-    { id: '80', nombre: "Fijador Quantum 20L", precioFinal: 115294, maxCuotas: 3 },
-    { id: '90', nombre: "Fijador Quantum 4L", precioFinal: 22235, maxCuotas: 3 },
-    // Agrega el resto de tus productos aquí...
-    { id: 'kovax-ejemplo', nombre: "Lija Kovax", precioFinal: 7500, maxCuotas: 6 }
-];
-
 
 // ---------------------------------------------------------
 // ENDPOINT 1: COTIZADOR
@@ -85,7 +68,7 @@ app.post('/api/cotizar', async (req, res) => {
 
 
 // ---------------------------------------------------------
-// ENDPOINT 2: CREAR PREFERENCIA
+// ENDPOINT 2: CREAR PREFERENCIA (MODIFICADO: SIN INFLACIÓN)
 // ---------------------------------------------------------
 app.post('/create_preference', async (req, res) => {
     try {
@@ -94,36 +77,21 @@ app.post('/create_preference', async (req, res) => {
 
         if (!items || !items.length) return res.status(400).json({ error: 'Carrito vacío' });
 
-        let maxCuotasPermitidasCarrito = 12;
+        // CAMBIO IMPORTANTE:
+        // Ya no miramos una base de datos interna para el precio.
+        // Confiamos en el precio que viene del Frontend (Tu web).
 
         const itemsProcesados = items.map(itemFrontend => {
-            if (itemFrontend.id === 'envio') {
-                return {
-                    title: itemFrontend.title,
-                    unit_price: Number(itemFrontend.unit_price),
-                    quantity: 1,
-                    currency_id: 'ARS'
-                };
-            }
-
-            const productoDB = PRODUCTOS_DB.find(p => p.id === String(itemFrontend.id));
-            let precioFinal = productoDB ? productoDB.precioFinal : Number(itemFrontend.unit_price);
-            let maxCuotasProd = productoDB ? productoDB.maxCuotas : 3;
-
-            if (maxCuotasProd < maxCuotasPermitidasCarrito) {
-                maxCuotasPermitidasCarrito = maxCuotasProd;
-            }
-
             return {
                 title: itemFrontend.title,
-                unit_price: Number(precioFinal),
+                unit_price: Number(itemFrontend.unit_price), // <--- PRECIO ORIGINAL DEL FRONT
                 quantity: Number(itemFrontend.quantity),
                 currency_id: 'ARS',
-                picture_url: productoDB ? productoDB.imagen : ''
+                picture_url: '' // Opcional, ya no dependemos de la DB interna
             };
         });
 
-        // Guardamos datos
+        // Guardamos datos para el email
         pendingOrders.set(external_reference, { items: itemsProcesados, payer });
 
         const preference = {
@@ -143,9 +111,8 @@ app.post('/create_preference', async (req, res) => {
             auto_return: "approved",
             external_reference: external_reference,
             notification_url: "https://checkout-server-gehy.onrender.com/webhook-mercadopago",
-            payment_methods: {
-                installments: maxCuotasPermitidasCarrito
-            }
+            // Quitamos el limitador de cuotas forzado
+            // Ahora MP ofrecerá lo que tenga configurado tu cuenta globalmente
         };
 
         const result = await mercadopago.preferences.create(preference);
@@ -186,7 +153,6 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 const totalFormatted = payment.body.transaction_amount.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' });
 
                 // --- 1. LÓGICA DE DIRECCIÓN / RETIRO ---
-                // Si el campo de calle está vacío o undefined, asumimos que es Retiro en Tienda
                 let infoEnvioHtml = '';
                 const tieneDireccion = payer.address?.street_name && payer.address.street_name.trim() !== '' && payer.address.street_name !== 'null';
 
@@ -197,7 +163,6 @@ app.post('/webhook-mercadopago', async (req, res) => {
                         <p style="margin: 2px 0; font-size: 14px; color: #333;"><strong>CP / Localidad:</strong> ${payer.address.zip_code}</p>
                     `;
                 } else {
-                    // Diseño destacado para Retiro
                     infoEnvioHtml = `
                         <div style="background-color: #fff03b; color: #000; padding: 10px; text-align: center; border-radius: 4px; margin-top: 5px;">
                             <strong style="font-size: 16px; text-transform: uppercase;">RETIRO EN SUCURSAL</strong>
@@ -254,7 +219,6 @@ app.post('/webhook-mercadopago', async (req, res) => {
 
                             <div style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
                                 <p style="color: #999; font-size: 12px; margin: 0;">Briago Pinturas</p>
-                                <p style="color: #ccc; font-size: 11px; margin-top: 5px;">Este es un correo automático, por favor no respondas a esta dirección.</p>
                             </div>
                         </div>
                     </div>
@@ -263,7 +227,7 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 `;
 
                 // -----------------------------------------------------
-                // 3. DISEÑO EMAIL VENDEDOR (OPERATIVO)
+                // 3. DISEÑO EMAIL VENDEDOR
                 // -----------------------------------------------------
                 const vendedorItemsHtml = items.map(item => `
                     <li style="margin-bottom: 8px; font-size: 14px; color: #333;">
@@ -317,7 +281,6 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 // 4. ENVIAR CORREOS
                 // -----------------------------------------------------
 
-                // Al Cliente
                 await resend.emails.send({
                     from: 'Briago Pinturas <ventas@briagopinturas.com>',
                     to: [payer.email],
@@ -325,7 +288,6 @@ app.post('/webhook-mercadopago', async (req, res) => {
                     html: htmlCliente
                 });
 
-                // Al Vendedor (Tú)
                 await resend.emails.send({
                     from: 'Sistema Web <ventas@briagopinturas.com>',
                     to: ['besadamateo@gmail.com'],
