@@ -3,6 +3,7 @@ import './index.css';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "swiper/css";
+import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
 
 import ScrollToTop from '@/components/ScrollToTop';
 // 🛑 ELIMINAMOS: Ya no necesitamos 'motion' de framer-motion si no hay animación de carga
@@ -42,10 +43,18 @@ import Ofertas from './pages/Ofertas';
 function HomePageWrapper() {
   return (
     <>
-      <Secciones />
-      <BannerOficial />
-      <ProductosTotal />
-      <AboutSection />
+      <RevealOnScroll width="100%">
+        <Secciones />
+      </RevealOnScroll>
+      <RevealOnScroll width="100%" delay={0.1}>
+        <BannerOficial />
+      </RevealOnScroll>
+      <RevealOnScroll width="100%" delay={0.1}>
+        <ProductosTotal />
+      </RevealOnScroll>
+      <RevealOnScroll width="100%">
+        <AboutSection />
+      </RevealOnScroll>
     </>
   );
 }

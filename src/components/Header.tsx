@@ -33,7 +33,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 z-50 w-full bg-[#fff03b] shadow-sm transition-all duration-300">
+      <header className="fixed top-0 z-50 w-full bg-[#fff03b]/95 backdrop-blur-md shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto py-3 px-4 flex items-center justify-between gap-6">
           <Link to="/" className="flex items-center gap-3 shrink-0 group" aria-label="Ir al inicio">
             <img src={logo} alt="Logo Briago Pinturas" className="h-16 md:h-19 w-auto transition-transform group-hover:scale-105" />

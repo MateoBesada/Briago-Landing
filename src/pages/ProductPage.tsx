@@ -168,7 +168,7 @@ export default function ProductPage() {
             </div>
 
             <div
-              className="flex-grow bg-white border border-gray-100 shadow-sm rounded-3xl p-2 lg:p-4 relative group aspect-square lg:aspect-auto lg:h-[600px] flex items-center justify-center transition-all duration-300 hover:shadow-md"
+              className="flex-grow bg-white border border-gray-100 shadow-sm rounded-3xl p-1 lg:p-2 relative group aspect-square lg:aspect-auto lg:h-[600px] flex items-center justify-center transition-all duration-300 hover:shadow-md"
               style={{ backgroundColor: selectedVariant.colorHex ? selectedVariant.colorHex : undefined }}
             >
               <ImageZoom
@@ -181,7 +181,7 @@ export default function ProductPage() {
               {!selectedVariant.colorHex && product.marca && logosMarca[normalizarMarca(product.marca)] && (
                 <img
                   src={logosMarca[normalizarMarca(product.marca)]}
-                  className="absolute top-4 right-4 lg:top-5 lg:right-5 w-16 lg:w-24 opacity-80 mix-blend-multiply contrast-110"
+                  className="absolute top-4 right-4 lg:top-5 lg:right-5 w-16 lg:w-24 mix-blend-multiply contrast-130"
                   alt={product.marca}
                 />
               )}

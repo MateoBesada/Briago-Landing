@@ -101,7 +101,7 @@ export default function ProductoCard({ variantes }: Props) {
       )}
 
       {/* Imagen con fondo sutil */}
-      <div className="relative h-[220px] flex items-center justify-center group-hover:bg-[#fff03b]/5 transition-colors duration-500 rounded-t-3xl overflow-hidden p-6">
+      <div className="relative h-[220px] flex items-center justify-center group-hover:bg-[#fff03b]/5 transition-colors duration-500 rounded-t-3xl overflow-hidden p-2">
         <img
           src={activo.imagen}
           alt={`Imagen de ${activo.nombre}`}
