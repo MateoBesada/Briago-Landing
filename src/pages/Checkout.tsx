@@ -83,13 +83,14 @@ const CheckoutPage = () => {
         toast.error("Faltan datos de envío.");
         return;
       }
+
       if (shippingCost === 0) {
         toast.error("Calculá el costo de envío antes de continuar.");
         return;
       }
 
       if (formData.postalcode.trim() !== calculatorZip.trim()) {
-        toast.error(`El Código Postal del formulario (${formData.postalcode}) no coincide con el calculado (${calculatorZip}). Por favor, corregilo.`);
+        toast.error(`El Código Postal del formulario (${formData.postalcode}) no coincide con el calculado (${calculatorZip}).`);
         return;
       }
     }

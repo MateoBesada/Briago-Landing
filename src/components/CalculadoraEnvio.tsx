@@ -1,39 +1,40 @@
 import React, { useState } from 'react';
-import { Loader2, Truck } from 'lucide-react';
+import { Loader2, Truck, Package } from 'lucide-react';
 
 interface CalculadoraEnvioProps {
     onSelect?: (costo: number, detalle: string, cp: string) => void;
 }
 
-// CORRECCIÓN: EnvíoPack necesita los nombres exactos, no letras.
 const PROVINCIAS = [
-    { valor: 'Capital Federal', label: 'Capital Federal (CABA)' },
-    { valor: 'Buenos Aires', label: 'Buenos Aires (GBA/Interior)' },
-    { valor: 'Córdoba', label: 'Córdoba' },
-    { valor: 'Santa Fe', label: 'Santa Fe' },
-    { valor: 'Mendoza', label: 'Mendoza' },
-    { valor: 'Entre Ríos', label: 'Entre Ríos' },
-    { valor: 'Tucumán', label: 'Tucumán' },
-    // Puedes agregar más, pero el "valor" debe ser el nombre real de la provincia
+    { id: 'C', nombre: 'Capital Federal (CABA)' },
+    { id: 'B', nombre: 'Buenos Aires (GBA/Interior)' },
+    { id: 'X', nombre: 'Córdoba' },
+    { id: 'S', nombre: 'Santa Fe' },
+    { id: 'M', nombre: 'Mendoza' },
+    { id: 'E', nombre: 'Entre Ríos' },
+    { id: 'T', nombre: 'Tucumán' },
+    { id: 'R', nombre: 'Río Negro' },
+    { id: 'N', nombre: 'Neuquén' },
+    { id: 'Q', nombre: 'Chubut' },
+    // Se pueden agregar más IDs según documentación de EnvíoPack
 ];
 
 export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
     const [cp, setCp] = useState('');
-    // Default: Buenos Aires (Nombre completo)
-    const [provincia, setProvincia] = useState('Buenos Aires');
+    const [provincia, setProvincia] = useState('B'); // Default Buenos Aires
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [opciones, setOpciones] = useState<any[]>([]);
     const [selectedId, setSelectedId] = useState<number | null>(null);
 
-    // URL DE TU BACKEND EN RENDER
+    // URL DEL BACKEND (Producción)
     const API_URL = 'https://checkout-server-gehy.onrender.com/api/cotizar';
 
     const calcularEnvio = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (cp.length < 4) {
-            setError("El código postal parece incompleto.");
+            setError("Ingresá un Código Postal válido (4 dígitos).");
             return;
         }
 
@@ -44,7 +45,6 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
         if (onSelect) onSelect(0, '', '');
 
         try {
-            // Enviamos el nombre completo de la provincia
             const res = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -55,22 +55,22 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
 
             const data = await res.json();
 
-            // Validación robusta de la respuesta
             if (Array.isArray(data) && data.length > 0) {
-                // Filtramos solo envíos a Domicilio ('D')
+                // Filtramos modalidades: D = Domicilio, S = Sucursal. Priorizamos Domicilio.
+                // Ajustar según preferencia. Aquí mostramos solo Domicilio como se pidió antes.
                 const enviosDomicilio = data.filter((d: any) => d.modalidad === 'D');
 
                 if (enviosDomicilio.length > 0) {
                     setOpciones(enviosDomicilio);
                 } else {
-                    setError("No encontramos envíos a domicilio para esta zona.");
+                    setError("No encontramos opciones a domicilio para esta ubicación con EnvíoPack.");
                 }
             } else {
-                setError("No se encontraron opciones de envío. Verificá el CP.");
+                setError("No se encontraron cotizaciones para los datos ingresados.");
             }
         } catch (err) {
             console.error(err);
-            setError("Error al calcular. Verificá tu CP y Provincia.");
+            setError("Hubo un problema al calcular. Verificá tu conexión.");
         } finally {
             setLoading(false);
         }
@@ -79,69 +79,78 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
     const handleSelectOption = (index: number, op: any) => {
         setSelectedId(index);
         if (onSelect) {
+            // Construimos un detalle legible
             const nombre = `${op.correo.nombre} - ${op.servicio.nombre}`;
             onSelect(op.valor, nombre, cp);
         }
     };
 
     return (
-        <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200">
+        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                <Truck className="w-5 h-5" /> Calcular Envío
+                <Package className="w-5 h-5 text-gray-600" />
+                Calculadora de Envíos
             </h3>
 
-            <form onSubmit={calcularEnvio} className="flex gap-2 mb-4">
-                <input
-                    type="text"
-                    placeholder="Tu CP (Ej: 1629)"
-                    className="flex-1 p-3 border rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
-                    value={cp}
-                    onChange={e => setCp(e.target.value)}
-                />
-                <button
-                    type="submit"
-                    disabled={loading || !cp}
-                    className="bg-black text-[#fff03b] px-6 py-3 rounded-xl font-bold uppercase disabled:opacity-50 hover:bg-gray-800 transition-colors"
-                >
-                    {loading ? <Loader2 className="animate-spin w-5 h-5" /> : 'Calcular'}
-                </button>
-            </form>
+            <form onSubmit={calcularEnvio} className="flex flex-col gap-3 mb-4">
+                <div className="flex gap-2">
+                    <input
+                        type="text"
+                        placeholder="Tu CP (Ej: 1414)"
+                        className="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
+                        value={cp}
+                        onChange={e => setCp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                    />
+                    <button
+                        type="submit"
+                        disabled={loading || cp.length < 4}
+                        className="bg-black text-[#fff03b] px-6 py-3 rounded-xl font-bold uppercase disabled:opacity-50 hover:opacity-90 transition-opacity"
+                    >
+                        {loading ? <Loader2 className="animate-spin w-5 h-5" /> : 'Cotizar'}
+                    </button>
+                </div>
 
-            <div className="mb-4">
                 <select
-                    className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm"
+                    className="w-full p-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
                     value={provincia}
                     onChange={e => setProvincia(e.target.value)}
                 >
                     {PROVINCIAS.map(p => (
-                        // USAMOS p.valor AQUÍ PARA QUE ENVÍE EL NOMBRE COMPLETO
-                        <option key={p.valor} value={p.valor}>{p.label}</option>
+                        <option key={p.id} value={p.id}>{p.nombre}</option>
                     ))}
-                    <option value="Buenos Aires">Otras Provincias</option>
+                    <option value="B">Otra Provincia (Usar Genérico BsAs)</option>
                 </select>
-                <p className="text-xs text-gray-400 mt-1">* Seleccioná tu provincia correctamente</p>
-            </div>
+            </form>
 
-            {error && <p className="text-red-500 text-sm font-medium mb-4">{error}</p>}
+            {error && (
+                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg mb-4 flex items-center gap-2">
+                    <span className="font-bold">!</span> {error}
+                </div>
+            )}
 
             {opciones.length > 0 && (
-                <div className="space-y-2 mt-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                    <p className="text-xs font-bold uppercase text-gray-500 mb-2">Opciones disponibles:</p>
-                    {opciones.map((op, idx) => (
-                        <div
-                            key={idx}
-                            onClick={() => handleSelectOption(idx, op)}
-                            className={`p-3 border rounded-xl cursor-pointer flex justify-between items-center transition-all ${selectedId === idx ? 'border-black bg-white ring-1 ring-black shadow-md' : 'border-gray-200 bg-white hover:border-gray-400'}`}
-                        >
-                            <div>
-                                <p className="font-bold text-sm">{op.correo.nombre}</p>
-                                <p className="text-xs text-gray-500">{op.servicio.nombre} ({op.horas_entrega}hs)</p>
+                <div className="space-y-2 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <p className="text-xs font-bold uppercase text-gray-400 mb-2 tracking-wider">Opciones encontradas:</p>
+                    <div className="max-h-60 overflow-y-auto custom-scrollbar pr-1 space-y-2">
+                        {opciones.map((op, idx) => (
+                            <div
+                                key={idx}
+                                onClick={() => handleSelectOption(idx, op)}
+                                className={`p-4 border rounded-xl cursor-pointer flex justify-between items-center transition-all ${selectedId === idx ? 'border-black bg-yellow-50 ring-1 ring-black' : 'border-gray-100 hover:border-gray-300 hover:bg-gray-50'}`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <Truck className={`w-5 h-5 ${selectedId === idx ? 'text-black' : 'text-gray-400'}`} />
+                                    <div>
+                                        <p className="font-bold text-sm text-gray-900">{op.correo.nombre}</p>
+                                        <p className="text-xs text-gray-500">{op.servicio.nombre} • {op.horas_entrega}hs</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-bold text-lg">${op.valor}</p>
+                                </div>
                             </div>
-                            <div className="text-right">
-                                <p className="font-bold text-lg">${op.valor}</p>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
