@@ -198,71 +198,131 @@ app.post('/webhook-mercadopago', async (req, res) => {
                 }
 
                 // --- EMAIL CLIENTE ---
-                const itemsCliente = items.map(i => `<tr><td style="padding:8px 0; border-bottom:1px solid #eee;">${i.title}</td><td style="padding:8px 0; border-bottom:1px solid #eee; text-align:right;">$${Number(i.unit_price).toLocaleString('es-AR')}</td></tr>`).join('');
+                const itemsCliente = items.map(i => `
+                    <tr>
+                        <td style="padding:15px 0; border-bottom:1px solid #eeeeee;">
+                            <span style="font-weight:bold; color:#333;">${i.title}</span>
+                            <br><span style="font-size:12px; color:#777;">Cantidad: ${i.quantity}</span>
+                        </td>
+                        <td style="padding:15px 0; border-bottom:1px solid #eeeeee; text-align:right; white-space:nowrap; font-weight:bold;">
+                            $${Number(i.unit_price).toLocaleString('es-AR')}
+                        </td>
+                    </tr>
+                `).join('');
 
                 const htmlCliente = `
-                    <div style="font-family:sans-serif; max-width:600px; margin:auto; border:1px solid #eee;">
-                        <div style="background:#000; padding:20px; text-align:center;">
-                            <img src="${LOGO_URL}" width="150" alt="Briago">
+                    <!DOCTYPE html>
+                    <html>
+                    <body style="margin:0; padding:0; background-color:#f4f4f4; font-family:'Helvetica Neue', Arial, sans-serif;">
+                        <div style="max-width:600px; margin:40px auto; background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+                            
+                            <!-- HEADER -->
+                            <div style="background-color:#000000; padding:30px 20px; text-align:center;">
+                                <img src="${LOGO_URL}" alt="Briago Pinturas" width="140" style="display:block; margin:0 auto;">
+                            </div>
+                            
+                            <!-- BODY -->
+                            <div style="padding:40px 30px;">
+                                <h1 style="color:#333333; font-size:24px; margin:0 0 10px 0; text-align:center;">¡Gracias por tu compra!</h1>
+                                <p style="color:#666666; font-size:16px; line-height:1.5; text-align:center; margin-bottom:30px;">
+                                    Tu pedido <strong>#${extRef}</strong> ha sido confirmado con éxito.
+                                </p>
+
+                                <div style="background-color:#fffce6; border:1px solid #fff03b; border-radius:6px; padding:15px; margin-bottom:30px;">
+                                    <h3 style="margin:0 0 10px 0; font-size:14px; color:#856404; text-transform:uppercase; letter-spacing:1px;">📦 Método de Entrega</h3>
+                                    ${infoEnvioHtml}
+                                </div>
+
+                                <h3 style="border-bottom:2px solid #000; padding-bottom:10px; margin-top:0;">Resumen del Pedido</h3>
+                                <table style="width:100%; border-collapse:collapse;">
+                                    ${itemsCliente}
+                                </table>
+
+                                <div style="margin-top:20px; text-align:right;">
+                                    <p style="font-size:14px; color:#666; margin:0;">Total Abonado</p>
+                                    <p style="font-size:28px; font-weight:bold; color:#000; margin:5px 0;">${totalFormatted}</p>
+                                </div>
+                            </div>
+
+                            <!-- FOOTER -->
+                            <div style="background-color:#eeeeee; padding:20px; text-align:center; font-size:12px; color:#888;">
+                                <p style="margin:0;">Briago Pinturas - Soluciones Industriales y Hogar</p>
+                                <p style="margin:5px 0 0 0;">Ante cualquier duda, responde a este correo.</p>
+                            </div>
                         </div>
-                        <div style="padding:30px;">
-                            <h2 style="margin-top:0;">¡Gracias por tu compra!</h2>
-                            <p>Tu pedido <strong>#${extRef}</strong> ha sido confirmado.</p>
-                            
-                            <table style="width:100%; margin:20px 0; border-collapse: collapse;">
-                                ${itemsCliente}
-                            </table>
-                            
-                            <h3 style="text-align:right; border-top: 2px solid #000; padding-top:10px;">Total: ${totalFormatted}</h3>
-                            
-                            <p style="font-size:12px; color:#999; margin-top:30px; text-align:center;">Briago Pinturas</p>
-                        </div>
-                    </div>
+                    </body>
+                    </html>
                 `;
 
                 // --- EMAIL VENDEDOR ---
-                const itemsVendedor = items.map(i => `<li>${i.quantity}x ${i.title}</li>`).join('');
+                const itemsVendedor = items.map(i => `
+                    <li style="padding:5px 0; border-bottom:1px solid #eee;">
+                        <strong>${i.quantity}x</strong> ${i.title}
+                    </li>
+                `).join('');
 
                 const htmlVendedor = `
-                    <div style="font-family:sans-serif; max-width:600px; margin:auto; border:1px solid #333;">
-                        <div style="background:#fff03b; padding:15px; text-align:center;">
-                            <h2 style="margin:0;">NUEVA VENTA WEB</h2>
-                            <small>Ref: #${extRef}</small>
+                    <!DOCTYPE html>
+                    <html>
+                    <body style="margin:0; padding:0; background-color:#eeeeee; font-family:'Helvetica Neue', Arial, sans-serif;">
+                        <div style="max-width:600px; margin:40px auto; background-color:#ffffff; border-radius:8px; overflow:hidden; border-top: 6px solid #fff03b;">
+                            
+                            <div style="padding:30px; border-bottom:1px solid #eee;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <div>
+                                        <h2 style="margin:0; font-size:22px; color:#000; text-transform:uppercase; letter-spacing:-0.5px;">🔴 NUEVA VENTA DETECTADA</h2>
+                                        <p style="margin:5px 0 0 0; color:#666; font-size:14px;">ID de Referencia: <strong>#${extRef}</strong></p>
+                                    </div>
+                                    <div style="font-size:24px; font-weight:bold; color:#000;">
+                                        ${totalFormatted}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="padding:30px;">
+                                <div style="margin-bottom:30px;">
+                                    <h3 style="font-size:13px; font-weight:bold; color:#999; text-transform:uppercase; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:5px;">👤 Datos del Cliente</h3>
+                                    <div style="font-size:15px; color:#333; line-height:1.6;">
+                                        <strong>Nombre:</strong> ${payer.name} ${payer.surname}<br>
+                                        <strong>DNI:</strong> ${payer.identification?.number}<br>
+                                        <strong>Teléfono:</strong> ${payer.phone?.area_code} ${payer.phone?.number}<br>
+                                        <strong>Email:</strong> <a href="mailto:${payer.email}" style="color:#007bff; text-decoration:none;">${payer.email}</a>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom:30px;">
+                                    <h3 style="font-size:13px; font-weight:bold; color:#999; text-transform:uppercase; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:5px;">🚚 Detalles de Envío / Retiro</h3>
+                                    ${infoEnvioHtml}
+                                </div>
+
+                                <div>
+                                    <h3 style="font-size:13px; font-weight:bold; color:#999; text-transform:uppercase; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:5px;">🛒 Productos Vendidos</h3>
+                                    <ul style="list-style:none; padding:0; margin:0; font-size:15px; color:#333;">
+                                        ${itemsVendedor}
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div style="background-color:#f9f9f9; padding:15px; text-align:center; font-size:12px; color:#999;">
+                                Sistema Automático de Ventas - Briago Pinturas
+                            </div>
                         </div>
-                        <div style="padding:20px;">
-                            <h3>👤 Cliente:</h3>
-                            <p><strong>Nombre:</strong> ${payer.name} ${payer.surname}</p>
-                            <p><strong>DNI:</strong> ${payer.identification?.number}</p>
-                            <p><strong>Tel:</strong> ${payer.phone?.number}</p>
-                            <p><strong>Email:</strong> ${payer.email}</p>
-                            
-                            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-                            
-                            <h3>📦 Entrega:</h3>
-                            ${infoEnvioHtml}
-                            
-                            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-                            
-                            <h3>🛒 Productos:</h3>
-                            <ul>${itemsVendedor}</ul>
-                            
-                            <h2 style="text-align:right;">Cobrado: ${totalFormatted}</h2>
-                        </div>
-                    </div>
+                    </body>
+                    </html>
                 `;
 
                 // Enviamos los correos
                 await resend.emails.send({
                     from: 'Briago Pinturas <ventas@briagopinturas.com>',
                     to: [payer.email],
-                    subject: `Tu Pedido #${extRef}`,
+                    subject: `Tu Pedido #${extRef} - Confirmado`,
                     html: htmlCliente
                 });
 
                 await resend.emails.send({
                     from: 'Sistema Web <ventas@briagopinturas.com>',
                     to: ['besadamateo@gmail.com'],
-                    subject: `Nueva Venta #${extRef}`,
+                    subject: `NUEVA VENTA #${extRef}`,
                     html: htmlVendedor
                 });
 
