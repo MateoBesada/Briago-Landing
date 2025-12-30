@@ -67,29 +67,45 @@ const CheckoutPage = () => {
   }, [cart, navigate]);
 
   const handlePay = async () => {
+    // Mapa de nombres amigables
+    const fieldLabels: Record<keyof typeof formData, string> = {
+      fullname: 'Nombre Completo',
+      email: 'Email',
+      phone: 'Teléfono',
+      dni: 'DNI / CUIT',
+      address: 'Dirección',
+      city: 'Ciudad',
+      postalcode: 'Código Postal',
+      entreCalles: 'Entre Calles',
+      descripcion: 'Notas'
+    };
 
     const requiredFields: (keyof typeof formData)[] = ['fullname', 'email', 'phone', 'dni'];
-    const isInvalid = requiredFields.some(field => formData[field].trim() === "");
+    const missingFields = requiredFields.filter(field => formData[field].trim() === "");
 
-    if (isInvalid) {
-      toast.error("Por favor, completá todos tus datos obligatorios.");
+    if (missingFields.length > 0) {
+      const missingNames = missingFields.map(f => fieldLabels[f]).join(', ');
+      toast.error(`Falta completar: ${missingNames}`);
       return;
     }
 
     if (deliveryMethod === 'delivery') {
       const requiredDeliveryFields: (keyof typeof formData)[] = ['address', 'city', 'postalcode'];
-      if (requiredDeliveryFields.some(field => formData[field].trim() === "")) {
-        toast.error("Faltan datos de envío.");
+      const missingDeliveryFields = requiredDeliveryFields.filter(field => formData[field].trim() === "");
+
+      if (missingDeliveryFields.length > 0) {
+        const missingNames = missingDeliveryFields.map(f => fieldLabels[f]).join(', ');
+        toast.error(`Datos de envío incompletos: ${missingNames}`);
         return;
       }
 
       if (shippingCost === 0) {
-        toast.error("Calculá el costo de envío antes de continuar.");
+        toast.error("⚠️ Debés calcular el costo de envío antes de continuar. Tocá el botón 'Cotizar'.");
         return;
       }
 
       if (formData.postalcode.trim() !== calculatorZip.trim()) {
-        toast.error(`El Código Postal del formulario (${formData.postalcode}) no coincide con el calculado (${calculatorZip}).`);
+        toast.error(`⚠️ El CP del formulario (${formData.postalcode}) no coincide con el cotizado (${calculatorZip}). Por favor, cotizá nuevamente con el CP correcto.`);
         return;
       }
     }
@@ -282,7 +298,7 @@ const CheckoutPage = () => {
                 className="mt-8 w-full bg-[#fff03b] text-black font-black uppercase tracking-wider py-4 rounded-xl hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? <Loader2 className="animate-spin w-5 h-5" /> : <CreditCard className="w-5 h-5" />}
-                PAGAR CON MERCADO PAGO
+                Proceder al Pago
               </button>
             </div>
           </div>

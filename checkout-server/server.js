@@ -112,6 +112,9 @@ app.post('/create_preference', async (req, res) => {
         // Guardamos en memoria para el email posterior
         pendingOrders.set(external_reference, { items: itemsProcesados, payer });
 
+        // URL Base para redirecciones (Local vs Prod)
+        const BASE_URL = process.env.CLIENT_URL || "https://briago-pinturas.com";
+
         const preference = {
             items: itemsProcesados,
             payer: {
@@ -122,9 +125,9 @@ app.post('/create_preference', async (req, res) => {
                 address: { zip_code: String(payer.address?.zip_code), street_name: String(payer.address?.street_name) }
             },
             back_urls: {
-                success: "https://briago-pinturas.com/compra-exitosa",
-                failure: "https://briago-pinturas.com/error-en-pago",
-                pending: "https://briago-pinturas.com/pago-pendiente",
+                success: `${BASE_URL}/compra-exitosa`,
+                failure: `${BASE_URL}/error-en-pago`,
+                pending: `${BASE_URL}/pago-pendiente`,
             },
             auto_return: "approved",
             external_reference: external_reference,
@@ -273,4 +276,5 @@ app.post('/webhook-mercadopago', async (req, res) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`✅ Servidor corriendo en puerto ${port}`);
+    console.log(`🔗 Redirecciones configuradas hacia: ${process.env.CLIENT_URL || "https://briago-pinturas.com"}`);
 });
