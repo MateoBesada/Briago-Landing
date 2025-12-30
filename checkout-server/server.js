@@ -113,7 +113,7 @@ app.post('/create_preference', async (req, res) => {
         pendingOrders.set(external_reference, { items: itemsProcesados, payer });
 
         // URL Base para redirecciones (Local vs Prod)
-        const BASE_URL = process.env.CLIENT_URL || "https://briago-pinturas.com";
+        const BASE_URL = process.env.CLIENT_URL || "https://briagopinturas.com";
 
         const preference = {
             items: itemsProcesados,
