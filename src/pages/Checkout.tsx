@@ -66,8 +66,7 @@ const CheckoutPage = () => {
     }
   }, [cart, navigate]);
 
-  const handlePay = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handlePay = async () => {
 
     const requiredFields: (keyof typeof formData)[] = ['fullname', 'email', 'phone', 'dni'];
     const isInvalid = requiredFields.some(field => formData[field].trim() === "");
@@ -192,7 +191,7 @@ const CheckoutPage = () => {
                 )}
               </AnimatePresence>
 
-              <form id="checkout-form" onSubmit={handlePay}>
+              <div id="checkout-form-container">
                 <div className="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
                   <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-[#fff03b] font-bold text-xl">1</div>
                   <h3 className="text-xl font-bold text-black uppercase tracking-tight">Tus Datos</h3>
@@ -245,7 +244,7 @@ const CheckoutPage = () => {
 
                   <FloatingLabelInput id="descripcion" name="descripcion" type="text" value={formData.descripcion} onChange={handleInputChange} placeholder="Notas adicionales (Opcional)" isTextArea={true} required={false} />
                 </div>
-              </form>
+              </div>
             </div>
 
             <div className="flex items-center justify-center gap-6 text-gray-400 grayscale opacity-70 mt-4">
@@ -277,8 +276,8 @@ const CheckoutPage = () => {
               </div>
 
               <button
-                type="submit"
-                form="checkout-form"
+                type="button"
+                onClick={handlePay}
                 disabled={isLoading}
                 className="mt-8 w-full bg-[#fff03b] text-black font-black uppercase tracking-wider py-4 rounded-xl hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >

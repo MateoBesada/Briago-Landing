@@ -16,12 +16,12 @@ const PROVINCIAS = [
     { id: 'R', nombre: 'Río Negro' },
     { id: 'N', nombre: 'Neuquén' },
     { id: 'Q', nombre: 'Chubut' },
-    // Se pueden agregar más IDs según documentación de EnvíoPack
+    // Agregá el resto que necesites
 ];
 
 export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
     const [cp, setCp] = useState('');
-    const [provincia, setProvincia] = useState('B'); // Default Buenos Aires
+    const [provincia, setProvincia] = useState('B');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [opciones, setOpciones] = useState<any[]>([]);
@@ -30,8 +30,12 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
     // URL DEL BACKEND (Producción)
     const API_URL = 'https://checkout-server-gehy.onrender.com/api/cotizar';
 
-    const calcularEnvio = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const calcularEnvio = async (e?: React.MouseEvent | React.FormEvent) => {
+        // BLINDAJE CONTRA RECARGAS:
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation(); // Detiene que el evento suba
+        }
 
         if (cp.length < 4) {
             setError("Ingresá un Código Postal válido (4 dígitos).");
@@ -45,32 +49,38 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
         if (onSelect) onSelect(0, '', '');
 
         try {
+            console.log("Enviando petición a:", API_URL); // Log para debug
+
             const res = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ codigo_postal: cp, provincia })
             });
 
-            if (!res.ok) throw new Error("Error de conexión con el servidor.");
+            if (!res.ok) {
+                // Intentamos leer el error que manda el server
+                const errorText = await res.text();
+                throw new Error(errorText || "Error de conexión con el servidor.");
+            }
 
             const data = await res.json();
+            console.log("Respuesta cotización:", data); // Log para debug
 
             if (Array.isArray(data) && data.length > 0) {
-                // Filtramos modalidades: D = Domicilio, S = Sucursal. Priorizamos Domicilio.
-                // Ajustar según preferencia. Aquí mostramos solo Domicilio como se pidió antes.
+                // Filtramos solo envíos a Domicilio (modalidad 'D')
                 const enviosDomicilio = data.filter((d: any) => d.modalidad === 'D');
 
                 if (enviosDomicilio.length > 0) {
                     setOpciones(enviosDomicilio);
                 } else {
-                    setError("No encontramos opciones a domicilio para esta ubicación con EnvíoPack.");
+                    setError("No encontramos opciones a domicilio para esta ubicación.");
                 }
             } else {
                 setError("No se encontraron cotizaciones para los datos ingresados.");
             }
-        } catch (err) {
-            console.error(err);
-            setError("Hubo un problema al calcular. Verificá tu conexión.");
+        } catch (err: any) {
+            console.error("Error en front:", err);
+            setError("Hubo un problema al calcular. Intentá de nuevo.");
         } finally {
             setLoading(false);
         }
@@ -79,7 +89,6 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
     const handleSelectOption = (index: number, op: any) => {
         setSelectedId(index);
         if (onSelect) {
-            // Construimos un detalle legible
             const nombre = `${op.correo.nombre} - ${op.servicio.nombre}`;
             onSelect(op.valor, nombre, cp);
         }
@@ -92,7 +101,7 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
                 Calculadora de Envíos
             </h3>
 
-            <form onSubmit={calcularEnvio} className="flex flex-col gap-3 mb-4">
+            <div className="flex flex-col gap-3 mb-4">
                 <div className="flex gap-2">
                     <input
                         type="text"
@@ -100,11 +109,19 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
                         className="flex-1 p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-black outline-none transition-all"
                         value={cp}
                         onChange={e => setCp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault(); // IMPORTANTE
+                                e.stopPropagation(); // IMPORTANTE
+                                calcularEnvio();
+                            }
+                        }}
                     />
                     <button
-                        type="submit"
+                        type="button" // CRUCIAL: type="button" evita submit
+                        onClick={(e) => calcularEnvio(e)}
                         disabled={loading || cp.length < 4}
-                        className="bg-black text-[#fff03b] px-6 py-3 rounded-xl font-bold uppercase disabled:opacity-50 hover:opacity-90 transition-opacity"
+                        className="bg-black text-[#fff03b] px-6 py-3 rounded-xl font-bold uppercase disabled:opacity-50 hover:opacity-90 transition-opacity flex items-center gap-2"
                     >
                         {loading ? <Loader2 className="animate-spin w-5 h-5" /> : 'Cotizar'}
                     </button>
@@ -120,10 +137,10 @@ export default function CalculadoraEnvio({ onSelect }: CalculadoraEnvioProps) {
                     ))}
                     <option value="B">Otra Provincia (Usar Genérico BsAs)</option>
                 </select>
-            </form>
+            </div>
 
             {error && (
-                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg mb-4 flex items-center gap-2">
+                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-lg mb-4 flex items-center gap-2 animate-in fade-in">
                     <span className="font-bold">!</span> {error}
                 </div>
             )}
