@@ -20,39 +20,31 @@ mercadopago.configure({
     access_token: process.env.MP_ACCESS_TOKEN,
 });
 
+// ALMACÉN TEMPORAL DE ÓRDENES
 const pendingOrders = new Map();
 
-// Constantes para EnvíoPack
-const PESO_DEFAULT = 22.0;
-const MEDIDAS_DEFAULT = '30x30x40';
-
 // ---------------------------------------------------------
-// 1. TU BASE DE DATOS (SIMULADA EN CÓDIGO)
+// 1. TU BASE DE DATOS DE PRECIOS
 // ---------------------------------------------------------
-// Aquí copié los productos Sherwin que me pasaste antes.
-// Tienes que mantener esta lista actualizada con tus precios REALES (de lista/contado).
+// Pon aquí el PRECIO FINAL que quieres cobrar en la tarjeta.
+// El servidor cobrará exactamente este número.
 const PRODUCTOS_DB = [
-    { id: '10', nombre: "Latex Interior Z10 20L", precioOriginal: 215448, maxCuotas: 3 },
-    { id: '20', nombre: "Latex Interior Z10 10L", precioOriginal: 117396, maxCuotas: 3 },
-    { id: '30', nombre: "Latex Interior Z10 4L", precioOriginal: 40203, maxCuotas: 3 },
-    { id: '40', nombre: "Latex Interior Quantum 20L", precioOriginal: 156104, maxCuotas: 3 },
-    { id: '50', nombre: "Latex Interior Quantum 4L", precioOriginal: 52680, maxCuotas: 3 },
-    { id: '60', nombre: "Latex Int/Ext Quantum 20L", precioOriginal: 173066, maxCuotas: 3 },
-    { id: '70', nombre: "Latex Int/Ext Quantum 4L", precioOriginal: 54229, maxCuotas: 3 },
-    { id: '80', nombre: "Fijador Quantum 20L", precioOriginal: 98000, maxCuotas: 3 },
-    { id: '90', nombre: "Fijador Quantum 4L", precioOriginal: 18900, maxCuotas: 3 },
-    // Agrega aquí los Kovax con maxCuotas: 6 si quieres
-    { id: 'kovax-ejemplo', nombre: "Lija Kovax", precioOriginal: 5000, maxCuotas: 6 }
+    { id: '10', nombre: "Latex Interior Z10 20L", precioFinal: 253468, maxCuotas: 3 },
+    { id: '20', nombre: "Latex Interior Z10 10L", precioFinal: 138112, maxCuotas: 3 },
+    { id: '30', nombre: "Latex Interior Z10 4L", precioFinal: 47297, maxCuotas: 3 },
+    { id: '40', nombre: "Latex Interior Quantum 20L", precioFinal: 183651, maxCuotas: 3 },
+    { id: '50', nombre: "Latex Interior Quantum 4L", precioFinal: 61976, maxCuotas: 3 },
+    { id: '60', nombre: "Latex Int/Ext Quantum 20L", precioFinal: 203607, maxCuotas: 3 },
+    { id: '70', nombre: "Latex Int/Ext Quantum 4L", precioFinal: 63798, maxCuotas: 3 },
+    { id: '80', nombre: "Fijador Quantum 20L", precioFinal: 115294, maxCuotas: 3 },
+    { id: '90', nombre: "Fijador Quantum 4L", precioFinal: 22235, maxCuotas: 3 },
+    // Agrega el resto de tus productos aquí...
+    { id: 'kovax-ejemplo', nombre: "Lija Kovax", precioFinal: 7500, maxCuotas: 6 }
 ];
 
-// Tasas de Mercado Pago (Costo aprox. por ofrecer cuotas sin interés)
-// Ajusta estos valores según lo que te diga tu panel de MP.
-const TASA_3_CUOTAS = 0.15; // 15% (Para dividir por 0.85)
-const TASA_6_CUOTAS = 0.25; // 25% (Para dividir por 0.75)
-
 
 // ---------------------------------------------------------
-// ENDPOINT 1: COTIZADOR DE ENVÍOPACK (IGUAL QUE ANTES)
+// ENDPOINT 1: COTIZADOR
 // ---------------------------------------------------------
 app.post('/api/cotizar', async (req, res) => {
     try {
@@ -61,8 +53,6 @@ app.post('/api/cotizar', async (req, res) => {
         const secretKey = process.env.ENVIOPACK_SECRET_KEY;
 
         if (!apiKey || !secretKey) return res.status(500).json({ error: "Faltan claves de EnvíoPack" });
-
-        console.log(`📡 Cotizando envío para CP: ${codigo_postal}`);
 
         const authResponse = await fetch('https://api.enviopack.com/auth', {
             method: 'POST',
@@ -77,8 +67,8 @@ app.post('/api/cotizar', async (req, res) => {
             access_token: token,
             provincia: provincia,
             codigo_postal: codigo_postal,
-            peso: PESO_DEFAULT,
-            paquetes: MEDIDAS_DEFAULT
+            peso: '22.0',
+            paquetes: '30x30x40'
         });
 
         const cotizacionResponse = await fetch(`https://api.enviopack.com/cotizar/costo?${params}`);
@@ -86,7 +76,6 @@ app.post('/api/cotizar', async (req, res) => {
 
         const resultados = await cotizacionResponse.json();
         res.json(resultados);
-
     } catch (error) {
         console.error("❌ Error al cotizar:", error.message);
         res.status(500).json({ error: "Error al cotizar envío" });
@@ -95,20 +84,18 @@ app.post('/api/cotizar', async (req, res) => {
 
 
 // ---------------------------------------------------------
-// ENDPOINT 2: CREAR PREFERENCIA (MODIFICADO - CHECKOUT PRO)
+// ENDPOINT 2: CREAR PREFERENCIA (CHECKOUT PRO)
 // ---------------------------------------------------------
 app.post('/create_preference', async (req, res) => {
     try {
         const { items, payer, external_reference } = req.body;
+        console.log(`🛒 Nueva solicitud de pago: ${external_reference}`);
 
         if (!items || !items.length) return res.status(400).json({ error: 'Carrito vacío' });
 
-        // --- LÓGICA DE INFLACIÓN DE PRECIOS ---
-
-        let maxCuotasPermitidasCarrito = 12; // Empezamos con el máximo
+        let maxCuotasPermitidasCarrito = 12;
 
         const itemsProcesados = items.map(itemFrontend => {
-            // Caso especial: El Envío (ese no se busca en la DB)
             if (itemFrontend.id === 'envio') {
                 return {
                     title: itemFrontend.title,
@@ -118,39 +105,26 @@ app.post('/create_preference', async (req, res) => {
                 };
             }
 
-            // 1. Buscamos el producto en nuestra "Base de Datos" local
+            // Buscamos el precio en la DB del servidor
             const productoDB = PRODUCTOS_DB.find(p => p.id === String(itemFrontend.id));
 
-            // Si no existe (seguridad), usamos el precio que mandó el front pero asumimos 1 cuota
-            // O podrías lanzar error. Aquí somos permisivos.
-            let precioBase = productoDB ? productoDB.precioOriginal : Number(itemFrontend.unit_price);
+            // Usamos el precio de la DB (seguro) o el del front (fallback)
+            let precioFinal = productoDB ? productoDB.precioFinal : Number(itemFrontend.unit_price);
             let maxCuotasProd = productoDB ? productoDB.maxCuotas : 3;
 
-            // Actualizamos el límite del carrito (Nivelamos hacia abajo)
+            // Limitamos las cuotas si el producto lo requiere
             if (maxCuotasProd < maxCuotasPermitidasCarrito) {
                 maxCuotasPermitidasCarrito = maxCuotasProd;
             }
 
-            // 2. Calculamos el PRECIO INFLADO
-            let precioFinal = precioBase;
-
-            if (maxCuotasProd === 3) {
-                // Inflamos para cubrir el 15%
-                precioFinal = precioBase / (1 - TASA_3_CUOTAS);
-            } else if (maxCuotasProd === 6) {
-                // Inflamos para cubrir el 25%
-                precioFinal = precioBase / (1 - TASA_6_CUOTAS);
-            }
-
             return {
                 title: itemFrontend.title,
-                unit_price: Number(precioFinal.toFixed(2)), // Redondeamos a 2 decimales
+                unit_price: Number(precioFinal),
                 quantity: Number(itemFrontend.quantity),
                 currency_id: 'ARS',
-                picture_url: productoDB ? productoDB.imagen : '' // Opcional
+                picture_url: productoDB ? productoDB.imagen : ''
             };
         });
-
 
         // Guardamos en memoria para el webhook
         pendingOrders.set(external_reference, { items: itemsProcesados, payer });
@@ -172,59 +146,100 @@ app.post('/create_preference', async (req, res) => {
             auto_return: "approved",
             external_reference: external_reference,
             notification_url: "https://checkout-server-gehy.onrender.com/webhook-mercadopago",
-
-            // --- AQUÍ LIMITAMOS LAS CUOTAS VISUALMENTE ---
             payment_methods: {
-                installments: maxCuotasPermitidasCarrito // Esto fuerza a MP a mostrar solo hasta 3 o 6
+                installments: maxCuotasPermitidasCarrito
             }
         };
 
         const result = await mercadopago.preferences.create(preference);
 
-        // --- CAMBIO CLAVE: DEVOLVEMOS init_point ---
         res.json({
             id: result.body.id,
-            init_point: result.body.init_point // URL para redirigir
+            init_point: result.body.init_point
         });
 
     } catch (error) {
-        console.error('Error create_preference:', error);
+        console.error('❌ Error create_preference:', error);
         res.status(500).json({ error: 'Error al generar link de pago' });
     }
 });
 
 
 // ---------------------------------------------------------
-// ENDPOINT 3: WEBHOOK (LIGERA MEJORA VISUAL)
+// ENDPOINT 3: WEBHOOK (CORREOS OFICIALES)
 // ---------------------------------------------------------
 app.post('/webhook-mercadopago', async (req, res) => {
-    // ... (Tu código de webhook está bien, mantenlo igual) ...
-    // Solo recuerda que ahora 'items' tendrá el precio inflado en el email,
-    // lo cual está bien porque es lo que el cliente pagó.
+    res.status(200).send('OK'); // Respondemos OK rápido a MP
 
-    // (Pego tu código original aquí para que no se pierda al copiar)
-    console.log('Webhook recibido');
-    try {
-        if (req.body.type === 'payment') {
-            const paymentId = req.body.data?.id;
-            if (!paymentId) return res.status(200).send('OK');
+    const type = req.body.type || req.query.type;
+    const dataId = req.body.data?.id || req.body.id || req.query['data.id'];
 
-            const payment = await mercadopago.payment.get(paymentId);
+    if (type === 'payment' && dataId) {
+        console.log(`🔔 Webhook recibido. ID Pago: ${dataId}`);
 
-            if (payment.body.status === 'approved') {
-                const extRef = payment.body.external_reference;
+        try {
+            const payment = await mercadopago.payment.get(dataId);
+            const status = payment.body.status;
+            const extRef = payment.body.external_reference;
+
+            if (status === 'approved') {
                 const orderData = pendingOrders.get(extRef);
 
-                if (orderData) {
-                    // ... Lógica de Emails (Resend) ...
-                    // Usa el mismo código que tenías para enviar mails
-                    console.log(`✅ Pago aprobado y emails enviados para ${extRef}`);
-                    pendingOrders.delete(extRef);
+                if (!orderData) {
+                    console.error(`⚠️ No encontré datos en memoria para la orden ${extRef}. (Servidor reiniciado?)`);
+                    return;
                 }
+
+                console.log(`✅ Pago Aprobado. Enviando emails a ${orderData.payer.email}...`);
+
+                // HTML del correo
+                const itemsHtml = orderData.items.map(item =>
+                    `<li style="margin-bottom: 5px;">
+                        <strong>${item.title}</strong> x${item.quantity} 
+                        - $${Number(item.unit_price).toLocaleString('es-AR')}
+                    </li>`
+                ).join('');
+
+                const emailHtml = `
+                    <div style="font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                        <div style="background: #000; color: #fff03b; padding: 20px; text-align: center;">
+                            <h1>¡Compra Exitosa!</h1>
+                        </div>
+                        <div style="padding: 20px;">
+                            <p>Hola <strong>${orderData.payer.name}</strong>,</p>
+                            <p>Hemos recibido tu pago correctamente. Aquí está el resumen de tu pedido:</p>
+                            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                            <ul style="list-style: none; padding: 0;">${itemsHtml}</ul>
+                            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                            <h2 style="text-align: right;">Total: $${payment.body.transaction_amount.toLocaleString('es-AR')}</h2>
+                            <p style="font-size: 12px; color: #666; margin-top: 30px;">
+                                Referencia: #${extRef} <br>
+                                Briago Pinturas
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                // --- ENVÍO DE EMAIL CON DOMINIO PROPIO ---
+                const emailResult = await resend.emails.send({
+                    from: 'Briago Pinturas <ventas@briagopinturas.com>', // <--- ¡AQUÍ ESTÁ EL CAMBIO!
+                    to: [orderData.payer.email, 'besadamateo@gmail.com'], // Le llega al cliente y a ti
+                    subject: `Confirmación de Compra #${extRef}`,
+                    html: emailHtml
+                });
+
+                if (emailResult.error) {
+                    console.error("❌ Error enviando email:", emailResult.error);
+                } else {
+                    console.log("📧 Emails enviados con éxito. ID:", emailResult.data?.id);
+                }
+
+                pendingOrders.delete(extRef);
             }
+        } catch (error) {
+            console.error('❌ Error procesando webhook:', error);
         }
-    } catch (e) { console.error(e); }
-    res.status(200).send('OK');
+    }
 });
 
 const port = process.env.PORT || 3000;
