@@ -27,8 +27,12 @@ const LOGO_URL = "https://briagopinturas.com/assets/LogoHeader-7HScdbpq.png";
 const pendingOrders = new Map();
 
 
+// Constantes para EnvíoPack (Valores por defecto para pintura)
+const PESO_DEFAULT = 22.0;
+const MEDIDAS_DEFAULT = '30x30x40';
+
 // ---------------------------------------------------------
-// ENDPOINT 1: COTIZADOR
+// ENDPOINT 1: COTIZADOR DE ENVÍOPACK (NUEVO)
 // ---------------------------------------------------------
 app.post('/api/cotizar', async (req, res) => {
     try {
@@ -36,32 +40,53 @@ app.post('/api/cotizar', async (req, res) => {
         const apiKey = process.env.ENVIOPACK_API_KEY;
         const secretKey = process.env.ENVIOPACK_SECRET_KEY;
 
-        if (!apiKey || !secretKey) return res.status(500).json({ error: "Faltan claves de EnvíoPack" });
+        if (!apiKey || !secretKey) {
+            console.error("❌ Faltan las claves de EnvíoPack en Render (Environment Variables)");
+            return res.status(500).json({ error: "Error de configuración del servidor." });
+        }
 
+        console.log(`📡 Cotizando envío para CP: ${codigo_postal} (${provincia})`);
+
+        // 1. AUTENTICACIÓN CON ENVIOPACK
         const authResponse = await fetch('https://api.enviopack.com/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({ 'api-key': apiKey, 'secret-key': secretKey })
         });
 
-        if (!authResponse.ok) throw new Error(`Auth fallida EnvíoPack`);
-        const { token } = await authResponse.json();
+        if (!authResponse.ok) {
+            const errorText = await authResponse.text();
+            throw new Error(`Fallo la autenticación con EnvíoPack: ${errorText}`);
+        }
 
+        const authData = await authResponse.json();
+        const token = authData.token;
+
+        // 2. SOLICITAR COTIZACIÓN
         const params = new URLSearchParams({
             access_token: token,
             provincia: provincia,
             codigo_postal: codigo_postal,
-            peso: '22.0',
-            paquetes: '30x30x40'
+            peso: PESO_DEFAULT.toString(),
+            paquetes: MEDIDAS_DEFAULT
         });
 
+        // Usamos la ruta correcta /cotizar/costo
         const cotizacionResponse = await fetch(`https://api.enviopack.com/cotizar/costo?${params}`);
-        if (!cotizacionResponse.ok) return res.json([]);
+
+        if (!cotizacionResponse.ok) {
+            // Si falla (ej: CP inválido), devolvemos array vacío para no romper el front
+            console.error("Error en API Cotización:", await cotizacionResponse.text());
+            return res.json([]);
+        }
 
         const resultados = await cotizacionResponse.json();
+
+        // 3. RESPONDER AL FRONTEND
         res.json(resultados);
+
     } catch (error) {
-        console.error("Error al cotizar:", error.message);
+        console.error("❌ Error al cotizar:", error.message);
         res.status(500).json({ error: "Error al cotizar envío" });
     }
 });

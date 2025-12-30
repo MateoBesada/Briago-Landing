@@ -61,16 +61,7 @@ function HomePageWrapper() {
 
 function App() {
   const location = useLocation();
-  // 🛑 ELIMINAMOS: Eliminamos el estado 'isLoading'
-  // const [isLoading, setIsLoading] = useState(true);
 
-  // 🛑 ELIMINAMOS: Eliminamos el useEffect que contenía el 'setTimeout'
-  // useEffect(() => {
-  //   const timer = setTimeout(() => setIsLoading(false), 2500);
-  //   return () => clearTimeout(timer);
-  // }, []);
-
-  // Lógica del footer (sin cambios)
   const ocultarFooterEn = [
     "/productos-pinturas",
     "/productos-automotor",
